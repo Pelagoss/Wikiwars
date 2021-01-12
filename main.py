@@ -28,8 +28,17 @@ def randomize_page():
 def get_page(title):
     url = f'https://fr.wikipedia.org/wiki/{title}'
     page = requests.get(url)
+
     soup = BeautifulSoup(page.text, features="lxml")
+
     page_py = soup.find('div', class_='mw-content-container')
+    [o.decompose() for o in page_py.find_all(class_='mw-editsection')]
+    [o.decompose() for o in page_py.find_all('sup', class_='reference')]
+
+    for a in page_py.find_all('a', href=True):
+        link_text = a['href']
+        if "/wiki/" not in link_text or "wiktionary" in link_text:
+            a.replaceWith(a.text)
 
     return page_py
 
@@ -86,7 +95,7 @@ def game(title):
         json.dump(json_dict, outfile)
 
     return render_template("main.html.twig", nombreJoueur=nb_player, code_game=code_game, page=page_py,
-                           username=username, started_from=start_page, target=target_page, title=title, blocker=False, clics=session['n_clicks'])
+                           username=username, started_from=start_page, target=target_page, title=str.replace(title, " ", "_"), blocker=False, clics=session['n_clicks'])
 
 
 @app.route('/lobby', methods=['GET', 'POST'])

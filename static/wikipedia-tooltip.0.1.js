@@ -76,7 +76,7 @@ $(document).ready(function() {
 	})(jQuery);
 
 	$(document).ready(function(){
-		$('body').find('a, span.target_page, span.started_page').attr('class','popups_hover');
+		$('body').find('a:not(.logout), span.target_page, span.started_page').attr('class','popups_hover');
 
     	$('.popups_hover').wiki_tooltip();
     });
