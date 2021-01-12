@@ -55,7 +55,7 @@ def index():
             return redirect(url_for('index'))
         else:
             return render_template("connection.html", error="Pseudo déjà utilisé !")
-    if request.method == 'GET':
+    elif request.method == 'GET':
         if 'username' in session:
             return redirect(url_for('lobby'))
         else:
@@ -109,6 +109,7 @@ def lobby():
             session['n_clicks'] = 0
 
             game['players'].append(username)
+            game['players'] = list(set(game['players']))
             game[username] = 0
 
             json_dict[code_game] = game
@@ -259,6 +260,23 @@ def delete_game(code_game):
     with open('games.json', 'w') as outfile:
         json.dump(json_dict, outfile)
 
+
+@app.route('/logout')
+def logout():
+
+    with open('players.json', 'r') as f:
+        json_dict = json.load(f)
+
+    players = json_dict['players']
+    players.remove(session['username'])
+    json_dict['players'] = players
+
+    with open(f'players.json', 'w') as outfile:
+        json.dump(json_dict, outfile)
+
+    session.clear()
+
+    return redirect("/")
 
 #ui.run()
 app.run(host= '0.0.0.0')

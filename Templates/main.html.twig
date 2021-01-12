@@ -45,6 +45,8 @@
         <span class="nav-link" ><span class="badge bg-dark">Page d'arrivée :</span> <span class="target_page" title="{{ target }}">{{ target | replace("_"," ")  }}</span></span>
         <span class="nav-link" ><span class="badge bg-primary">Joueurs :</span> <span id="nbPlayers">{{nombreJoueur}}</span></span>
         <span class="nav-link" ><span class="badge bg-warning">Clics :</span> {{clics}}</span>
+        <a class="btn btn-danger" href="/logout" role="button">Logout</a>
+
       </div>
     </div>
   </div>
@@ -129,9 +131,6 @@
 </script>
 {% endif %}
 <script>
-    {% if blocker == False %}
-        blocker(false,0,'');
-    {% endif %}
 
     //opt 0 => blocker attente partie
     //opt 1 => blocker winner
@@ -190,6 +189,8 @@
         }
     }
     setTimeout(() => { winner(); }, 100);
+    blocker(false,0,'');
+
 </script>
 {% if host is defined %}
 <script>
