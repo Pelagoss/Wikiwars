@@ -6,7 +6,7 @@ $(document).ready(function() {
 			settings = jQuery.extend({
 			wiki_lang : 'fr',
 			in_delay : 0,
-			out_delay : 3000,
+			out_delay : 0,
 			in_speed : 500,
 			out_speed : 500
 			},settings);
@@ -18,6 +18,7 @@ $(document).ready(function() {
 		$(".mwe-popups").css('opacity','1');
 		var _t = m.pageY + 10;
 		var _l = m.pageX - 15;
+
 		tooltip.css({ 'top':_t, 'left':_l });
 		  title = $(this).attr('title');
 		  $(this).attr('title',"");
@@ -45,15 +46,19 @@ $(document).ready(function() {
 			  wikipage.find('.mw-empty-elt').remove();
 			  wikipage.find('#sous_titre_h1').remove();
 			  wikipage.find('div').remove();
+			  wikipage.find('br').remove();
+
 			  wikipage = wikipage.children('p:lt(1)');
 
 			  wikipage.find('a').contents().unwrap();
-			  wikipage = wikipage[0].innerHTML;
+			  wikipage.find('br').contents().unwrap();
+
+			  wikipage = wikipage[0].outerHTML;
 			  wikipage = wikipage.replaceAll('()','');
 			  wikipage = wikipage.replaceAll(' ,',',');
 
 			  $('.mwe-popups').html('<div class="mwe-popups-container">\n' +
-				  '    <a class="mwe-popups-extract" href="/wiki/'+title+'" dir="ltr" lang="fr">'+wikipage+'</a>\n' +
+				  '    <span class="mwe-popups-extract" href="/wiki/'+title+'" dir="ltr" lang="fr">'+wikipage+'</span>\n' +
 				  '</div>');
 			  $(".mwe-popups").stop(true, true).delay(settings.in_delay).fadeIn(settings.in_speed);
 
@@ -71,7 +76,8 @@ $(document).ready(function() {
 	})(jQuery);
 
 	$(document).ready(function(){
-		$('body').find('a').attr('class','popups_hover');
+		$('body').find('a, span.target_page, span.started_page').attr('class','popups_hover');
+
     	$('.popups_hover').wiki_tooltip();
     });
 });
