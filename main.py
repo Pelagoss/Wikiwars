@@ -4,7 +4,6 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 import json
-from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
