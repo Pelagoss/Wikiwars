@@ -28,7 +28,10 @@ def login(username, password):
         players = json.load(f)
 
     if username not in players:
-        user = {'pwd': generate_password_hash(password)}
+        user = {'pwd': generate_password_hash(password),
+                'wins': 0,
+                'loses': 0,
+                'ratio': 0.00}
         players[username] = user
         with open('players.json', 'w') as outfile:
             json.dump(players, outfile)
@@ -96,6 +99,7 @@ def index():
 @app.route('/wiki/<title>')
 @login_required
 def game(title):
+    print(title)
     if request.referrer is None:
         return redirect(url_for('index'))
 
@@ -121,11 +125,19 @@ def game(title):
     with open('games.json', 'w') as outfile:
         json.dump(json_dict, outfile)
 
+    print(target_page)
+
     if title == target_page:
         finished(code_game, username)
 
     return render_template("main.html.twig", nombreJoueur=nb_player, code_game=code_game, page=page_py,
                            username=username, started_from=start_page, target=target_page, title=str.replace(title, " ", "_"), blocker=False, clics=session['n_clicks'])
+
+
+def get_user(username):
+    with open('players.json', 'r') as f:
+        players = json.load(f)
+    return players[username]
 
 
 @app.route('/lobby', methods=['GET', 'POST'])
@@ -196,7 +208,9 @@ def lobby():
                                        started_from=start_page, target=target_page, host=True, blocker=True, clics=session['n_clicks'])
 
         if request.method == 'GET':
-            return render_template("lobby.html", username=username)
+            user = get_user(username)
+
+            return render_template("lobby.html", username=username, user=user)
     else:
         return redirect(url_for('/'))
 
@@ -208,12 +222,12 @@ def start_game():
     code_game = data['code_game']
 
     with open('games.json', 'r') as f:
-        json_dict = json.load(f)
-    game = json_dict[code_game]
-    game['started'] = True
-    json_dict[code_game] = game
+        games = json.load(f)
+
+    games[code_game]['started'] = True
+
     with open('games.json', 'w') as outfile:
-        json.dump(json_dict, outfile)
+        json.dump(games, outfile)
 
     return jsonify({"response": 200})
 
@@ -241,45 +255,49 @@ def players(code_game):
 @login_required
 def is_finished(code_game):
     with open('games.json', 'r') as f:
-        json_dict = json.load(f)
+        games = json.load(f)
 
-    game = json_dict[code_game]
-
-    players = game["players"]
+    players = games[code_game]["players"]
     classement = {}
     for player in players:
-        classement[player] = game[player]
+        classement[player] = games[code_game][player]
 
-    if game["winner"]:
-        del classement[game['winner']]
+    if games[code_game]["winner"]:
+        del classement[games[code_game]['winner']]
 
-    return jsonify({"game": game, "classement": classement})
+    return jsonify({"game": games[code_game], "classement": classement})
 
 
 def finished(code_game, username):
-    user = username
-
     with open('games.json', 'r') as f:
-        json_dict = json.load(f)
+        games = json.load(f)
 
-    game = json_dict[code_game]
-
-    game['winner'] = user
-
-    json_dict[code_game] = game
+    games[code_game]['winner'] = username
 
     with open('games.json', 'w') as outfile:
-        json.dump(json_dict, outfile)
+        json.dump(games, outfile)
 
-    return jsonify({"game": game})
+    with open('players.json', 'r') as f:
+        players = json.load(f)
+
+    for p in games[code_game]["players"]:
+        if username == p:
+            players[p]["wins"] += 1
+        else:
+            players[p]["loses"] += 1
+        players[p]["ratio"] = players[p]["wins"] / (players[p]["loses"]+players[p]["wins"])
+
+    with open('players.json', 'w') as outfile:
+        json.dump(players, outfile)
+
+    return jsonify({"game": games[code_game]})
 
 
 def count_players(code_game):
     with open('games.json', 'r') as f:
-        json_dict = json.load(f)
-    game = json_dict[code_game]
+        games = json.load(f)
     nb_players = 0
-    for player in game['players']:
+    for player in games[code_game]['players']:
         nb_players += 1
     return nb_players
 
