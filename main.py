@@ -1,5 +1,4 @@
 import requests
-import unidecode as unidecode
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
 from flaskwebgui import FlaskUI  # get the FlaskUI class
@@ -12,10 +11,6 @@ ui = FlaskUI(app)  # feed the parameters
 
 
 # do your logic as usual in Flask
-def strip_accents(s):
-   return unidecode.unidecode(s)
-
-
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
     pages = r.json()['query']['pages']
@@ -28,8 +23,17 @@ def randomize_page():
 def get_page(title):
     url = f'https://fr.wikipedia.org/wiki/{title}'
     page = requests.get(url)
+
     soup = BeautifulSoup(page.text, features="lxml")
+
     page_py = soup.find('div', class_='mw-content-container')
+    [o.decompose() for o in page_py.find_all(class_='mw-editsection')]
+    [o.decompose() for o in page_py.find_all('sup', class_='reference')]
+
+    for a in page_py.find_all('a', href=True):
+        link_text = a['href']
+        if "/wiki/" not in link_text or "wiktionary" in link_text:
+            a.replaceWith(a.text)
 
     return page_py
 
@@ -55,7 +59,7 @@ def index():
             return redirect(url_for('index'))
         else:
             return render_template("connection.html", error="Pseudo déjà utilisé !")
-    if request.method == 'GET':
+    elif request.method == 'GET':
         if 'username' in session:
             return redirect(url_for('lobby'))
         else:
@@ -86,7 +90,7 @@ def game(title):
         json.dump(json_dict, outfile)
 
     return render_template("main.html.twig", nombreJoueur=nb_player, code_game=code_game, page=page_py,
-                           username=username, started_from=start_page, target=target_page, title=title, blocker=False, clics=session['n_clicks'])
+                           username=username, started_from=start_page, target=target_page, title=str.replace(title, " ", "_"), blocker=False, clics=session['n_clicks'])
 
 
 @app.route('/lobby', methods=['GET', 'POST'])
@@ -109,6 +113,7 @@ def lobby():
             session['n_clicks'] = 0
 
             game['players'].append(username)
+            game['players'] = list(set(game['players']))
             game[username] = 0
 
             json_dict[code_game] = game
@@ -259,6 +264,23 @@ def delete_game(code_game):
     with open('games.json', 'w') as outfile:
         json.dump(json_dict, outfile)
 
+
+@app.route('/logout')
+def logout():
+
+    with open('players.json', 'r') as f:
+        json_dict = json.load(f)
+
+    players = json_dict['players']
+    players.remove(session['username'])
+    json_dict['players'] = players
+
+    with open(f'players.json', 'w') as outfile:
+        json.dump(json_dict, outfile)
+
+    session.clear()
+
+    return redirect("/")
 
 #ui.run()
 app.run(host= '0.0.0.0')

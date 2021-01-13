@@ -35,16 +35,18 @@
 
 </HEAD>
 <BODY>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
   <div class="container-fluid">
     <span class="navbar-brand" href="#">WikiWars</span>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <span class="nav-link active" aria-current="page" >{{username}}</span>
-        <span class="nav-link" ><span class="badge bg-success">Page de départ :</span> <span class="started_page" title="{{ started_from }}">{{ started_from | replace("_"," ")  }}</span></span>
+        <span class="nav-link" ><span class="badge bg-success">Page de départ :</span> <a class="started_page" href="/wiki/{{ started_from }}" title="{{ started_from }}">{{ started_from | replace("_"," ")  }}</a></span>
         <span class="nav-link" ><span class="badge bg-dark">Page d'arrivée :</span> <span class="target_page" title="{{ target }}">{{ target | replace("_"," ")  }}</span></span>
         <span class="nav-link" ><span class="badge bg-primary">Joueurs :</span> <span id="nbPlayers">{{nombreJoueur}}</span></span>
         <span class="nav-link" ><span class="badge bg-warning">Clics :</span> {{clics}}</span>
+        <button class="btn btn-danger" onclick="location.href='/logout';" role="button" style="position: absolute;right: 4%;">Déconnexion <i class="bi bi-box-arrow-in-left"></i></button>
+
       </div>
     </div>
   </div>
@@ -78,13 +80,15 @@
     var nombrePlayers = $('#nbPlayers');
     var nombrePlayersLoading = $('#nbPlayersLoading');
 
-    function blocker() {
-        var locker = $('.locker');
-        locker.css('display', 'block');
-    }
-    let objResponse;
-    let started = false;
-    function canIStart() {
+        function blocker() {
+            var locker = $('.locker');
+            locker.css('display', 'block');
+        }
+
+        let objResponse;
+        let started = false;
+
+        function canIStart() {
             $.ajax({
                 url: "/canIStart/{{ code_game }}",
                 type: "GET",
@@ -96,15 +100,15 @@
                         started = true;
                         var locker = $('.locker');
                         locker.css('display', 'none');
-                    }else{
+                    } else {
                         setTimeout(canIStart, 2000);
                     }
                 }
             });
-    }
+        }
 
-    function howManyPlayers() {
-        let nombreDeJoueur;
+        function howManyPlayers() {
+            let nombreDeJoueur;
             $.ajax({
                 url: "/{{ code_game }}/numbersOfPlayer",
                 type: "GET",
@@ -114,13 +118,13 @@
                     objResponse = data;
                     nombreDeJoueur = objResponse.responseJSON.nombre;
                     nombrePlayers.html(nombreDeJoueur);
-                    nombrePlayersLoading.html(nombreDeJoueur+' joueur(s)');
-                    if (!started){
+                    nombrePlayersLoading.html(nombreDeJoueur + ' joueur(s)');
+                    if (!started) {
                         setTimeout(howManyPlayers, 2000);
                     }
                 }
             });
-    }
+        }
 
     blocker();
     setTimeout(() => { canIStart(); }, 10);
@@ -129,25 +133,22 @@
 </script>
 {% endif %}
 <script>
-    {% if blocker == False %}
-        blocker(false,0,'');
-    {% endif %}
 
     //opt 0 => blocker attente partie
     //opt 1 => blocker winner
     function blocker(toggle, opt, texte) {
         var locker;
-        if(opt===0){
+        if (opt === 0) {
             locker = $('.locker');
-        }else if(opt===1){
+        } else if (opt === 1) {
             locker = $('.lockerWinner');
         }
 
-        if (toggle){
+        if (toggle) {
             locker.css('display', 'block');
             var texteLocker = $('.lockerWinnerText');
             texteLocker.html(texte);
-        }else{
+        } else {
             locker.css('display', 'none');
         }
     }
@@ -155,41 +156,48 @@
     function is_finished() {
         let hasWinner;
         $.ajax({
-                url: "/{{ code_game }}/isFinished",
-                type: "GET",
-                async: true, // Mode synchrone
-                dataType: "json",
-                complete: function (data) {
-                    objResponse = data;
-                    hasWinner = objResponse.responseJSON.game.winner;
-                    console.log(hasWinner);
-                    if (hasWinner !== false){
-                        blocker(true,1,hasWinner + ' ' + objResponse.responseJSON.game[hasWinner] + ' clics');
-                    }else{
-                        setTimeout(is_finished, 2000);
-                    }
+            url: "/{{ code_game }}/isFinished",
+            type: "GET",
+            async: true, // Mode synchrone
+            dataType: "json",
+            complete: function (data) {
+                objResponse = data;
+                hasWinner = objResponse.responseJSON.game.winner;
+                console.log(hasWinner);
+                if (hasWinner !== false) {
+                    blocker(true, 1, hasWinner + ' ' + objResponse.responseJSON.game[hasWinner] + ' clics');
+                } else {
+                    setTimeout(is_finished, 2000);
                 }
-            });
+            }
+        });
     }
-    setTimeout(() => { is_finished(); }, 10);
 
-    function winner(){
+    setTimeout(() => {
+        is_finished();
+    }, 10);
+
+    function winner() {
         let title = '{{ title |upper }}';
         let target = '{{ target |upper }}';
-        if (title === target){
+        if (title === target) {
             $.ajax({
                 url: "/{{ code_game }}/finished",
                 type: "POST",
                 async: true, // Mode synchrone
-                data: {"username":'{{ username }}'},
+                data: {"username": '{{ username }}'},
                 dataType: "json",
                 complete: function (data) {
-                    blocker(true,1,'{{username}} {{ clics }} clics');
+                    blocker(true, 1, '{{ username }} {{ clics }} clics');
                 }
             });
         }
     }
     setTimeout(() => { winner(); }, 100);
+    {% if blocker == False %}
+        blocker(false,0,'');
+    {% endif %}
+
 </script>
 {% if host is defined %}
 <script>
