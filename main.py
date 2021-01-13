@@ -93,6 +93,9 @@ def game(title):
     with open('games.json', 'w') as outfile:
         json.dump(json_dict, outfile)
 
+    if title == target_page:
+        finished(code_game, username)
+
     return render_template("main.html.twig", nombreJoueur=nb_player, code_game=code_game, page=page_py,
                            username=username, started_from=start_page, target=target_page, title=str.replace(title, " ", "_"), blocker=False, clics=session['n_clicks'])
 
@@ -213,10 +216,8 @@ def is_finished(code_game):
     return jsonify({"game": game})
 
 
-@app.route('/<code_game>/finished', methods=['POST'])
-def finished(code_game):
-    data = request.form
-    user = data['username']
+def finished(code_game, username):
+    user = username
 
     with open('games.json', 'r') as f:
         json_dict = json.load(f)
