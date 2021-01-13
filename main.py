@@ -1,5 +1,4 @@
 import requests
-import unidecode as unidecode
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
 from flaskwebgui import FlaskUI  # get the FlaskUI class
@@ -12,10 +11,6 @@ ui = FlaskUI(app)  # feed the parameters
 
 
 # do your logic as usual in Flask
-def strip_accents(s):
-   return unidecode.unidecode(s)
-
-
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
     pages = r.json()['query']['pages']
