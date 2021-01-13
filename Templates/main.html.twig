@@ -176,24 +176,7 @@
     setTimeout(() => {
         is_finished();
     }, 10);
-
-    function winner() {
-        let title = '{{ title |upper }}';
-        let target = '{{ target |upper }}';
-        if (title === target) {
-            $.ajax({
-                url: "/{{ code_game }}/finished",
-                type: "POST",
-                async: true, // Mode synchrone
-                data: {"username": '{{ username }}'},
-                dataType: "json",
-                complete: function (data) {
-                    blocker(true, 1, '{{ username }} {{ clics }} clics');
-                }
-            });
-        }
-    }
-    setTimeout(() => { winner(); }, 100);
+    
     {% if blocker == False %}
         blocker(false,0,'');
     {% endif %}
