@@ -1,5 +1,6 @@
 import requests
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 import json
@@ -11,6 +12,41 @@ ui = FlaskUI(app)  # feed the parameters
 
 
 # do your logic as usual in Flask
+def login_required(func):
+    def secure_function(*args, **kwargs):
+        if "username" not in session:
+            return redirect(url_for('index'))
+        return func(*args, **kwargs)
+
+    secure_function.__name__ = func.__name__
+
+    return secure_function
+
+
+def login(username, password):
+    with open('players.json', 'r') as f:
+        players = json.load(f)
+
+    if username not in players:
+        user = {'pwd': generate_password_hash(password)}
+        players[username] = user
+        with open('players.json', 'w') as outfile:
+            json.dump(players, outfile)
+
+        session['username'] = username
+        return True
+    else:
+        pwd = players[username]['pwd']
+        connected = check_password_hash(pwd, password)
+
+        if connected:
+            session['username'] = username
+            return True
+        else:
+            session.clear()
+            return False
+
+
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
     pages = r.json()['query']['pages']
@@ -37,7 +73,25 @@ def get_page(title):
 
     return page_py
 
+
 @app.route("/", methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        data = request.form
+        pseudo = data["inputPseudo"]
+        pwd = data["inputPwd"]
+        connected = login(pseudo, pwd)
+
+        if connected:
+            return redirect(url_for('lobby'))
+        else:
+            return redirect('index')
+    elif request.method == 'GET':
+        if 'username' in session:
+            return redirect(url_for('lobby'))
+        else:
+            return render_template('connection.html')
+"""
 def index():
     with open('players.json', 'r') as f:
         json_dict = json.load(f)
@@ -64,9 +118,10 @@ def index():
             return redirect(url_for('lobby'))
         else:
             return render_template("connection.html")
-
+"""
 
 @app.route('/wiki/<title>')
+@login_required
 def game(title):
     if request.referrer is None:
         return redirect(url_for('index'))
@@ -101,6 +156,7 @@ def game(title):
 
 
 @app.route('/lobby', methods=['GET', 'POST'])
+@login_required
 def lobby():
     if 'username' in session:
         if not request.script_root:
@@ -212,8 +268,15 @@ def is_finished(code_game):
 
     game = json_dict[code_game]
 
+    players = game["players"]
+    classement = {}
+    for player in players:
+        classement[player] = game[player]
 
-    return jsonify({"game": game})
+    if game["winner"]:
+        del classement[game['winner']]
+
+    return jsonify({"game": game, "classement": classement})
 
 
 def finished(code_game, username):
