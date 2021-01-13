@@ -162,9 +162,20 @@
             dataType: "json",
             complete: function (data) {
                 objResponse = data;
-                hasWinner = objResponse.responseJSON.game.winner;
-                console.log(hasWinner);
+                game = objResponse.responseJSON.game;
+                hasWinner = game.winner;
+                classement = objResponse.responseJSON.classement;
                 if (hasWinner !== false) {
+                    tab = '<table><tbody>';
+                    for(var player of game.players){
+                        if(player === hasWinner){
+
+                        }else{
+                            tab += '<tr><td>'+player+'</td><td>'+classement[player]+'</td></tr>';
+                        }
+                    }
+                    tab += '</tbody></table>';
+                    console.log(tab);
                     blocker(true, 1, hasWinner + ' ' + objResponse.responseJSON.game[hasWinner] + ' clics');
                 } else {
                     setTimeout(is_finished, 2000);
