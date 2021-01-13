@@ -68,7 +68,11 @@ def index():
 
 @app.route('/wiki/<title>')
 def game(title):
+    if request.referrer is None:
+        return redirect(url_for('index'))
+
     session['n_clicks'] += 1
+
     if not request.script_root:
         request.script_root = url_for('index', _external=True)
     username = session['username']
@@ -95,71 +99,74 @@ def game(title):
 
 @app.route('/lobby', methods=['GET', 'POST'])
 def lobby():
-    if not request.script_root:
-        request.script_root = url_for('index', _external=True)
-    username = session['username']
-    delete_game(username)
-    if request.method == 'POST':
-        data = request.form
-        if 'inputGame' in data:
-            code_game = data['inputGame']
-            # join game
-            with open('games.json', 'r') as f:
-                json_dict = json.load(f)
+    if 'username' in session:
+        if not request.script_root:
+            request.script_root = url_for('index', _external=True)
+        username = session['username']
+        delete_game(username)
+        if request.method == 'POST':
+            data = request.form
+            if 'inputGame' in data:
+                code_game = data['inputGame']
+                # join game
+                with open('games.json', 'r') as f:
+                    json_dict = json.load(f)
 
-            game = json_dict[code_game]
-            start_page = game['start_page']
-            target_page = game['target_page']
-            session['n_clicks'] = 0
+                game = json_dict[code_game]
+                start_page = game['start_page']
+                target_page = game['target_page']
+                session['n_clicks'] = 0
 
-            game['players'].append(username)
-            game['players'] = list(set(game['players']))
-            game[username] = 0
+                game['players'].append(username)
+                game['players'] = list(set(game['players']))
+                game[username] = 0
 
-            json_dict[code_game] = game
+                json_dict[code_game] = game
 
-            with open('games.json', 'w') as outfile:
-                json.dump(json_dict, outfile)
+                with open('games.json', 'w') as outfile:
+                    json.dump(json_dict, outfile)
 
-            page_py = get_page(start_page)
+                page_py = get_page(start_page)
 
-            session['code_game'] = code_game
-            return render_template("main.html.twig", code_game=code_game, page=page_py, username=username,
-                                   started_from=start_page, target=target_page, blocker=True, clics=session['n_clicks'])
-        else:
-            # create game
-            code_game = username
-            start_page = randomize_page()
-            target_page = randomize_page()
-            with open(f'games.json', 'r') as f:
-                json_dict = json.load(f)
+                session['code_game'] = code_game
+                return render_template("main.html.twig", code_game=code_game, page=page_py, username=username,
+                                       started_from=start_page, target=target_page, blocker=True, clics=session['n_clicks'])
+            else:
+                # create game
+                code_game = username
+                start_page = randomize_page()
+                target_page = randomize_page()
+                with open(f'games.json', 'r') as f:
+                    json_dict = json.load(f)
 
-            json_dict['codes'].append(code_game)
-            json_dict['codes'] = list(set(json_dict['codes']))
-            json_dict[code_game] = {"host": username,
-                                    "started": False,
-                                    "players": [username],
-                                    "winner": False,
-                                    "start_page": start_page,
-                                    "target_page": target_page,
-                                    username: 0
-                                    }
+                json_dict['codes'].append(code_game)
+                json_dict['codes'] = list(set(json_dict['codes']))
+                json_dict[code_game] = {"host": username,
+                                        "started": False,
+                                        "players": [username],
+                                        "winner": False,
+                                        "start_page": start_page,
+                                        "target_page": target_page,
+                                        username: 0
+                                        }
 
-            with open(f'games.json', 'w') as outfile:
-                json.dump(json_dict, outfile)
+                with open(f'games.json', 'w') as outfile:
+                    json.dump(json_dict, outfile)
 
-            session['start_page'] = start_page
-            session['target_page'] = target_page
-            session['code_game'] = code_game
-            session['n_clicks'] = 0
+                session['start_page'] = start_page
+                session['target_page'] = target_page
+                session['code_game'] = code_game
+                session['n_clicks'] = 0
 
-            page_py = get_page(start_page)
+                page_py = get_page(start_page)
 
-            return render_template("main.html.twig", code_game=code_game, page=page_py, username=username,
-                                   started_from=start_page, target=target_page, host=True, blocker=True, clics=session['n_clicks'])
+                return render_template("main.html.twig", code_game=code_game, page=page_py, username=username,
+                                       started_from=start_page, target=target_page, host=True, blocker=True, clics=session['n_clicks'])
 
-    if request.method == 'GET':
-        return render_template("lobby.html", username=username)
+        if request.method == 'GET':
+            return render_template("lobby.html", username=username)
+    else:
+        return redirect(url_for('/'))
 
 
 @app.route('/start', methods=['POST'])
