@@ -245,7 +245,7 @@ path {
   stroke-dasharray: 240 1386;
 }
 .form {
-  margin: 40px;
+  margin: 25px 40px 40px 40px;
   position: absolute;
 }
 label {
