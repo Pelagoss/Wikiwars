@@ -99,7 +99,6 @@ def index():
 @app.route('/wiki/<title>')
 @login_required
 def game(title):
-    print(title)
     if request.referrer is None:
         return redirect(url_for('index'))
 
@@ -124,8 +123,6 @@ def game(title):
 
     with open('games.json', 'w') as outfile:
         json.dump(json_dict, outfile)
-
-    print(target_page)
 
     if title == target_page:
         finished(code_game, username)
