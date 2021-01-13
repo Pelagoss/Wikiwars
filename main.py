@@ -91,34 +91,7 @@ def index():
             return redirect(url_for('lobby'))
         else:
             return render_template('connection.html')
-"""
-def index():
-    with open('players.json', 'r') as f:
-        json_dict = json.load(f)
 
-    players = json_dict['players']
-    if request.method == 'POST':
-        data = request.form
-        pseudo = data["inputPseudo"]
-
-        if pseudo not in players:
-            json_dict['players'].append(pseudo)
-            with open('players.json', 'w') as outfile:
-                json.dump(json_dict, outfile)
-
-            session['username'] = pseudo
-
-            return redirect(url_for('index'))
-        if pseudo in players and 'username' in session and session['username'] == pseudo:
-            return redirect(url_for('index'))
-        else:
-            return render_template("connection.html", error="Pseudo déjà utilisé !")
-    elif request.method == 'GET':
-        if 'username' in session:
-            return redirect(url_for('lobby'))
-        else:
-            return render_template("connection.html")
-"""
 
 @app.route('/wiki/<title>')
 @login_required
@@ -229,6 +202,7 @@ def lobby():
 
 
 @app.route('/start', methods=['POST'])
+@login_required
 def start_game():
     data = request.form
     code_game = data['code_game']
@@ -245,6 +219,7 @@ def start_game():
 
 
 @app.route('/canIStart/<code_game>', methods=['GET'])
+@login_required
 def can_i_start(code_game):
     with open('games.json', 'r') as f:
         json_dict = json.load(f)
@@ -256,12 +231,14 @@ def can_i_start(code_game):
 
 
 @app.route('/<code_game>/numbersOfPlayer', methods=['GET'])
+@login_required
 def players(code_game):
     nb_players = count_players(code_game)
     return jsonify({"nombre": nb_players})
 
 
 @app.route('/<code_game>/isFinished', methods=['GET'])
+@login_required
 def is_finished(code_game):
     with open('games.json', 'r') as f:
         json_dict = json.load(f)
@@ -338,17 +315,6 @@ def delete_game(code_game):
 
 @app.route('/logout')
 def logout():
-
-    with open('players.json', 'r') as f:
-        json_dict = json.load(f)
-
-    players = json_dict['players']
-    players.remove(session['username'])
-    json_dict['players'] = players
-
-    with open(f'players.json', 'w') as outfile:
-        json.dump(json_dict, outfile)
-
     session.clear()
 
     return redirect("/")
