@@ -306,6 +306,7 @@ def list_games():
     games = []
     for game in json_dict['codes']:
         games.append(json_dict[game])
+    games.reverse()
     return jsonify({"games": games})
 
 
