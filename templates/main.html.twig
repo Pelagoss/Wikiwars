@@ -51,7 +51,7 @@
     </div>
   </div>
 </nav>
-<div>
+<div style="padding-top: 55px;">
         {{ page | safe }}
 </div>
 
@@ -68,8 +68,9 @@
 </div>
 <div class="lockerWinner" style="display: none">
     <div class="d-flex flex-column justify-content-center" style="height: 100%;align-items: center;">
-        <strong class="text-light my-3">There is a winner !</strong>
-        <strong class="lockerWinnerText text-light my-3"></strong>
+        <h1 class="text-light my-3">There is a winner !</h1>
+        <h2 class="lockerWinnerText text-light my-3"></h2>
+        <div id="result" class="text-light"></div>
         <button id="delete" type="button" class="btn btn-success">Quitter !</button>
     </div>
 </div>
@@ -136,7 +137,7 @@
 
     //opt 0 => blocker attente partie
     //opt 1 => blocker winner
-    function blocker(toggle, opt, texte) {
+    function blocker(toggle, opt, msg) {
         var locker;
         if (opt === 0) {
             locker = $('.locker');
@@ -147,7 +148,10 @@
         if (toggle) {
             locker.css('display', 'block');
             var texteLocker = $('.lockerWinnerText');
-            texteLocker.html(texte);
+            winner = msg.winner;
+            reste = msg.reste;
+            $('#result').html(reste);
+            texteLocker.html(winner);
         } else {
             locker.css('display', 'none');
         }
@@ -162,10 +166,22 @@
             dataType: "json",
             complete: function (data) {
                 objResponse = data;
-                hasWinner = objResponse.responseJSON.game.winner;
-                console.log(hasWinner);
+                game = objResponse.responseJSON.game;
+                hasWinner = game.winner;
+                classement = objResponse.responseJSON.classement;
                 if (hasWinner !== false) {
-                    blocker(true, 1, hasWinner + ' ' + objResponse.responseJSON.game[hasWinner] + ' clics');
+                    tab = '<table><tbody>';
+                    for(var player of game.players){
+                        if(player === hasWinner){
+
+                        }else{
+                            tab += '<tr><td><h3 class="text-light">'+player+'</h3></td><td><h3 class="text-light">'+classement[player]+' clics</h3></td></tr>';
+                        }
+                    }
+                    tab += '</tbody></table>';
+                    msg = {"winner": hasWinner + ' ' + objResponse.responseJSON.game[hasWinner] + ' clics', "reste": tab};
+
+                    blocker(true, 1, msg);
                 } else {
                     setTimeout(is_finished, 2000);
                 }
@@ -176,24 +192,7 @@
     setTimeout(() => {
         is_finished();
     }, 10);
-
-    function winner() {
-        let title = '{{ title |upper }}';
-        let target = '{{ target |upper }}';
-        if (title === target) {
-            $.ajax({
-                url: "/{{ code_game }}/finished",
-                type: "POST",
-                async: true, // Mode synchrone
-                data: {"username": '{{ username }}'},
-                dataType: "json",
-                complete: function (data) {
-                    blocker(true, 1, '{{ username }} {{ clics }} clics');
-                }
-            });
-        }
-    }
-    setTimeout(() => { winner(); }, 100);
+    
     {% if blocker == False %}
         blocker(false,0,'');
     {% endif %}

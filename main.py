@@ -1,5 +1,6 @@
 import requests
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskwebgui import FlaskUI  # get the FlaskUI class
 import json
@@ -11,6 +12,44 @@ ui = FlaskUI(app)  # feed the parameters
 
 
 # do your logic as usual in Flask
+def login_required(func):
+    def secure_function(*args, **kwargs):
+        if "username" not in session:
+            return redirect(url_for('index'))
+        return func(*args, **kwargs)
+
+    secure_function.__name__ = func.__name__
+
+    return secure_function
+
+
+def login(username, password):
+    with open('players.json', 'r') as f:
+        players = json.load(f)
+
+    if username not in players:
+        user = {'pwd': generate_password_hash(password),
+                'wins': 0,
+                'loses': 0,
+                'ratio': 0.00}
+        players[username] = user
+        with open('players.json', 'w') as outfile:
+            json.dump(players, outfile)
+
+        session['username'] = username
+        return True
+    else:
+        pwd = players[username]['pwd']
+        connected = check_password_hash(pwd, password)
+
+        if connected:
+            session['username'] = username
+            return True
+        else:
+            session.clear()
+            return False
+
+
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
     pages = r.json()['query']['pages']
@@ -37,36 +76,28 @@ def get_page(title):
 
     return page_py
 
+
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    with open('players.json', 'r') as f:
-        json_dict = json.load(f)
-
-    players = json_dict['players']
     if request.method == 'POST':
         data = request.form
         pseudo = data["inputPseudo"]
+        pwd = data["inputPwd"]
+        connected = login(pseudo, pwd)
 
-        if pseudo not in players:
-            json_dict['players'].append(pseudo)
-            with open('players.json', 'w') as outfile:
-                json.dump(json_dict, outfile)
-
-            session['username'] = pseudo
-
-            return redirect(url_for('index'))
-        if pseudo in players and 'username' in session and session['username'] == pseudo:
-            return redirect(url_for('index'))
+        if connected:
+            return redirect(url_for('lobby'))
         else:
-            return render_template("connection.html", error="Pseudo déjà utilisé !")
+            return redirect('index')
     elif request.method == 'GET':
         if 'username' in session:
             return redirect(url_for('lobby'))
         else:
-            return render_template("connection.html")
+            return render_template('connection.html')
 
 
 @app.route('/wiki/<title>')
+@login_required
 def game(title):
     if request.referrer is None:
         return redirect(url_for('index'))
@@ -93,11 +124,21 @@ def game(title):
     with open('games.json', 'w') as outfile:
         json.dump(json_dict, outfile)
 
+    if title == target_page:
+        finished(code_game, username)
+
     return render_template("main.html.twig", nombreJoueur=nb_player, code_game=code_game, page=page_py,
                            username=username, started_from=start_page, target=target_page, title=str.replace(title, " ", "_"), blocker=False, clics=session['n_clicks'])
 
 
+def get_user(username):
+    with open('players.json', 'r') as f:
+        players = json.load(f)
+    return players[username]
+
+
 @app.route('/lobby', methods=['GET', 'POST'])
+@login_required
 def lobby():
     if 'username' in session:
         if not request.script_root:
@@ -164,28 +205,32 @@ def lobby():
                                        started_from=start_page, target=target_page, host=True, blocker=True, clics=session['n_clicks'])
 
         if request.method == 'GET':
-            return render_template("lobby.html", username=username)
+            user = get_user(username)
+
+            return render_template("lobby.html", username=username, user=user)
     else:
         return redirect(url_for('/'))
 
 
 @app.route('/start', methods=['POST'])
+@login_required
 def start_game():
     data = request.form
     code_game = data['code_game']
 
     with open('games.json', 'r') as f:
-        json_dict = json.load(f)
-    game = json_dict[code_game]
-    game['started'] = True
-    json_dict[code_game] = game
+        games = json.load(f)
+
+    games[code_game]['started'] = True
+
     with open('games.json', 'w') as outfile:
-        json.dump(json_dict, outfile)
+        json.dump(games, outfile)
 
     return jsonify({"response": 200})
 
 
 @app.route('/canIStart/<code_game>', methods=['GET'])
+@login_required
 def can_i_start(code_game):
     with open('games.json', 'r') as f:
         json_dict = json.load(f)
@@ -197,48 +242,59 @@ def can_i_start(code_game):
 
 
 @app.route('/<code_game>/numbersOfPlayer', methods=['GET'])
+@login_required
 def players(code_game):
     nb_players = count_players(code_game)
     return jsonify({"nombre": nb_players})
 
 
 @app.route('/<code_game>/isFinished', methods=['GET'])
+@login_required
 def is_finished(code_game):
     with open('games.json', 'r') as f:
-        json_dict = json.load(f)
+        games = json.load(f)
 
-    game = json_dict[code_game]
+    players = games[code_game]["players"]
+    classement = {}
+    for player in players:
+        classement[player] = games[code_game][player]
+
+    if games[code_game]["winner"]:
+        del classement[games[code_game]['winner']]
+
+    return jsonify({"game": games[code_game], "classement": classement})
 
 
-    return jsonify({"game": game})
-
-
-@app.route('/<code_game>/finished', methods=['POST'])
-def finished(code_game):
-    data = request.form
-    user = data['username']
-
+def finished(code_game, username):
     with open('games.json', 'r') as f:
-        json_dict = json.load(f)
+        games = json.load(f)
 
-    game = json_dict[code_game]
-
-    game['winner'] = user
-
-    json_dict[code_game] = game
+    games[code_game]['winner'] = username
 
     with open('games.json', 'w') as outfile:
-        json.dump(json_dict, outfile)
+        json.dump(games, outfile)
 
-    return jsonify({"game": game})
+    with open('players.json', 'r') as f:
+        players = json.load(f)
+
+    for p in games[code_game]["players"]:
+        if username == p:
+            players[p]["wins"] += 1
+        else:
+            players[p]["loses"] += 1
+        players[p]["ratio"] = players[p]["wins"] / (players[p]["loses"]+players[p]["wins"])
+
+    with open('players.json', 'w') as outfile:
+        json.dump(players, outfile)
+
+    return jsonify({"game": games[code_game]})
 
 
 def count_players(code_game):
     with open('games.json', 'r') as f:
-        json_dict = json.load(f)
-    game = json_dict[code_game]
+        games = json.load(f)
     nb_players = 0
-    for player in game['players']:
+    for player in games[code_game]['players']:
         nb_players += 1
     return nb_players
 
@@ -274,17 +330,6 @@ def delete_game(code_game):
 
 @app.route('/logout')
 def logout():
-
-    with open('players.json', 'r') as f:
-        json_dict = json.load(f)
-
-    players = json_dict['players']
-    players.remove(session['username'])
-    json_dict['players'] = players
-
-    with open(f'players.json', 'w') as outfile:
-        json.dump(json_dict, outfile)
-
     session.clear()
 
     return redirect("/")

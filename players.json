@@ -1,1 +1,1 @@
-{"players": ["", "Fares"]}
+{"players": [""], "Pelagoss": {"pwd": "pbkdf2:sha256:150000$fezUXnki$cfba122f9f48fabc2da19dece9b80190347741f6b679bd8e0cbdd6153af5a618", "wins": 0, "loses": 0, "ratio": 0.0}, "Fares": {"pwd": "pbkdf2:sha256:150000$OW1CVVVW$550f430b48985264b1c3c072b76b544671760db37d7021dee3a4e9128bb96ccf", "wins": 0, "loses": 0, "ratio": 0.0}, "fares": {"pwd": "pbkdf2:sha256:150000$gi1wPWcw$a3360a91134fbdf45a23443186b795b662f8e3f6bf6bdac12bbeff5c0493003c", "wins": 0, "loses": 0, "ratio": 0.0}}

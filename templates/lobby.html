@@ -19,6 +19,10 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <span class="nav-link active" aria-current="page" >Bienvenue {{username}}</span>
+        <span class="nav-link" ><span class="badge bg-success">Victoires :</span> {{ user.wins }}</span>
+        <span class="nav-link" ><span class="badge bg-danger">Défaites :</span> {{ user.loses }}</span>
+        <span class="nav-link" ><span class="badge bg-info">Ratio V/D :</span> {{ user.ratio }}</span>
+
         <button class="btn btn-danger" onclick="location.href='/logout';" role="button" style="position: absolute;right: 4%;">Déconnexion <i class="bi bi-box-arrow-in-left"></i></button>
       </div>
     </div>
