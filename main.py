@@ -73,8 +73,9 @@ def get_page(title):
         link_text = a['href']
         if "/wiki/" not in link_text or "wiktionary" in link_text:
             a.replaceWith(a.text)
+    title = page_py.find('div',class_='firstHeading')
 
-    return page_py
+    return page_py, title
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -108,7 +109,7 @@ def game(title):
         request.script_root = url_for('index', _external=True)
     username = session['username']
 
-    page_py = get_page(title)
+    (page_py, title) = get_page(title)
     code_game = session['code_game']
     nb_player = count_players(code_game)
     with open('games.json', 'r') as f:
