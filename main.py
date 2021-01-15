@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import requests
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -71,9 +73,11 @@ def get_page(title):
 
     for a in page_py.find_all('a', href=True):
         link_text = a['href']
-        if "/wiki/" not in link_text or "wiktionary" in link_text:
+        if ("/wiki/" in link_text and "wiktionary.org" not in link_text) or '#' in link_text:
+            pass
+        else:
             a.replaceWith(a.text)
-    title = page_py.find('div',class_='firstHeading')
+    title = page_py.find('h1', class_='firstHeading').text
 
     return page_py, title
 
@@ -97,6 +101,17 @@ def index():
             return render_template('connection.html')
 
 
+def verify_date(code_game):
+    with open('games.json', 'r') as f:
+        games = json.load(f)
+
+    games[code_game]['maj'] = str(datetime.now())
+
+    for code in games['codes']:
+        if datetime.now() - datetime.fromisoformat(games[code_game]['maj']) > timedelta(minutes=2):
+            delete_game(code)
+
+
 @app.route('/wiki/<title>')
 @login_required
 def game(title):
@@ -111,6 +126,7 @@ def game(title):
 
     (page_py, title) = get_page(title)
     code_game = session['code_game']
+    verify_date(code_game)
     nb_player = count_players(code_game)
     with open('games.json', 'r') as f:
         json_dict = json.load(f)
@@ -189,6 +205,7 @@ def lobby():
                                         "winner": False,
                                         "start_page": start_page,
                                         "target_page": target_page,
+                                        "maj": str(datetime.now()),
                                         username: 0
                                         }
 
@@ -200,7 +217,7 @@ def lobby():
                 session['code_game'] = code_game
                 session['n_clicks'] = 0
 
-                page_py = get_page(start_page)
+                (page_py, title) = get_page(start_page)
 
                 return render_template("main.html.twig", code_game=code_game, page=page_py, username=username,
                                        started_from=start_page, target=target_page, host=True, blocker=True, clics=session['n_clicks'])
