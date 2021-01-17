@@ -93,7 +93,7 @@ def index():
         if connected:
             return redirect(url_for('lobby'))
         else:
-            return redirect('index')
+            return redirect(url_for('index'))
     elif request.method == 'GET':
         if 'username' in session:
             return redirect(url_for('lobby'))
