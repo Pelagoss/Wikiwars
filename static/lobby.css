@@ -241,7 +241,7 @@ td.text-right {
     position: absolute;
     top: 0;
     left: 0;
-    right: 320px;
+    right: 16%;
     height: 60px;
  }
  
@@ -262,7 +262,7 @@ td.text-right {
     font-size: 12px;
     text-transform: uppercase;
     position: absolute;
-    top: 15px;
+    top: 25%;
     /* right: 169px; */
     opacity: 0.9;
  }
