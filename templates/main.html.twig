@@ -41,11 +41,12 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <span class="nav-link active" aria-current="page" >{{username}}</span>
-        <span class="nav-link" ><span class="badge bg-success">Page de départ :</span> <a class="started_page" href="/wiki/{{ started_from }}" title="{{ started_from }}">{{ started_from | replace("_"," ")  }}</a></span>
-        <span class="nav-link" ><span class="badge bg-dark">Page d'arrivée :</span> <span class="target_page" title="{{ target }}">{{ target | replace("_"," ")  }}</span></span>
-        <span class="nav-link" ><span class="badge bg-primary">Joueurs :</span> <span id="nbPlayers">{{nombreJoueur}}</span></span>
-        <span class="nav-link" ><span class="badge bg-warning">Clics :</span> {{clics}}</span>
-        <button class="btn btn-danger" onclick="location.href='/logout';" role="button" style="position: absolute;right: 4%;">Déconnexion <i class="bi bi-box-arrow-in-left"></i></button>
+        <span class="nav-link"><span class="badge bg-success">Page de départ :</span> <a class="started_page" href="/wiki/{{ started_from }}" title="{{ started_from }}">{{ started_from | replace("_"," ")  }}</a></span>
+        <span class="nav-link"><span class="badge bg-dark">Page d'arrivée :</span> <span class="target_page" title="{{ target }}">{{ target | replace("_"," ")  }}</span></span>
+        <span class="nav-link"><span class="badge bg-primary">Joueurs :</span> <span id="nbPlayers">{{nombreJoueur}}</span></span>
+        <span class="nav-link"><span class="badge bg-warning">Clics :</span> {{clics}}</span>
+        <span class="nav-link"><a class="btnv btnv-4" onclick="location.href='/logout';" role="button" style="position: absolute;right: -18%; font-size:20px; border-radius:30px; width:50px; margin-top:-6px;"><i class="bi bi-box-arrow-in-left"></i></a></span>
+        <!-- <button class="btn btn-danger" onclick="location.href='/logout';" role="button" style="position: absolute;right: 4%;">Déconnexion <i class="bi bi-box-arrow-in-left"></i></button> -->
 
       </div>
     </div>

@@ -160,12 +160,14 @@
 }
 body {
   background: white;
+  background-color: #000 !important;
   font-family: 'Inter UI', sans-serif;
   margin: 0;
   padding: 20px;
 }
 .page {
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.3) 0%, rgba(255, 255, 255, 0.3)), url("./wpWikiwars.jpg");
+  background-size: cover;
   display: flex;
   flex-direction: column;
   height: calc(100% - 40px);
@@ -194,7 +196,7 @@ body {
 }
 }
 .left {
-  background: white;
+  background: black;
   height: calc(100% - 40px);
   top: 20px;
   position: relative;
@@ -214,7 +216,7 @@ body {
   margin: 50px 40px 40px;
 }
 .eula {
-  color: #999;
+  color: rgb(255, 255, 255);
   font-size: 17px;
   line-height: 1.5;
   margin: 40px;
