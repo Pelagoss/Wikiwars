@@ -99,6 +99,9 @@
                             table += '<tr><td class="text-left">'+i+'</td><td class="text-left">'+game.host+'</td><td class="text-left">'+nbPlayers+'</td><td class="text-left">'+game.start_page.replaceAll('_',' ')+'</td><td class="text-left">'+game.target_page.replaceAll('_',' ')+'</td><td class="text-left">'+button+'</td></tr>';
                             i++;
                         }
+						if (tab_games.length === 0){
+                            table += '<tr><td colspan="6" class="text-center"> Aucune partie n\'est encore créée ! </td></tr>';
+                        }
                         table += '</tbody>';
     
                         parties.html(table);
