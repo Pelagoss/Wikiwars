@@ -100,7 +100,7 @@
                             i++;
                         }
 						if (tab_games.length === 0){
-                            table += '<tr><td colspan="6" class="text-center"> Aucune partie n\'est encore créée ! </td></tr>';
+                            table += '<tr><td colspan="6" class="text-center" style="background-image: url(\'{{ url_for('static', filename='table_bg.gif') }}\'); background-position: center;"> Aucune partie n\'est encore créée ! </td></tr>';
                         }
                         table += '</tbody>';
     
