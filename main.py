@@ -225,7 +225,7 @@ def lobby():
         if request.method == 'GET':
             user = get_user(username)
 
-            return render_template("lobby.html", username=username, user=user)
+            return render_template("lobby_cyril.html", username=username, user=user)
     else:
         return redirect(url_for('/'))
 
