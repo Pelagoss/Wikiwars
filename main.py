@@ -33,7 +33,7 @@ def login(username, password):
         user = {'pwd': generate_password_hash(password),
                 'wins': 0,
                 'loses': 0,
-                'ratio': 0.00}
+                'ratio': '0%'}
         players[username] = user
         with open('players.json', 'w') as outfile:
             json.dump(players, outfile)
@@ -141,7 +141,7 @@ def game(title):
     with open('games.json', 'w') as outfile:
         json.dump(json_dict, outfile)
 
-    if title == target_page:
+    if str.replace(title, " ", "_") == target_page:
         finished(code_game, username)
 
     return render_template("main.html.twig", nombreJoueur=nb_player, code_game=code_game, page=page_py,
@@ -300,7 +300,7 @@ def finished(code_game, username):
             players[p]["wins"] += 1
         else:
             players[p]["loses"] += 1
-        players[p]["ratio"] = players[p]["wins"] / (players[p]["loses"]+players[p]["wins"])
+        players[p]["ratio"] = str(((players[p]["wins"] / (players[p]["loses"]+players[p]["wins"]))*100))+" %"
 
     with open('players.json', 'w') as outfile:
         json.dump(players, outfile)
