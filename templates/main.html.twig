@@ -43,8 +43,8 @@
         <span class="nav-link active" aria-current="page" >{{username}}</span>
         <span class="nav-link"><span class="badge bg-success">Page de départ :</span> <a class="started_page" href="/wiki/{{ started_from }}" title="{{ started_from }}">{{ started_from | replace("_"," ")  }}</a></span>
         <span class="nav-link"><span class="badge bg-dark">Page d'arrivée :</span> <span class="target_page" title="{{ target }}">{{ target | replace("_"," ")  }}</span></span>
-        <span class="nav-link"><span class="badge bg-primary">Joueurs :</span> <span id="nbPlayers">{{nombreJoueur}}</span></span>
-        <span class="nav-link"><span class="badge bg-warning">Clics :</span> {{clics}}</span>
+        <span class="nav-link"><span class="badge bg-primary"><i class="bi bi-people-fill"></i> Joueurs :</span> <span id="nbPlayers">{{nombreJoueur}}</span></span>
+        <span class="nav-link"><span class="badge bg-warning"><i class="bi bi-cursor-fill"></i> Clics :</span> {{clics}}</span>
         <span class="nav-link"><a class="btnv btnv-4" onclick="location.href='/logout';" role="button" style="position: absolute;right: -18%; font-size:20px; border-radius:30px; width:50px; margin-top:-6px;"><i class="bi bi-box-arrow-in-left"></i></a></span>
         <!-- <button class="btn btn-danger" onclick="location.href='/logout';" role="button" style="position: absolute;right: 4%;">Déconnexion <i class="bi bi-box-arrow-in-left"></i></button> -->
 
@@ -69,7 +69,7 @@
 </div>
 <div class="lockerWinner" style="display: none">
     <div class="d-flex flex-column justify-content-center" style="height: 100%;align-items: center;">
-        <h1 class="text-light my-3">There is a winner !</h1>
+        <h1 class="text-light my-3"><i style="color: #ffc107" class="bi bi-trophy-fill"></i> There is a winner !</h1>
         <h2 class="lockerWinnerText text-light my-3"></h2>
         <div id="result" class="text-light"></div>
         <button id="delete" type="button" class="btn btn-success">Quitter !</button>
@@ -120,7 +120,7 @@
                     objResponse = data;
                     nombreDeJoueur = objResponse.responseJSON.nombre;
                     nombrePlayers.html(nombreDeJoueur);
-                    nombrePlayersLoading.html(nombreDeJoueur + ' joueur(s)');
+                    nombrePlayersLoading.html(nombreDeJoueur + ' joueur(s) <i class="bi bi-people-fill"></i>');
                     if (!started) {
                         setTimeout(howManyPlayers, 2000);
                     }
