@@ -23,6 +23,7 @@ $(document).ready(function() {
 		  title = $(this).attr('title');
 		  $(this).attr('title',"");
 		  title = title.replace(' ','_');
+		  if (title.length){
 			var x;
 			if(x) {x = null; x.abort(); }
 			 x = $.ajax({
@@ -37,7 +38,9 @@ $(document).ready(function() {
 				 async:false,
 			dataType:'jsonp',
 			success: function(data) {
+			console.log(data);
 			  wikipage = $(data.parse.text['*']);
+			  console.log(wikipage);
 			  wikipage.find('table').remove();
 			  wikipage.find('img').remove();
 			  wikipage.find('style').remove();
@@ -45,14 +48,22 @@ $(document).ready(function() {
 			  wikipage.find('link').remove();
 			  wikipage.find('.mw-empty-elt').remove();
 			  wikipage.find('#sous_titre_h1').remove();
-			  wikipage.find('div').remove();
 			  wikipage.find('br').remove();
+			  if(wikipage.find('div#homonymie').length){
+				  wikipage.find('div#homonymie').remove();
+				  wikipage.find('a').contents().unwrap();
+				  wikipage.find('br').contents().unwrap();
+				  wikipage.find('div').remove();
+				  wikipage = wikipage.children();
+			  }else{
+				  wikipage.find('a').contents().unwrap();
+				  wikipage.find('br').contents().unwrap();
+				  wikipage.find('div').remove();
+				  wikipage = wikipage.children('p:lt(1)');
+			  }
 
-			  wikipage = wikipage.children('p:lt(1)');
-
-			  wikipage.find('a').contents().unwrap();
-			  wikipage.find('br').contents().unwrap();
-
+			console.log(wikipage);
+			console.log(wikipage[0]);
 			  wikipage = wikipage[0].outerHTML;
 			  wikipage = wikipage.replaceAll('()','');
 			  wikipage = wikipage.replaceAll(' ,',',');
@@ -64,6 +75,7 @@ $(document).ready(function() {
 
 			}
 		  });
+		  }
 		},
 		function(){
 			$(this).attr('title',title);
