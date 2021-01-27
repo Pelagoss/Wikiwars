@@ -64,7 +64,7 @@
                         for (var game of tab_games) {
                             let button;
                             if (!game.started){
-                                button = '<form action="/lobby" method="post"><button style="display:contents;"><a name="inputGame" value="'+game.host+'" type="submit" class="btnv btnv-3" style="margin-right:65px;">Rejoindre <i class="bi bi-play-fill"></i></a></button></form>'
+                                button = '<form action="/lobby" method="post"><button  name="inputGame" value="'+game.host+'" type="submit" class="btnv btnv-3" style="margin-right:65px;">Rejoindre <i class="bi bi-play-fill"></i></button></form>'
                             }else{
                                 button = '<button type="submit" class="btn btn-danger" disabled>Partie en cours...</button>'
                             }
