@@ -47,7 +47,7 @@
                     dataType: "json",
                     complete: function (data) {
                         objResponse = data;
-                        tab_games = objResponse.responseJSON.games;
+                        tab_games = objResponse.responseJSON.games.reverse();
                         var table = '<table class="table-fill">' +
                             '<thead><tr>' +
                             '<th class="text-left">#</th>' +
