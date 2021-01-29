@@ -10,7 +10,7 @@ $(document).ready(function() {
 			in_speed : 500,
 			out_speed : 500
 			},settings);
-		 var tooltip = $('<div class="mwe-popups mwe-popups-type-page mwe-popups-fade-in-up mwe-popups-no-image-pointer mwe-popups-is-not-tall" aria-hidden="" style="left: 534px; top: auto; bottom: -94px; display: block;height:fit-content;z-index:2000"></div>');
+		 var tooltip = $('<div class="mwe-popups mwe-popups-type-page mwe-popups-fade-in-up mwe-popups-no-image-pointer mwe-popups-is-not-tall" aria-hidden="" style="left: 534px; top: auto; bottom: -94px; display: block;height:fit-content;z-index:4000"></div>');
 		$('body').append(tooltip);
 		$(".popups_hover").hover(function(m){
 		$(".mwe-popups").html("");
