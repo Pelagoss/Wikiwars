@@ -90,7 +90,11 @@
                             if (!game.started){
                                 button = '<form action="/lobby" method="post"><button name="inputGame" value="'+game.host+'" type="submit" class="btnv btnv-3">Rejoindre <i class="bi bi-play-fill"></i></button></form>'
                             }else{
-                                button = '<button type="submit" class="btn btn-danger" disabled>Partie en cours...</button>'
+                                if(!game.winner){
+                                    button = '<button type="submit" class="btn btn-danger" disabled>Partie en cours...</button>'
+                                }else{
+                                    button = '<button type="submit" class="btn btn-danger" disabled>Partie terminée</button>'
+                                }
                             }
                             let nbPlayers = 0;
                             for (var player of game.players){

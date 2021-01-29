@@ -84,6 +84,7 @@ def get_page(title):
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
+    verify_date()
     if request.method == 'POST':
         data = request.form
         pseudo = data["inputPseudo"]
@@ -101,20 +102,20 @@ def index():
             return render_template('connection.html')
 
 
-def verify_date(code_game):
+def verify_date():
     with open('games.json', 'r') as f:
         games = json.load(f)
 
-    games[code_game]['maj'] = str(datetime.now())
-
     for code in games['codes']:
-        if datetime.now() - datetime.fromisoformat(games[code_game]['maj']) > timedelta(minutes=2):
+        if datetime.now() - datetime.fromisoformat(games[code]['maj']) > timedelta(minutes=2):
             delete_game(code)
 
 
 @app.route('/wiki/<title>')
 @login_required
 def game(title):
+    verify_date()
+
     if request.referrer is None:
         return redirect(url_for('index'))
 
@@ -126,11 +127,11 @@ def game(title):
 
     (page_py, title) = get_page(title)
     code_game = session['code_game']
-    verify_date(code_game)
     nb_player = count_players(code_game)
     with open('games.json', 'r') as f:
         json_dict = json.load(f)
     game = json_dict[code_game]
+    game['maj'] = str(datetime.now())
     start_page = game['start_page']
     target_page = game['target_page']
 
