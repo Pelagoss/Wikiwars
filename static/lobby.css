@@ -30,12 +30,11 @@ div.table-title {
 /*** Table Styles **/
 
 .table-fill {
-  background: white;
   border-radius:3px;
   border-collapse: collapse;
   height: 105px;
   margin: auto;
-  max-width: 600px;
+  max-width: 90%;
   padding:5px;
   width: 100%;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
@@ -149,20 +148,21 @@ td.text-right {
     color: #e1332d;
   } */
   
-  .btnv {
+.btnv{
     color: #fff;
     cursor: pointer;
     text-align: center;
-    font-size: 16px;
+    font-size: 1vw;
     font-weight: 400;
-    line-height: 45px;
-    max-width: 160px;
+    line-height: 3vh;
+    max-width: 15vw;
     position: relative;
     text-decoration: none;
     text-transform: uppercase;
-    border-radius: 15px;
-    width: 115%;
-  }
+    border-radius: 1vh;
+    padding: 0.5vh 0.5vw 0.5vh 0.5vw;
+    width: fit-content;
+}
   /* @media (min-width: 600px) {
     .btn {
       margin: 0 1em 2em;

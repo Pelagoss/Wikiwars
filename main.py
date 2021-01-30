@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = b'\xd4\xbd\x15\x84:U\xf5\xec\xf9\xcd"\x8d\xa6^lx'
 ui = FlaskUI(app)  # feed the parameters
 
 
-# do your logic as usual in Flask
+#Sécurise l'accès avec vérification du token utilisateur pour les pages appellantes
 def login_required(func):
     def secure_function(*args, **kwargs):
         if "username" not in session:
@@ -24,7 +24,7 @@ def login_required(func):
 
     return secure_function
 
-
+#Permet à un utilisateur de se connecter, s'il n'existe pas son compte est crée
 def login(username, password):
     with open('players.json', 'r') as f:
         players = json.load(f)
@@ -51,7 +51,7 @@ def login(username, password):
             session.clear()
             return False
 
-
+#Retourne une URL wikipedia aléatoire
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
     pages = r.json()['query']['pages']
@@ -60,7 +60,7 @@ def randomize_page():
     title = str.replace(title, " ", "_")
     return title
 
-
+#Récupère le contenu HTML d'une page wikipedia cible
 def get_page(title):
     url = f'https://fr.wikipedia.org/wiki/{title}'
     page = requests.get(url)
@@ -81,7 +81,7 @@ def get_page(title):
 
     return page_py, title
 
-
+#Page de connexion si pas connecter, pas d'acceuil sinon
 @app.route("/", methods=['GET', 'POST'])
 def index():
     verify_date()
@@ -101,7 +101,7 @@ def index():
         else:
             return render_template('connection.html')
 
-
+#Supprime une partie si aucun n'utilisateur n'est à l'intérieur après plus de 2min
 def verify_date():
     with open('games.json', 'r') as f:
         games = json.load(f)
@@ -110,7 +110,7 @@ def verify_date():
         if datetime.now() - datetime.fromisoformat(games[code]['maj']) > timedelta(minutes=2):
             delete_game(code)
 
-
+#
 @app.route('/wiki/<title>')
 @login_required
 def game(title):
@@ -148,13 +148,13 @@ def game(title):
     return render_template("main.html.twig", nombreJoueur=nb_player, code_game=code_game, page=page_py,
                            username=username, started_from=start_page, target=target_page, title=str.replace(title, " ", "_"), blocker=False, clics=session['n_clicks'])
 
-
+#Recupère un utilisateur
 def get_user(username):
     with open('players.json', 'r') as f:
         players = json.load(f)
     return players[username]
 
-
+#Retourne la page de lobby avec les différentes parties en cours
 @app.route('/lobby', methods=['GET', 'POST'])
 @login_required
 def lobby():
@@ -226,11 +226,11 @@ def lobby():
         if request.method == 'GET':
             user = get_user(username)
 
-            return render_template("lobby_cyril.html", username=username, user=user)
+            return render_template("lobby.html", username=username, user=user)
     else:
         return redirect(url_for('/'))
 
-
+#Permet de lancer une game
 @app.route('/start', methods=['POST'])
 @login_required
 def start_game():
@@ -247,7 +247,7 @@ def start_game():
 
     return jsonify({"response": 200})
 
-
+#Permet de vérifier si une partie peut démarrer
 @app.route('/canIStart/<code_game>', methods=['GET'])
 @login_required
 def can_i_start(code_game):
@@ -266,7 +266,7 @@ def players(code_game):
     nb_players = count_players(code_game)
     return jsonify({"nombre": nb_players})
 
-
+#Vérifie si la partie courante est terminé
 @app.route('/<code_game>/isFinished', methods=['GET'])
 @login_required
 def is_finished(code_game):
@@ -283,7 +283,7 @@ def is_finished(code_game):
 
     return jsonify({"game": games[code_game], "classement": classement})
 
-
+#Met à jour les statistiques des joueurs à la fin d'une partie
 def finished(code_game, username):
     with open('games.json', 'r') as f:
         games = json.load(f)
@@ -308,7 +308,7 @@ def finished(code_game, username):
 
     return jsonify({"game": games[code_game]})
 
-
+#Compte le nombre de joueur dans une parties
 def count_players(code_game):
     with open('games.json', 'r') as f:
         games = json.load(f)
@@ -317,7 +317,7 @@ def count_players(code_game):
         nb_players += 1
     return nb_players
 
-
+#Liste l'ensemble des parties dans l'ordre inverse de leeurs création
 @app.route('/listGames', methods=['GET'])
 def list_games():
     with open('games.json', 'r') as f:
@@ -328,7 +328,7 @@ def list_games():
     games.reverse()
     return jsonify({"games": games})
 
-
+#Supprime une partie
 def delete_game(code_game):
     with open('games.json', 'r') as f:
         json_dict = json.load(f)
@@ -347,7 +347,7 @@ def delete_game(code_game):
     with open('games.json', 'w') as outfile:
         json.dump(json_dict, outfile)
 
-
+#Déconnexion de l'application
 @app.route('/logout')
 def logout():
     session.clear()
