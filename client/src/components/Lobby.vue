@@ -1,10 +1,11 @@
 <template>
     <div class="w-full h-full grid grid-cols-12">
-        <div class="col-span-6">
-            <img src="/WikiWarsGif.gif" class="w-[90%] h-[90%]">
-            <form method="post" style="position: relative;top: -11vh;left: 17vw;">
-                <button style="display:contents;"><a type="submit" class="btnv btnv-3" style="">Start Game<i
-                    class="bi bi-play-fill"></i></a></button>
+        <div class="col-span-6 flex flex-col">
+            <img src="/WikiWarsGif.gif" class="w-full h-full">
+            <form method="post" class="-mt-16">
+                <Button class="bg-green-500" icon="PlaySolid">
+                    Start Game
+                </Button>
             </form>
         </div>
         <div class="col-span-6">
@@ -56,18 +57,20 @@
 
 <script>
 import axios from "axios";
+import Button from "./ui/Button.vue";
 
 export default {
     name: "Lobby",
+    components: {Button},
     data() {
         return {
             games: []
         };
     },
     created() {
-        axios.get('/listGames').then(({data}) => {
-            this.games = data.games.reverse();
-        })
+        // axios.get('/listGames').then(({data}) => {
+        //     this.games = data.games.reverse();
+        // })
     }
 }
 </script>
