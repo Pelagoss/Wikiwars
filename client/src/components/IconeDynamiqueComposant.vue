@@ -1,22 +1,32 @@
 <template>
-    <Icon />
+    <component class="w-5 h-5" :is="iconComponent"/>
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue'
+import * as solid from "@heroicons/vue/24/solid"
+import * as outline from "@heroicons/vue/24/outline"
+
 export default {
     name: "IconeDynamiqueComposant",
     props: {
-        type: {
-            type: String|null,
+        icon: {
+            type: String,
             required: true,
             default: null
+        },
+        type: {
+            type: String,
+            required: false,
+            default: 'solid'
         }
     },
-    components: {
-        Icon: defineAsyncComponent(() =>
-            import(`./icons/${this.type}.vue`)
-        )
+    computed: {
+        icons() {
+            return {solid, outline}
+        },
+        iconComponent() {
+            return this.icons[this.type][this.icon + "Icon"];
+        }
     }
 }
 </script>

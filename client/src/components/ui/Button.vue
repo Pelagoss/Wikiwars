@@ -1,7 +1,7 @@
 <template>
-    <button class="rounded-full">
+    <button class="flex items-center px-4 py-3 btnv">
         <slot></slot>
-        <IconeDynamiqueComposant v-if="icon !== null" class="ml-3 h-6 w-6" :type="icon"></IconeDynamiqueComposant>
+        <IconeDynamiqueComposant v-if="icon !== null" class="ml-3 w-5 h-5" :icon="icon"/>
     </button>
 </template>
 
@@ -13,7 +13,7 @@ export default {
     components: {IconeDynamiqueComposant},
     props: {
         icon: {
-            type: String|null,
+            type: String,
             required: true,
             default: null
         }
