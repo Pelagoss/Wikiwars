@@ -1,19 +1,24 @@
 <template>
-    <Lobby v-if="user !== null">
-    </Lobby>
+    <Lobby v-if="isAuthenticated" />
+    <Login v-else />
 </template>
 
 <script>
 import Lobby from "./Lobby.vue";
+import Login from "./Login.vue";
+import { mapState } from 'pinia'
+import {userStore} from "../store/index.js";
 
 export default {
     name: "Accueil",
-    components: {Lobby},
+    components: {Login, Lobby},
     data() {
         return {
-            count: 0,
-            user: {username: "Pelagoss"}
+            count: 0
         }
+    },
+    computed: {
+        ...mapState(userStore,{isAuthenticated: "isAuthenticated"})
     }
 }
 </script>

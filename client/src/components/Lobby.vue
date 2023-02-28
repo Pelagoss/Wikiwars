@@ -1,14 +1,14 @@
 <template>
-    <div class="w-full h-full grid grid-cols-12 bg-[#101010]">
-        <div class="col-span-6 flex flex-col items-center h-full w-full bgWiki">
-            <form method="post" class="absolute bottom-0 mb-8">
+    <div class="w-full h-full sm:grid sm:grid-cols-12 bg-[#101010] flex flex-col">
+        <div class="relative col-span-6 flex flex-col items-center sm:h-full w-full h-1/2 bgWiki">
+            <form method="post" class="absolute bottom-0 sm:mb-8 mb-3">
                 <Button class="btnv-success" icon="Play">
                     Start Game
                 </Button>
             </form>
         </div>
-        <div class="flex flex-col col-span-6">
-            <div class="h-1/2" id="TabGames">
+        <div class="sm:h-full w-full h-1/2 flex flex-col col-span-6">
+            <div class="h-1/2 pt-6" id="TabGames">
                 <table>
                     <thead>
                     <tr>
@@ -49,7 +49,7 @@
                     </tr>
                     <tr v-else>
                         <td colspan="6" class="text-center bgTable">
-                            <h1 class="text-3xl">
+                            <h1 class="sm:text-3xl text-lg">
                                 Aucune partie n'est encore créée !
                             </h1>
                         </td>
@@ -58,29 +58,29 @@
                 </table>
             </div>
             <div class="flex flex-col items-center h-1/2 pt-6 mx-auto w-[90%]">
-                <h2 class="pb-6">
+                <h2 class="sm:pb-6 pb-3 sm:text-3xl text-base">
                     Vos Stats
                 </h2>
                 <div class="grid grid-cols-12 gap-4 w-full">
-                    <div class="bg-green-500 rounded grid grid-cols-12 gap-6 mb-6 p-6 col-span-4">
-                        <IconeDynamiqueComposant class="col-span-4 h-full w-full" icon="Trophy" type="solid"/>
-                        <div class="col-span-6 flex flex-col gap-1 text-right">
-                            <h3 class="font-bold">Victoires</h3>
-                            <div class="font-medium text-xl">{{ user.wins }}</div>
+                    <div class="bg-green-500 rounded sm:grid grid-cols-12 gap-6 mb-6 sm:p-6 p-3 col-span-4">
+                        <IconeDynamiqueComposant class="col-span-4 sm:h-full w-full" icon="Trophy" type="solid"/>
+                        <div class="col-span-6 flex flex-col gap-1 sm:text-right">
+                            <h3 class="font-bold sm:text-xl text-xs">Victoires</h3>
+                            <div class="font-medium sm:text-xl text-xs">{{ user.wins }}</div>
                         </div>
                     </div>
-                    <div class="bg-red-500 rounded grid grid-cols-12 gap-6 mb-6 p-6 col-span-4">
-                        <IconeDynamiqueComposant class="col-span-4 h-full w-full" icon="Trophy" type="outline"/>
-                        <div class="col-span-6 flex flex-col gap-1 text-right">
-                            <h3 class="font-bold">Défaites</h3>
-                            <div class="font-medium text-xl">{{ user.loses }}</div>
+                    <div class="bg-red-500 rounded sm:grid grid-cols-12 gap-6 mb-6 sm:p-6 p-3 col-span-4">
+                        <IconeDynamiqueComposant class="col-span-4 sm:h-full w-full" icon="Trophy" type="outline"/>
+                        <div class="col-span-6 flex flex-col gap-1 sm:text-right">
+                            <h3 class="font-bold sm:text-xl text-xs">Défaites</h3>
+                            <div class="font-medium sm:text-xl text-xs">{{ user.loses }}</div>
                         </div>
                     </div>
-                    <div class="bg-yellow-500 rounded grid grid-cols-12 gap-6 mb-6 p-6 col-span-4">
-                        <IconeDynamiqueComposant class="col-span-4 h-full w-full" icon="ChartPie" type="solid"/>
-                        <div class="col-span-6 flex flex-col gap-1 text-right">
-                            <h3 class="font-bold">Ratio V/D</h3>
-                            <div class="font-medium text-xl">{{ user.ratio }}</div>
+                    <div class="bg-yellow-500 rounded sm:grid grid-cols-12 gap-6 mb-6 sm:p-6 p-3 col-span-4">
+                        <IconeDynamiqueComposant class="col-span-4 sm:h-full w-full" icon="ChartPie" type="solid"/>
+                        <div class="col-span-6 flex flex-col gap-1 sm:text-right">
+                            <h3 class="font-bold sm:text-xl text-xs">Ratio V/D</h3>
+                            <div class="font-medium sm:text-xl text-xs">{{ user.ratio }}</div>
                         </div>
                     </div>
                 </div>
@@ -93,15 +93,19 @@
 import axios from "axios";
 import Button from "./ui/Button.vue";
 import IconeDynamiqueComposant from "./IconeDynamiqueComposant.vue";
+import {mapState} from "pinia";
+import {userStore} from "../store/index.js";
 
 export default {
     name: "Lobby",
     components: {IconeDynamiqueComposant, Button},
     data() {
         return {
-            games: [],
-            user: {username: "Pelagoss", wins: 2, loses: 0, ratio: "100.0 %"}
+            games: []
         };
+    },
+    computed: {
+        ...mapState(userStore,{user: "getUser"})
     },
     created() {
         // axios.get('/listGames').then(({data}) => {
@@ -113,14 +117,12 @@ export default {
 
 <style scoped>
 .bgWiki {
-    background: url("/WikiWarsGif.gif");
-    background-repeat: no-repeat;
+    background: url("/WikiWarsGif.gif") no-repeat center;
     background-size: cover;
 }
 
 .bgTable {
-    background: url("/table_bg.gif");
-    background-repeat: no-repeat;
+    background: url("/table_bg.gif") no-repeat center;
     background-size: cover;
 }
 </style>

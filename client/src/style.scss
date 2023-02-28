@@ -150,22 +150,16 @@ p a:hover {
     color: #fff;
     cursor: pointer;
     text-align: center;
-    font-size: 1vw;
+    font-size: 1rem;
     font-weight: 400;
     line-height: 3vh;
-    max-width: 15vw;
     position: relative;
     text-decoration: none;
     text-transform: uppercase;
     border-radius: 1vh;
-    padding: 0.5vh 0.5vw 0.5vh 0.5vw;
     width: fit-content;
 }
-/* @media (min-width: 600px) {
-  .btn {
-    margin: 0 1em 2em;
-  }
-} */
+
 .btnv:hover {
     text-decoration: none;
 }
@@ -183,7 +177,6 @@ p a:hover {
     background: #0f6b40;
     border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 1px 1px 2px rgba(255, 255, 255, 0.2);
-    color: #748c81;
     text-decoration: none;
     text-shadow: -1px -1px 0 #08482a;
     transition: all 250ms linear;

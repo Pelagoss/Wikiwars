@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 import requests
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask_cors import CORS
+
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 
@@ -11,6 +13,8 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = b'\xd4\xbd\x15\x84:U\xf5\xec\xf9\xcd"\x8d\xa6^lx'
+CORS(app)
+
 socketio = SocketIO(app, cors_allowed_origins="*")
 ui = FlaskUI(app)  # feed the parameters
 
@@ -28,7 +32,7 @@ def login_required(func):
 
 
 # Permet à un utilisateur de se connecter, s'il n'existe pas son compte est crée
-def login(username, password):
+def login(username, password, api=False):
     with open('players.json', 'r') as f:
         players = json.load(f)
 
@@ -42,17 +46,26 @@ def login(username, password):
             json.dump(players, outfile)
 
         session['username'] = username
-        return True
+        if api:
+            return True, {'username': username, 'wins': 0, 'loses': 0, 'ratio': '0%'}
+        else:
+            return True
     else:
         pwd = players[username]['pwd']
         connected = check_password_hash(pwd, password)
 
         if connected:
             session['username'] = username
-            return True
+            if api:
+                return True, {'username': username, 'wins': players[username]['wins'], 'loses': players[username]['loses'], 'ratio': players[username]['ratio']}
+            else:
+                return True
         else:
             session.clear()
-            return False
+            if api:
+                return False, None
+            else:
+                return False
 
 
 # Retourne une URL wikipedia aléatoire
@@ -348,6 +361,21 @@ def delete_game(code_game):
         json.dump(json_dict, outfile)
 
 
+
+# Connexion
+@app.route("/login", methods=['POST'])
+def logUserIn():
+    if request.method == 'POST':
+        data = request.get_json()
+        pseudo = data["inputPseudo"]
+        pwd = data["inputPwd"]
+        (connected, user) = login(pseudo, pwd, True)
+
+        if connected:
+            return jsonify(user)
+        else:
+            return jsonify(user, code=403)
+
 # Déconnexion de l'application
 @app.route('/logout')
 def logout():
@@ -359,4 +387,4 @@ def logout():
 # ui.run()
 if __name__ == '__main__':
     # app.run(host= '0.0.0.0')
-    socketio.run(app, allow_unsafe_werkzeug=True)
+    socketio.run(app)
