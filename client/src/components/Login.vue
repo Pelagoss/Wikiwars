@@ -19,7 +19,7 @@
                         <div id="inputPseudoHelp" class="text-xs text-[#6c757d]">Entrez votre pseudo</div>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-6">
                         <label for="inputPwd" class="form-label">Mot de passe</label>
 
                         <div class="input-form">
@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="mb-2">
-                        <Button @click="login(credentials)" class="btnv-success" icon="Play">
+                        <Button @click="login(credentials)" class="btnv-success" icon="ArrowRightCircle">
                             Se connecter
                         </Button>
                     </div>

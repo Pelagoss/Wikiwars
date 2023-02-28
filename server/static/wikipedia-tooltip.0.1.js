@@ -21,55 +21,19 @@ $(document).ready(function() {
 
 		tooltip.css({ 'top':_t, 'left':_l });
 		  title = $(this).attr('title');
+		  var namePage = title.toString();
 		  $(this).attr('title',"");
 		  title = title.replace(' ','_');
 		  if (title.length){
 			var x;
 			if(x) {x = null; x.abort(); }
 			 x = $.ajax({
-			url: 'http://'+settings.wiki_lang+'.wikipedia.org/w/api.php',
-			data: {
-				action:'parse',
-				prop:'text|images',
-				page:title,
-				redirects:true,
-				format:'json'
-			},
-				 async:false,
-			dataType:'jsonp',
+			 url: 'https://'+settings.wiki_lang+'.wikipedia.org/api/rest_v1/page/summary/'+namePage+'?redirect=true',
+			 async:false,
 			success: function(data) {
 			console.log(data);
-			  wikipage = $(data.parse.text['*']);
-			  console.log(wikipage);
-			  wikipage.find('table').remove();
-			  wikipage.find('img').remove();
-			  wikipage.find('style').remove();
-			  wikipage.find('sup').remove();
-			  wikipage.find('link').remove();
-			  wikipage.find('.mw-empty-elt').remove();
-			  wikipage.find('#sous_titre_h1').remove();
-			  wikipage.find('br').remove();
-			  if(wikipage.find('div#homonymie').length){
-				  wikipage.find('div#homonymie').remove();
-				  wikipage.find('a').contents().unwrap();
-				  wikipage.find('br').contents().unwrap();
-				  wikipage.find('div').remove();
-				  wikipage = wikipage.children();
-			  }else{
-				  wikipage.find('a').contents().unwrap();
-				  wikipage.find('br').contents().unwrap();
-				  wikipage.find('div').remove();
-				  wikipage = wikipage.children('p:lt(1)');
-			  }
-
-			console.log(wikipage);
-			console.log(wikipage[0]);
-			  wikipage = wikipage[0].outerHTML;
-			  wikipage = wikipage.replaceAll('()','');
-			  wikipage = wikipage.replaceAll(' ,',',');
-
 			  $('.mwe-popups').html('<div class="mwe-popups-container">\n' +
-				  '    <span class="mwe-popups-extract" href="/wiki/'+title+'" dir="ltr" lang="fr">'+wikipage+'</span>\n' +
+				  '    <span class="mwe-popups-extract" href="/wiki/'+title+'" dir="ltr" lang="fr">'+ data.extract +'</span>\n' +
 				  '</div>');
 			  $(".mwe-popups").stop(true, true).delay(settings.in_delay).fadeIn(settings.in_speed);
 
