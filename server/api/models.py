@@ -1,5 +1,7 @@
+from abc import ABC
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.mutable import MutableDict
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import MetaData
 from .tools import to_dict
@@ -15,6 +17,26 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(metadata=metadata)
+
+
+from sqlalchemy.types import TypeDecorator, VARCHAR
+import json
+
+class JSONEncodedDict(TypeDecorator, ABC):
+    "Represents an immutable structure as a json-encoded string."
+
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            value = json.dumps(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            value = json.loads(value)
+        return value
+
 
 u_g = db.Table('user_game',
                db.Column('game_id', db.Integer, db.ForeignKey('games.id'), primary_key=True),
@@ -51,12 +73,13 @@ class User(db.Model):
         return user
 
     def to_dict(self, type = None):
-        d = dict(username=self.username)
+        d = dict(id=self.id, username=self.username)
 
         if type == 'game':
             return d
         else:
             d['games'] = [game.to_dict() for game in self.games]
+            d['wins'] = [win.to_dict() for win in self.wins]
             return d
 
 
@@ -69,18 +92,22 @@ class Game(db.Model):
     target = db.Column(db.String(500), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     winner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    clics = db.Column(db.PickleType)
+    host_id = db.Column(db.Integer, nullable=False)
+    clics = db.Column(MutableDict.as_mutable(JSONEncodedDict))
 
     def to_dict(self, type = None):
         d = dict(id=self.id,
                  is_started=self.is_started,
                  start=self.start,
                  target=self.target,
-                 winner=to_dict(self.winner_id),
+                 winner=self.winner_id,
+                 host=self.host_id,
                  clics=self.clics)
 
         if type == 'game':
             d['users'] = [u.to_dict(type) for u in self.users]
+            if self.winner_id is not None:
+                d['winner'] = User.query.filter_by(id=self.winner_id).first().to_dict(type)
             return d
         else:
             return d

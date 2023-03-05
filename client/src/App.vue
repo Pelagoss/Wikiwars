@@ -1,15 +1,23 @@
 <template>
-  <Accueil/>
+  <router-view>
+  </router-view>
 </template>
 
+
 <script>
-import Accueil from "./components/Accueil.vue";
+import {emitter} from "./utils/index.js";
+import {userStore} from "./store/index.js";
+
+emitter.$on('unAuthorized', (data) => {
+    console.log(userStore);
+    userStore().logout();
+});
 
 export default {
-  components: {Accueil}
+    name: 'App'
 };
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 </style>
