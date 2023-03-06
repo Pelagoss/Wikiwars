@@ -11,20 +11,22 @@ def randomize_page():
     return title
 
 def get_wiki_page(title):
-    url = f'https://fr.wikipedia.org/api/rest_v1/page/html/{title}?redirect=true'
+    url = f'https://fr.wikipedia.org/wiki/{title}'
     page = requests.get(url)
 
     soup = BeautifulSoup(page.text, features="lxml")
 
-    page_py = soup.find('body')
+    page_py = soup.find('div', class_='mw-content-container')
+    [o.decompose() for o in page_py.find_all(class_='mw-editsection')]
     [o.decompose() for o in page_py.find_all('sup', class_='reference')]
 
     for a in page_py.find_all('a', href=True, rel=True):
         link_text = a['href']
         rel = a['rel']
-        if "mw:WikiLink" in rel:
+        if "/wiki/" in link_text:
             pass
-        elif a.find('img') is not None and "./" in link_text:
+        elif a.find('img') is not None:
+            a.replaceWithChildren()
             pass
         else:
             a.replaceWith(a.text)
