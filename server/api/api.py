@@ -115,7 +115,7 @@ def join_game(current_user):
     return jsonify(response)
 
 
-@api.route('/game/page/<title>', methods=('GET',))
+@api.route('/game/page/<path:title>', methods=('GET',))
 @token_required
 def get_page(current_user, title):
     try:
@@ -126,6 +126,14 @@ def get_page(current_user, title):
     except Exception as e:
         print(f'{e} ici')
         return jsonify({"message": str(e)}), 500
+    print(request.args)
+    if len(request.args):
+        title = f'{title}?'
+        if 'pagefrom' in request.args.keys():
+            title += f'pagefrom={request.args["pagefrom"]}'
+        if 'pageuntil' in request.args.keys():
+            title += f'pageuntil={request.args["pageuntil"]}'
+
     page = get_wiki_page(title)
 
     room = f'{game.start}_{game.target}'
