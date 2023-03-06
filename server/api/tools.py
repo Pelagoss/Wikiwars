@@ -22,7 +22,8 @@ def get_wiki_page(title):
     for a in page_py.find_all('a', href=True, rel=True):
         link_text = a['href']
         rel = a['rel']
-        if "mw:WikiLink" in rel:
+
+        if "mw:WikiLink" in rel and 'class' not in a.attrs.keys():
             pass
         elif a.find('img') is not None and "./" in link_text:
             pass
