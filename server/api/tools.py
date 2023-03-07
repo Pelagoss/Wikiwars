@@ -55,6 +55,12 @@ def get_wiki_page(title):
 
     return page_py.prettify()
 
+def getSummaryWikiPage(title):
+    url = f'https://fr.wikipedia.org/api/rest_v1/page/summary/{title}?redirect=true'
+    data = requests.get(url)
+
+    return data.json()
+
 
 def to_dict(o):
     if o is None:

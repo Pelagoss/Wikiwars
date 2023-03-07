@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
 from .models import db, Game, User
-from .tools import randomize_page, get_wiki_page
+from .tools import randomize_page, get_wiki_page, getSummaryWikiPage
 from datetime import datetime, timedelta
 
 import jwt
@@ -148,6 +148,12 @@ def get_page(current_user, title):
 
     socketio().emit(event, game.to_dict('game'), broadcast=True, to = room)
     return page
+
+
+@api.route('/game/link/<path:title>', methods=('GET',))
+@token_required
+def get_summary_page(current_user, title):
+    return getSummaryWikiPage(title)
 
 @api.route('/game/launch', methods=('POST',))
 @token_required
