@@ -4,27 +4,40 @@
 
         <div class="col-span-3 flex flex-col m-6 relative">
             <div class="leaderboard">
+                <h1 class="flex flex-col !mb-8">
+                    <div class="flex gap-6 items-center">
+                        <icone-dynamique-composant icon="AdjustmentsHorizontal" class="!w-8 !h-8"></icone-dynamique-composant>
+                        <div class="text-2xl">
+                            Partie
+                        </div>
+                    </div>
+                    <div class="grid text-white pt-3 grid-cols-10 font-bold gap-4">
+                        <div class="col-span-3">Départ</div>
+                        <div class="col-span-5">{{ game.start }}</div>
+                        <div class="col-span-2 text-center">{{ game.target }}</div>
+                    </div>
+                </h1>
                 <h1 class="flex flex-col">
                     <div class="flex gap-6 items-center">
-                        <icone-dynamique-composant icon="Trophy" class="w-12 h-12"></icone-dynamique-composant>
+                        <icone-dynamique-composant icon="Trophy" class="!w-8 !h-8"></icone-dynamique-composant>
                         <div class="text-2xl">
                             Statistiques
                         </div>
                     </div>
-                    <div class="grid text-white pt-3 grid-cols-3 font-bold">
-                        <div>Joueur</div>
-                        <div>Page actuelle</div>
-                        <div># Clics</div>
+                    <div class="grid text-white pt-3 grid-cols-10 font-bold gap-4">
+                        <div class="col-span-3">Joueur</div>
+                        <div class="col-span-5">Page actuelle</div>
+                        <div class="col-span-2 text-center"># Clics</div>
 
                     </div>
                 </h1>
                 <ol>
+<!--                    <li v-for="(player, index) in [{username: 'Pelagoss'},{username: 'Pelagoss'}]" v-if="game.users != null">-->
                     <li v-for="(player, index) in game.users">
-                        <div class="grid text-white px-4 py-3 grid-cols-3">
-                            <div>{{ player.username }}</div>
-                            <div>{{ game.clics[player.username].page }}</div>
-                            <div>{{ game.clics[player.username].clics }}</div>
-
+                        <div class="grid text-white px-4 py-3 grid-cols-10 gap-4">
+                            <div class="col-span-3">{{ player.username }}</div>
+                            <div class="col-span-5 whitespace-nowrap text-ellipsis overflow-hidden">{{ game.clics[player.username].page }}</div>
+                            <div class="col-span-2 text-center">{{ game.clics[player.username].clics }}</div>
                         </div>
                     </li>
                 </ol>
