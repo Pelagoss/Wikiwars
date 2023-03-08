@@ -100,6 +100,15 @@
                 </div>
             </div>
         </div>
+
+        <transition>
+            <div ref="tooltip" class="mwe-popups mwe-popups-type-page mwe-popups-fade-in-up mwe-popups-no-image-pointer mwe-popups-is-not-tall absolute p-3"
+                 aria-hidden="" style="display: block;height:fit-content;z-index:4000"
+                 v-show="showTooltip"
+                 v-html="tooltipContent"
+            >
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -119,6 +128,9 @@ export default {
     data() {
         return {
             id: '',
+            showTooltip: false,
+            title: '',
+            tooltipContent: '',
             initStarted: false,
             socket: null,
             contenu: '',
@@ -141,7 +153,16 @@ export default {
 
         this.fetchPage(this.game.clics[userStore().username].page);
     },
+    created() {
+        this.fetchGames();
+    },
     methods: {
+        fetchGames() {
+            this.$axios.get('/games').then(({data}) => {
+                this.games = data.reverse();
+                userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));
+            })
+        },
         initSocket() {
             if (this.initStarted) {
                 return;
@@ -189,6 +210,16 @@ export default {
 
             this.fetchPage(event.target.title);
         },
+        hoverLink(event) {
+            event.preventDefault();
+
+            this.fetchLink(event);
+        },
+        unhoverLink(event) {
+            event.preventDefault();
+
+            this.toggleTooltip(false, event)
+        },
         fetchPage(title) {
             this.loading = true;
             this.$axios.get('/game/page/' + title).then(({data}) => {
@@ -196,6 +227,27 @@ export default {
             }).finally(() => {
                 this.loading = false;
             });
+        },
+        fetchLink(event) {
+            this.$axios.get('/game/link/' + event.target.title).then(({data}) => {
+                this.toggleTooltip(true, event)
+                this.tooltipContent = '<div class="mwe-popups-container"><span class="mwe-popups-extract" dir="ltr" lang="fr">'+ data.extract_html +'</span></div>';
+            }).finally(() => {
+                this.loading = false;
+            });
+        },
+        toggleTooltip(val, event) {
+            if (val === true) {
+                this.title = event.target.title;
+                event.target.title = '';
+                console.log(event);
+                this.$refs.tooltip.style.top = `${event.pageY + event.target.offsetHeight}px`;
+                this.$refs.tooltip.style.left = `${event.target.offsetLeft + (event.target.offsetWidth/2)}px`;
+                this.showTooltip = true;
+            } else {
+                this.showTooltip = false;
+                event.target.title = this.title;
+            }
         }
     },
     watch: {
@@ -212,7 +264,9 @@ export default {
             if (this.loading === false) {
                 this.$nextTick(() => {
                     this.$refs.wiki.querySelectorAll('a').forEach((a) => {
-                        a.addEventListener("click", this.clickLink.bind(this), false)
+                        a.addEventListener("click", this.clickLink.bind(this), false);
+                        a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
+                        a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
                     });
                 })
             }

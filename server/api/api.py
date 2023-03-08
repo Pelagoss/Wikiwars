@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
 from .models import db, Game, User
-from .tools import randomize_page, get_wiki_page
+from .tools import randomize_page, get_wiki_page, getSummaryWikiPage
 from datetime import datetime, timedelta
 
 import jwt
@@ -115,7 +115,7 @@ def join_game(current_user):
     return jsonify(response)
 
 
-@api.route('/game/page/<title>', methods=('GET',))
+@api.route('/game/page/<path:title>', methods=('GET',))
 @token_required
 def get_page(current_user, title):
     try:
@@ -126,6 +126,14 @@ def get_page(current_user, title):
     except Exception as e:
         print(f'{e} ici')
         return jsonify({"message": str(e)}), 500
+    print(request.args)
+    if len(request.args):
+        title = f'{title}?'
+        if 'pagefrom' in request.args.keys():
+            title += f'pagefrom={request.args["pagefrom"]}'
+        if 'pageuntil' in request.args.keys():
+            title += f'pageuntil={request.args["pageuntil"]}'
+
     page = get_wiki_page(title)
 
     room = f'{game.start}_{game.target}'
@@ -140,6 +148,12 @@ def get_page(current_user, title):
 
     socketio().emit(event, game.to_dict('game'), broadcast=True, to = room)
     return page
+
+
+@api.route('/game/link/<path:title>', methods=('GET',))
+@token_required
+def get_summary_page(current_user, title):
+    return getSummaryWikiPage(title)
 
 @api.route('/game/launch', methods=('POST',))
 @token_required
