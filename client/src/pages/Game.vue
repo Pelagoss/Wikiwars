@@ -2,7 +2,7 @@
     <div class="grid grid-cols-12">
         <link rel="stylesheet" href="/wiki.css"/>
 
-        <div class="col-span-3 flex flex-col m-6 relative">
+        <div v-if="!loadPage" class="col-span-3 flex flex-col m-6 relative">
             <div class="leaderboard">
                 <h1 class="flex flex-col !mb-8">
                     <div class="flex gap-6 items-center">
@@ -11,13 +11,21 @@
                             Partie
                         </div>
                     </div>
-                    <div class="grid text-white pt-3 grid-cols-10 font-bold gap-4">
-                        <div class="col-span-3">Départ</div>
-                        <div class="col-span-7">{{ game.start }}</div>
+                    <div class="grid text-white pt-3 grid-cols-10 gap-4">
+                        <div class="font-bold col-span-3">Départ</div>
+                        <div class="col-span-7" :title="game?.start"
+                             @mouseenter="hoverLink"
+                             @mouseleave="unhoverLink">
+                            {{ game?.start?.replaceAll('_', ' ') }}
+                        </div>
                     </div>
-                    <div class="grid text-white pt-3 grid-cols-10 font-bold gap-4">
-                        <div class="col-span-3">Arrivée</div>
-                        <div class="col-span-7 text-center">{{ game.target }}</div>
+                    <div class="grid text-white pt-3 grid-cols-10 gap-4">
+                        <div class="font-bold col-span-3">Arrivée</div>
+                        <div class="col-span-7" :title="game?.target"
+                             @mouseenter="hoverLink"
+                             @mouseleave="unhoverLink">
+                            {{ game?.target?.replaceAll('_', ' ') }}
+                        </div>
                     </div>
                 </h1>
                 <h1 class="flex flex-col">
@@ -47,23 +55,24 @@
             </div>
         </div>
 
-        <div v-if="!loading" ref="wiki"
-             class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output overflow-x-hidden col-start-4 col-span-9 grid-col"
-             :class="{'overflow-hidden h-[100vh]': game.is_started === false}"
-             v-html="contenu">
-
+        <div class="mac-container overflow-x-hidden col-start-4 col-span-9 ">
+            <div v-if="!loading" ref="wiki"
+                 class="mac mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col"
+                 :class="{'overflow-hidden h-[100vh]': game.is_started === false}"
+                 v-html="contenu">
+            </div>
         </div>
 
-        <div v-if="game.is_started === false || loading === true || game.winner !== null" class="modal-mask">
+        <div v-if="game.is_started === false || loading === true || game.winner !== null || loadPage === true" class="modal-mask">
             <div class="flex flex-col gap-8 justify-center items-center modal-container">
                 <div class="scale-[2]">
-                    <slot name="header" v-if="game.winner === null">
+                    <slot name="header" v-if="game.winner === null || loadPage === true">
                         <div class="lds-default w-32 h-32"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                     </slot>
                 </div>
 
                 <div class="modal-body">
-                    <slot v-if="game.is_started === false" name="body">
+                    <slot v-if="game.is_started === false && loadPage === false" name="body">
                         En attente du lancement de la partie...
 
                         <div class="text-light text-center font-bold my-3 flex justify-center items-center">
@@ -72,7 +81,7 @@
                         </div>
                     </slot>
 
-                    <slot v-else-if="game != null && game?.winner !== null" name="body">
+                    <slot v-else-if="game != null && game?.winner !== null && loadPage === false" name="body">
                         <Generique :start="game != null && game?.winner !== null" :game="game"/>
                     </slot>
 
@@ -81,7 +90,7 @@
                     </slot>
                 </div>
 
-                <div v-if="game.host === id && game.is_started === false" class="modal-footer">
+                <div v-if="game.host === id && game.is_started === false && loadPage === false" class="modal-footer">
                     <slot name="footer">
                         <Button
                             class="btnv-success"
@@ -91,7 +100,7 @@
                         </Button>
                     </slot>
                 </div>
-                <div v-else-if="game.winner !== null" class="modal-footer">
+                <div v-else-if="game.winner !== null && loadPage === false" class="modal-footer">
                     <slot name="footer">
                         <Button
                             class="btnv-4"
@@ -132,12 +141,12 @@ export default {
         return {
             id: '',
             showTooltip: false,
-            title: '',
             tooltipContent: '',
             initStarted: false,
             socket: null,
             contenu: '',
             loading: true,
+            loadPage: true,
             game: {}
         }
     },
@@ -161,10 +170,13 @@ export default {
     },
     methods: {
         fetchGames() {
+            this.loadPage = true;
             this.$axios.get('/games').then(({data}) => {
                 this.games = data.reverse();
                 userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));
-            })
+            }).finally(() => {
+                this.loadPage = false;
+            });
         },
         initSocket() {
             if (this.initStarted) {
@@ -232,24 +244,30 @@ export default {
             });
         },
         fetchLink(event) {
-            this.$axios.get('/game/link/' + event.target.title).then(({data}) => {
-                this.toggleTooltip(true, event)
-                this.tooltipContent = '<div class="mwe-popups-container"><span class="mwe-popups-extract" dir="ltr" lang="fr">'+ data.extract_html +'</span></div>';
-            }).finally(() => {
-                this.loading = false;
-            });
+            if (event.target.title != null) {
+                event.target["data-title"] = event.target.title;
+                event.target.title = '';
+                this.$axios.get('/game/link/' + event.target["data-title"]).then(({data}) => {
+                    if (data.extract_html != null && data.extract_html !== '') {
+                        this.toggleTooltip(true, event);
+                        this.tooltipContent = '<div class="mwe-popups-container"><span class="mwe-popups-extract" dir="ltr" lang="fr">'+ data.extract_html +'</span></div>';
+                    }
+                }).finally(() => {
+                    this.loading = false;
+                });
+            }
         },
         toggleTooltip(val, event) {
             if (val === true) {
-                this.title = event.target.title;
-                event.target.title = '';
-                console.log(event);
                 this.$refs.tooltip.style.top = `${event.pageY + event.target.offsetHeight}px`;
                 this.$refs.tooltip.style.left = `${event.target.offsetLeft + (event.target.offsetWidth/2)}px`;
                 this.showTooltip = true;
             } else {
                 this.showTooltip = false;
-                event.target.title = this.title;
+
+                if (event.target["data-title"] != null) {
+                    event.target.title = event.target["data-title"];
+                }
             }
         }
     },
@@ -444,6 +462,24 @@ Leaderboard
 .leaderboard ol li {
     position: relative;
     z-index: 1;
+}
+
+.mac-container {
+    position: relative;
+    padding-bottom: 60%;
+    height: 0;
+}
+
+.mac {
+    box-sizing: border-box;
+    background: url(http://i.stack.imgur.com/zZNgk.png) center center no-repeat;
+    background-size: contain;
+    padding: 7.1% 15.4% 9.8%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 </style>
