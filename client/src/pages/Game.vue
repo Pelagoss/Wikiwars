@@ -13,8 +13,11 @@
                     </div>
                     <div class="grid text-white pt-3 grid-cols-10 font-bold gap-4">
                         <div class="col-span-3">Départ</div>
-                        <div class="col-span-5">{{ game.start }}</div>
-                        <div class="col-span-2 text-center">{{ game.target }}</div>
+                        <div class="col-span-7">{{ game.start }}</div>
+                    </div>
+                    <div class="grid text-white pt-3 grid-cols-10 font-bold gap-4">
+                        <div class="col-span-3">Arrivée</div>
+                        <div class="col-span-7 text-center">{{ game.target }}</div>
                     </div>
                 </h1>
                 <h1 class="flex flex-col">
