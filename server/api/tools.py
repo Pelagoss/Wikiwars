@@ -11,12 +11,13 @@ def randomize_page():
     title = str.replace(title, " ", "_")
     return title
 
+
 def get_wiki_page(title):
     url = f'/wiki/{title}'
 
     # if 'w/index.php' in title and "#mw-pages" in title:
     #     url = title
-    #https://fr.wikipedia.org/w/index.php?title=Cat%C3%A9gorie:Portail:Am%C3%A9rique_du_Sud/Articles_li%C3%A9s&pagefrom=Abarema+longipedunculata#mw-pages
+    # https://fr.wikipedia.org/w/index.php?title=Cat%C3%A9gorie:Portail:Am%C3%A9rique_du_Sud/Articles_li%C3%A9s&pagefrom=Abarema+longipedunculata#mw-pages
     url = f'https://fr.wikipedia.org{url}'
     page = requests.get(url)
 
@@ -38,10 +39,11 @@ def get_wiki_page(title):
         if a.find('img') is not None:
             a.replaceWithChildren()
             pass
-        elif "/wiki/" in link_text and "/wiki/Aide:" not in link_text and "/wiki/Sp%C3%A9cial:" not in link_text and "https" not in link_text:
+        elif "/wiki/" in link_text and "/wiki/Aide:" not in link_text and "/wiki/Sp%C3%A9cial:" not in link_text and "/wiki/Discussion:" not in link_text and "/wiki/Mod%C3%A8le:" not in link_text and "https" not in link_text:
             pass
         elif '/w/index.php?title=' in link_text and "#mw-pages" in link_text:
-            a['title'] = link_text.replace(f'/w/index.php?title={urllib.parse.quote(a["title"].replace(" ","_"), safe=":/")}', f'{a["title"]}?')
+            a['title'] = link_text.replace(
+                f'/w/index.php?title={urllib.parse.quote(a["title"].replace(" ", "_"), safe=":/")}', f'{a["title"]}?')
             pass
         else:
             a.replaceWith(a.text)
@@ -54,6 +56,7 @@ def get_wiki_page(title):
             img["src"] = f'https:{img["src"]}'
 
     return page_py.prettify()
+
 
 def getSummaryWikiPage(title):
     url = f'https://fr.wikipedia.org/api/rest_v1/page/summary/{title}?redirect=true'
