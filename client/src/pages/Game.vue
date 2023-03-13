@@ -2,7 +2,24 @@
     <div class="grid grid-cols-12">
         <link rel="stylesheet" href="/wiki.css"/>
 
-        <div v-if="!loadPage" class="col-span-3 flex flex-col m-6 relative">
+        <div class="book">
+            <div id="pages" class="pages" ref="pages">
+                <div class="page" :class="{'flipped': game.is_started}" ref="premiere"><p>Debut</p></div>
+                <div class="page" :class="{'flipped': game.is_started}" ref="stats"><p>Stats</p></div>
+                <div class="page" ref="partie">
+                    <div v-if="!loading" ref="wiki"
+                         class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col"
+                         :class="{'overflow-hidden h-[100vh]': game.is_started === false}"
+                         v-html="contenu">
+                    </div>
+                </div>
+                <div class="page" ref="loadPage_un"><div class="lds-default w-32 h-32"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+                <div class="page" ref="loadPage_deux"><div class="lds-default w-32 h-32"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+
+            </div>
+        </div>
+
+        <div v-if="!loadPage" class="col-span-3 flex flex-col m-6 relative hidden">
             <div class="leaderboard">
                 <h1 class="flex flex-col !mb-8">
                     <div class="flex gap-6 items-center">
@@ -55,15 +72,7 @@
             </div>
         </div>
 
-        <div class="mac-container overflow-x-hidden col-start-4 col-span-9 ">
-            <div v-if="!loading" ref="wiki"
-                 class="mac mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col"
-                 :class="{'overflow-hidden h-[100vh]': game.is_started === false}"
-                 v-html="contenu">
-            </div>
-        </div>
-
-        <div v-if="game.is_started === false || loading === true || game.winner !== null || loadPage === true" class="modal-mask">
+        <div v-if="game.is_started === false || game.winner !== null" class="modal-mask">
             <div class="flex flex-col gap-8 justify-center items-center modal-container">
                 <div class="scale-[2]">
                     <slot name="header" v-if="game.winner === null || loadPage === true">
@@ -164,6 +173,25 @@ export default {
         }
 
         this.fetchPage(this.game.clics[userStore().username].page);
+
+
+        var pages = document.getElementsByClassName('page');
+        for(var i = 0; i < pages.length; i++)
+        {
+            var page = pages[i];
+            if (i % 2 === 0)
+            {
+                page.style.zIndex = (pages.length - i);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            for(var i = 0; i < pages.length; i++)
+            {
+                //Or var page = pages[i];
+                pages[i].pageNum = i + 1;
+            }
+        })
     },
     created() {
         this.fetchGames();
@@ -208,6 +236,8 @@ export default {
 
             socket.on('START_GAME', (data) => {
                 console.log("Game started");
+                this.$refs.premiere.classList.add('flipped');
+                this.$refs.stats.classList.add('flipped');
                 this.game = data;
             });
 
@@ -223,7 +253,45 @@ export default {
         clickLink(event) {
             event.preventDefault();
 
-            this.fetchPage(event.target.title);
+            this.$refs.partie.classList.add('flipped');
+            this.$refs.loadPage_un.classList.add('flipped');
+
+            this.$refs.partie.pageNum += 2;
+            this.$refs.stats.pageNum += 2;
+
+            this.fetchPage(event.target['data-title']).finally(() => {
+                let fragmentPartie = document.createDocumentFragment();
+                fragmentPartie.appendChild(this.$refs.partie);
+
+                let fragmentStats = document.createDocumentFragment();
+                fragmentStats.appendChild(this.$refs.stats);
+
+                this.$refs.pages.append(fragmentStats);
+                this.$refs.pages.append(fragmentPartie);
+
+
+                setTimeout(() => {
+                    this.$refs.loadPage_deux.classList.add('flipped');
+                    this.$refs.partie.classList.add('hidden');
+                    this.$refs.partie.classList.remove('flipped');
+                    this.$refs.partie.classList.remove('hidden');
+
+                    let fragmentLoadUn = document.createDocumentFragment();
+                    let a = fragmentLoadUn.appendChild(this.$refs.loadPage_un);
+                    a.style.opacity = 0;
+                    a.classList.remove('flipped')
+                    a.style.opacity = 1;
+
+                    let fragmentLoadDeux = document.createDocumentFragment();
+                    a = fragmentLoadDeux.appendChild(this.$refs.loadPage_deux);
+                    a.style.opacity = 0;
+                    a.classList.remove('flipped')
+                    a.style.opacity = 1;
+
+                    this.$refs.pages.append(fragmentLoadUn);
+                    this.$refs.pages.append(fragmentLoadDeux);
+                }, 500)
+            });
         },
         hoverLink(event) {
             event.preventDefault();
@@ -237,7 +305,7 @@ export default {
         },
         fetchPage(title) {
             this.loading = true;
-            this.$axios.get('/game/page/' + title).then(({data}) => {
+            return this.$axios.get('/game/page/' + title).then(({data}) => {
                 this.contenu = data.replace(/<\/body>/, '').replace(/<body["'=\w0-9a-zA-Z-,_ ]*>/, '');
             }).finally(() => {
                 this.loading = false;
@@ -464,22 +532,102 @@ Leaderboard
     z-index: 1;
 }
 
-.mac-container {
-    position: relative;
-    padding-bottom: 60%;
-    height: 0;
-}
 
-.mac {
-    box-sizing: border-box;
-    background: url(http://i.stack.imgur.com/zZNgk.png) center center no-repeat;
-    background-size: contain;
-    padding: 7.1% 15.4% 9.8%;
+.book {
+    transition: opacity 0.4s 0.2s;
+}
+p{
+    margin-top: 8vw;
+    text-align: center;
+    font-size: 5vw;
+    color: #000000;
+}
+.page {
+    width: 30vw;
+    height: 44vw;
+    background-color: #111111;
+    float: left;
+    margin-bottom: 0.5em;
+    background: left top no-repeat;
+    background-size: cover;
+}
+.page:nth-child(even) {
+    clear: both;
+}
+.book {
+    perspective: 250vw;
+}
+.book .pages {
+    width: 60vw;
+    height: 44vw;
+    position: relative;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    border-radius: 4px;
+    /*box-shadow: 0 0 0 1px #e3dfd8;*/
+}
+.book .page {
+    float: none;
+    clear: none;
+    margin: 0;
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    width: 30vw;
+    height: 44vw;
+    transform-origin: 0 0;
+    transition: transform 1.4s;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    user-select: none;
+    background-color: #f0f0f0;
 }
+.book .page:nth-child(odd) {
+    transform: rotateY(0deg);
+    right: 0;
+    border-radius: 0 4px 4px 0;
+    background-image: linear-gradient(to right, rgba(0,0,0,.15) 0%, rgba(0,0,0,0) 10%);
+}
+.book .page:nth-child(odd):before {
+    background: rgba(0, 0, 0, 0);
+}
+.book .page:nth-child(even) {
+    transform: rotateY(180deg);
+    transform-origin: 100% 0;
+    left: 0;
+    border-radius: 4px 0 0 4px;
+    border-color: black;
+    background-image: linear-gradient(to left, rgba(0,0,0,.12) 0%, rgba(0,0,0,0) 10%);
+}
+.book .page:nth-child(even):before {
+    background: rgba(0, 0, 0, 0.2);
+}
+.book .page.grabbing {
+    transition: none;
+}
+.book .page.flipped:nth-child(odd) {
+    transform: rotateY(-180deg);
+}
+.book .page.flipped:nth-child(even) {
+    transform: rotateY(0deg);
+}
+*,
+* :before,
+*:after {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2em 0;
+    line-height: 1.5em;
+}
+.page:nth-child(odd){
+    background-position: right top;
+}
+
+
 
 </style>
