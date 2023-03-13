@@ -5,20 +5,40 @@
         </div>
 
         <div :class="{'crawl': start}">
-            <p>
-                It is a period of civil war.
-                Rebel spaceships, striking
-                from a hidden base, have won
-                their first victory against
-                the evil Galactic Empire.
-            </p>
+            <div>
+                <p>Le valeureux joueur {{ game?.winner?.username }} à réussi à ne faire qu'un avec la force !</p>
+                <p>Sa capacité à maitriser la force lui à permis de remplir sa mission...</p>
+                <p>
+                    {{ game?.winner?.username }} a traversé la galaxie à bord du Faucon Millenium pour rallier {{game?.target}} depuis
+                    {{ game?.start }} !
+                </p>
+                <p>
+                    Il aura au passage écrasé bon nombre de Sith (web) tels que : {{game?.users?.filter(u => u.username !== game?.winner?.username).map(u => u.username).join(', ')}}.
+                </p>
+            </div>
+        </div>
+
+        <div class="the-end text-white flex flex-col items-center gap-6">
+            <div class="text-lg font-bold">
+                GG {{ game?.winner?.username }} !
+            </div>
+
+            <Button
+                class="btnv-4"
+                @click="$router.push({name: 'accueil'})"
+            >
+                Quitter
+            </Button>
         </div>
     </div>
 </template>
 
 <script>
+import Button from "../components/ui/Button.vue";
+
 export default {
     name: "Generique",
+    components: {Button},
     props: {
         start: {
             type: Boolean,
@@ -33,6 +53,7 @@ export default {
 
 <style scoped>
 .back {
+    position: relative;
     width: 100%;
     height: 100%;
     background: black;
@@ -43,6 +64,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 .a-long-time-ago {
@@ -80,9 +102,8 @@ export default {
     /* centrage de l'élément' */
     position: absolute;
     top: 45%;
-    left: 50%;
-    width: 800px;
-    margin: 0 0 0 -400px;
+    left: 25%;
+    width: 50%;
     top: auto;
     bottom: 0;
     height: 50em;
@@ -101,7 +122,7 @@ export default {
     position: absolute;
     top: 100%;
     animation-delay: 2s; /* Démarre l'animation après la première */
-    animation-duration: 20s;
+    animation-duration: 15s;
     animation-name: crawl;
     animation-timing-function: linear;
 }
@@ -119,6 +140,27 @@ export default {
     100% {
         top: 0;
         opacity: 0;
+    }
+}
+
+.the-end {
+    opacity: 1;
+    animation-delay: 0s;
+    animation-duration: 17s;
+    animation-name: the-end;
+}
+
+@keyframes the-end {
+    0% {
+        opacity: 0;
+    }
+
+    90% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }
 </style>

@@ -18,8 +18,10 @@ cli = FlaskGroup(app)
 
 @socketio.on('join')
 def join(data):
+    print("Joined room")
     session['room'] = f'{data["start"]}_{data["target"]}'
     join_room(session['room'])
+    socketio.emit('ROOM_JOINED', to=current_user)
 
 
 @socketio.on('leave')

@@ -4,7 +4,7 @@
 
         <div class="book">
             <div id="pages" class="pages" ref="pages">
-                <div class="page premiere" :class="{'flipped': game.is_started}" ref="premiere">
+                <div class="page premiere" :class="{'flipped': game.is_started || game.winner !== null}" ref="premiere">
                     <div class="flex flex-col items-center justify-center h-full gap-6 relative text-white">
                         <div class="font-black absolute top-[10%] left-[15%] text-5xl"
                         style="font-family: Dancing Script;">
@@ -26,7 +26,7 @@
                             <icone-dynamique-composant icon="User" class="ml-3 w-5 h-5"></icone-dynamique-composant>
                         </div>
 
-                        <Button v-if="game.host === id && game.is_started === false && loadPage === false"
+                        <Button v-if="game.host === id && game.is_started === false && loadPage === false && socketJoined === true"
                                 class="btnv-success"
                                 @click="launch"
                         >
@@ -34,7 +34,7 @@
                         </Button>
                     </div>
                 </div>
-                <div class="page" :class="{'flipped': game.is_started}" ref="stats">
+                <div class="page" :class="{'flipped': game.is_started || game.winner !== null}" ref="stats">
                     <div class="leaderboard">
                         <h1 class="flex flex-col !mb-8">
                             <div class="flex gap-6 items-center">
@@ -86,7 +86,7 @@
                         </ol>
                     </div>
                 </div>
-                <div class="page" ref="partie">
+                <div class="page" ref="partie" :class="{'flipped': game.winner !== null}">
                     <div v-if="!loading" ref="wiki"
                          class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col h-full"
                          :class="{'overflow-hidden h-[100vh]': game.is_started === false}"
@@ -101,64 +101,20 @@
                     </div>
                 </div>
 
-                <div class="page loader" ref="loadPage_un">
+                <div class="page loader" :class="{'flipped': game.winner !== null}" ref="loadPage_un">
                     <Loader></Loader>
                     Chargement...
                 </div>
-                <div class="page loader" ref="loadPage_deux">
+                <div class="page loader" :class="{'flipped': game.winner !== null}" ref="loadPage_deux">
                     <Loader></Loader>
                     Chargement...
                 </div>
             </div>
         </div>
 
-        <div v-if="game.is_started === false || game.winner !== null" class="modal-mask">
+        <div v-if="game.winner !== null" class="modal-mask">
             <div class="flex flex-col gap-8 justify-center items-center modal-container">
-                <div class="scale-[2]">
-                    <slot name="header" v-if="game.winner === null || loadPage === true">
-                        <Loader></Loader>
-                    </slot>
-                </div>
-
-                <div class="modal-body">
-                    <slot v-if="game.is_started === false && loadPage === false" name="body">
-                        En attente du lancement de la partie...
-
-                        <div class="text-light text-center font-bold my-3 flex justify-center items-center">
-                            {{ game.users.length }} joueur(s)
-                            <icone-dynamique-composant icon="User" class="ml-3 w-5 h-5"></icone-dynamique-composant>
-                        </div>
-                    </slot>
-
-                    <slot v-else-if="game != null && game?.winner !== null && loadPage === false" name="body">
-                        <Generique :start="game != null && game?.winner !== null" :game="game"/>
-                    </slot>
-
-                    <slot v-else name="body">
-                        Chargement...
-                    </slot>
-                </div>
-
-                <div v-if="game.host === id && game.is_started === false && loadPage === false" class="modal-footer">
-                    <slot name="footer">
-                        <Button
-                            class="btnv-success"
-                            @click="launch"
-                        >
-                            Start !
-                        </Button>
-                    </slot>
-                </div>
-                <div v-else-if="game.winner !== null && loadPage === false" class="modal-footer">
-                    <slot name="footer">
-                        <Button
-                            class="btnv-4"
-                            @click="$router.push({name: 'accueil'})"
-                        >
-                            Quitter
-                        </Button>
-                    </slot>
-                </div>
+                <Generique v-if="game != null" :start="game?.winner !== null" :game="game"/>
             </div>
         </div>
 
@@ -180,7 +136,6 @@ import socket from '../utils/socket.js'
 import {mapState} from "pinia";
 import Button from "../components/ui/Button.vue";
 import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue";
-import router from "../router/index.js";
 import Generique from "../components/Generique.vue";
 import Loader from "../components/ui/Loader.vue";
 
@@ -193,6 +148,7 @@ export default {
             showTooltip: false,
             tooltipContent: '',
             initStarted: false,
+            socketJoined: false,
             socket: null,
             contenu: '',
             loading: true,
@@ -207,6 +163,11 @@ export default {
         let games = toRaw(userStore().games);
         let filtered_games = games.filter(g => g.winner == null);
         this.game = filtered_games[0]
+
+        if (this.game == null) {
+            this.$router.push({name: 'accueil'});
+            return;
+        }
 
         if (this.isAuthenticated === true) {
             this.id = userStore().id;
@@ -257,7 +218,8 @@ export default {
             socket.connect();
 
             socket.on("connect", () => {
-                socket.emit('join', this.game)
+                socket.emit('join', this.game);
+                this.socketJoined = true;
             })
 
             socket.on("session", ({token}) => {
@@ -508,6 +470,9 @@ body {
     margin: auto;
     border-radius: 2px;
     transition: all 0.3s ease;
+
+    width: 100vw;
+    height: 100vh;
 }
 
 
@@ -668,5 +633,8 @@ Leaderboard
     right: 0;
 }
 
+.page.fin.flipped {
+    width: 100vw!important;
+}
 
 </style>
