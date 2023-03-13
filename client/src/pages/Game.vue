@@ -278,15 +278,15 @@ export default {
 
                     let fragmentLoadUn = document.createDocumentFragment();
                     let a = fragmentLoadUn.appendChild(this.$refs.loadPage_un);
-                    a.style.opacity = 0;
+                    a.classList.add('hidden');
                     a.classList.remove('flipped')
-                    a.style.opacity = 1;
+                    a.classList.remove('hidden')
 
                     let fragmentLoadDeux = document.createDocumentFragment();
                     a = fragmentLoadDeux.appendChild(this.$refs.loadPage_deux);
-                    a.style.opacity = 0;
+                    a.classList.add('hidden');
                     a.classList.remove('flipped')
-                    a.style.opacity = 1;
+                    a.classList.remove('hidden')
 
                     this.$refs.pages.append(fragmentLoadUn);
                     this.$refs.pages.append(fragmentLoadDeux);
