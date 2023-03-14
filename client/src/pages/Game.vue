@@ -149,7 +149,7 @@ export default {
             tooltipContent: '',
             initStarted: false,
             socketJoined: false,
-            socket: null,
+            timeoutHover: null,
             contenu: '',
             loading: true,
             loadPage: true,
@@ -160,7 +160,13 @@ export default {
         ...mapState(userStore, {isAuthenticated: "isAuthenticated", username: "username"}),
     },
     mounted() {
-        console.log("here");
+        window.addEventListener("keydown",function (e) {
+            if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+                e.preventDefault();
+                console.log("Timeout 5s");
+            }
+        })
+
         let games = toRaw(userStore().games);
         let filtered_games = games.filter(g => g.winner == null);
         this.game = filtered_games[0]
@@ -217,9 +223,7 @@ export default {
             });
         },
         initSocket() {
-            console.log("debut init")
             if (this.initStarted) {
-                console.log("init abort")
                 return;
             }
 
@@ -227,7 +231,6 @@ export default {
 
             socket.connect();
             socket.on("connect", () => {
-                console.log("SOCKET_CONNECTED");
                 socket.emit('join', this.game);
                 this.socketJoined = true;
                 this.loading = false;
@@ -257,7 +260,6 @@ export default {
             this.initStarted = false;
         },
         destroy() {
-            console.log("DESTROY SOCKET");
             socket.disconnect();
 
             socket.off("connect");
@@ -333,10 +335,14 @@ export default {
         hoverLink(event) {
             event.preventDefault();
 
-            this.fetchLink(event);
+            this.timeoutHover = setTimeout(() => {
+                this.fetchLink(event);
+            }, 250);
         },
         unhoverLink(event) {
             event.preventDefault();
+
+            clearTimeout(this.timeoutHover);
 
             this.toggleTooltip(false, event)
         },
