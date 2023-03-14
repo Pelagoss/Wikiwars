@@ -114,7 +114,7 @@
 
         <div v-if="game?.winner !== null" class="modal-mask">
             <div class="flex flex-col gap-8 justify-center items-center modal-container">
-                <Generique v-if="game != null" :start="game?.winner !== null" :game="game"/>
+                <Generique v-if="game != null" :start="game?.winner !== null" :game="game" @close="closeGame"/>
             </div>
         </div>
 
@@ -200,6 +200,13 @@ export default {
         this.fetchGames();
     },
     methods: {
+        closeGame() {
+            this.destroy();
+
+            this.$nextTick(() => {
+                this.$router.push({name: 'accueil'});
+            });
+        },
         fetchGames() {
             this.loadPage = true;
             this.$axios.get('/games').then(({data}) => {
@@ -248,6 +255,15 @@ export default {
             });
 
             this.initStarted = false;
+        },
+        destroy() {
+            console.log("DESTROY SOCKET");
+            socket.disconnect();
+
+            socket.off("connect");
+            socket.off("PAGE_CHANGED");
+            socket.off("GAME_FINISHED");
+            socket.off("START_GAME");
         },
         launch() {
             this.$axios.post('/game/launch').finally(() => {
@@ -437,13 +453,7 @@ export default {
         }
     },
     destroyed() {
-        console.log("DESTROY SOCKET");
-        socket.disconnect();
-
-        socket.off("connect");
-        socket.off("PAGE_CHANGED");
-        socket.off("GAME_FINISHED");
-        socket.off("START_GAME");
+        this.destroy();
     }
 }
 </script>

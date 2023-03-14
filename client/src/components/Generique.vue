@@ -25,7 +25,7 @@
 
             <Button
                 class="btnv-4"
-                @click="$router.push({name: 'accueil'})"
+                @click="$emit('close')"
             >
                 Quitter
             </Button>
