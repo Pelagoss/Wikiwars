@@ -4,7 +4,7 @@
 
         <div class="book">
             <div id="pages" class="pages" ref="pages">
-                <div class="page premiere" :class="{'flipped': game.is_started || game.winner !== null}" ref="premiere">
+                <div class="page premiere" :class="{'flipped': game?.is_started || game?.winner !== null}" ref="premiere">
                     <div class="flex flex-col items-center justify-center h-full gap-6 relative text-white">
                         <div class="font-black absolute top-[10%] left-[15%] text-5xl"
                         style="font-family: Dancing Script;">
@@ -26,7 +26,7 @@
                             <icone-dynamique-composant icon="User" class="ml-3 w-5 h-5"></icone-dynamique-composant>
                         </div>
 
-                        <Button v-if="game.host === id && game.is_started === false && loadPage === false && socketJoined === true"
+                        <Button v-if="game?.host === id && game?.is_started === false && loadPage === false && socketJoined === true"
                                 class="btnv-success"
                                 @click="launch"
                         >
@@ -34,7 +34,7 @@
                         </Button>
                     </div>
                 </div>
-                <div class="page" :class="{'flipped': game.is_started || game.winner !== null}" ref="stats">
+                <div class="page" :class="{'flipped': game?.is_started || game?.winner !== null}" ref="stats">
                     <div class="leaderboard">
                         <h1 class="flex flex-col !mb-8">
                             <div class="flex gap-6 items-center">
@@ -86,10 +86,10 @@
                         </ol>
                     </div>
                 </div>
-                <div class="page" ref="partie" :class="{'flipped': game.winner !== null}">
+                <div class="page" ref="partie" :class="{'flipped': game?.winner !== null}">
                     <div v-if="!loading" ref="wiki"
                          class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col h-full"
-                         :class="{'overflow-hidden h-[100vh]': game.is_started === false}"
+                         :class="{'overflow-hidden h-[100vh]': game?.is_started === false}"
                          v-html="contenu">
                     </div>
 
@@ -101,18 +101,18 @@
                     </div>
                 </div>
 
-                <div class="page loader" :class="{'flipped': game.winner !== null}" ref="loadPage_un">
+                <div class="page loader" :class="{'flipped': game?.winner !== null}" ref="loadPage_un">
                     <Loader></Loader>
                     Chargement...
                 </div>
-                <div class="page loader" :class="{'flipped': game.winner !== null}" ref="loadPage_deux">
+                <div class="page loader" :class="{'flipped': game?.winner !== null}" ref="loadPage_deux">
                     <Loader></Loader>
                     Chargement...
                 </div>
             </div>
         </div>
 
-        <div v-if="game.winner !== null" class="modal-mask">
+        <div v-if="game?.winner !== null" class="modal-mask">
             <div class="flex flex-col gap-8 justify-center items-center modal-container">
                 <Generique v-if="game != null" :start="game?.winner !== null" :game="game"/>
             </div>
@@ -160,6 +160,7 @@ export default {
         ...mapState(userStore, {isAuthenticated: "isAuthenticated", username: "username"}),
     },
     mounted() {
+        console.log("here");
         let games = toRaw(userStore().games);
         let filtered_games = games.filter(g => g.winner == null);
         this.game = filtered_games[0]
@@ -209,20 +210,19 @@ export default {
             });
         },
         initSocket() {
+            console.log("debut init")
             if (this.initStarted) {
+                console.log("init abort")
                 return;
             }
 
             this.initStarted = true;
 
             socket.connect();
-
             socket.on("connect", () => {
+                console.log("SOCKET_CONNECTED");
                 socket.emit('join', this.game);
                 this.socketJoined = true;
-            })
-
-            socket.on("session", ({token}) => {
                 this.loading = false;
                 this.initStarted = false;
 
@@ -238,7 +238,6 @@ export default {
             });
 
             socket.on('START_GAME', (data) => {
-                console.log("Game started");
                 this.$refs.premiere.classList.add('flipped');
                 this.$refs.stats.classList.add('flipped');
                 this.game = data;
@@ -247,6 +246,8 @@ export default {
             socket.on('connect_error', (e) => {
                 this.error = true;
             });
+
+            this.initStarted = false;
         },
         launch() {
             this.$axios.post('/game/launch').finally(() => {
@@ -409,7 +410,7 @@ export default {
         }
     },
     watch: {
-        token: {
+        isAuthenticated: {
             handler() {
                 if (this.isAuthenticated !== false) {
                     this.initSocket();
@@ -436,9 +437,13 @@ export default {
         }
     },
     destroyed() {
+        console.log("DESTROY SOCKET");
         socket.disconnect();
 
-        socket.off("session");
+        socket.off("connect");
+        socket.off("PAGE_CHANGED");
+        socket.off("GAME_FINISHED");
+        socket.off("START_GAME");
     }
 }
 </script>

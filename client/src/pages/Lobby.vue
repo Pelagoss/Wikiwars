@@ -135,7 +135,7 @@ export default {
     },
     methods: {
         fetchGames() {
-            this.$axios.get('/games').then(({data}) => {
+            return this.$axios.get('/games').then(({data}) => {
                 this.games = data.reverse();
                 userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));
             })
@@ -143,9 +143,11 @@ export default {
         joinGame(game_id = null) {
             if (this.isInGame === null && game_id === null) {
                 this.createGame().then(() => {
-                    this.fetchGames();
-
-                    this.$router.push({name: 'game'});
+                    this.fetchGames().finally(() => {
+                        this.$nextTick(() => {
+                            this.$router.push({name: 'game'});
+                        })
+                    });
                 })
             } else {
                 this.join({id: game_id}).then(() => {
