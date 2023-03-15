@@ -1,114 +1,101 @@
 <template>
-    <div class="grid grid-cols-12 h-[100vh]">
+    <div class="grid grid-cols-12 h-[100vh] relative overflow-hidden">
         <link rel="stylesheet" href="/wiki.css"/>
 
-        <div class="book">
-            <div id="pages" class="pages" ref="pages">
-                <div class="page premiere" :class="{'flipped': game?.is_started || game?.winner !== null}" ref="premiere">
-                    <div class="flex flex-col items-center justify-center h-full gap-6 relative text-white">
-                        <div class="font-black absolute top-[10%] left-[15%] text-5xl"
-                        style="font-family: Dancing Script;">
-                            <div>
-                                De {{ game?.start?.replaceAll('_', ' ') }} à
-                            </div>
-                            <div>
-                                {{ game?.target?.replaceAll('_', ' ') }}
-                            </div>
-                        </div>
-                        <div class="scale-[2]">
-                            <Loader></Loader>
-                        </div>
+        <div ref="door_un" class="door col-span-12 flex flex-col items-center justify-end h-full gap-6 text-white bg-gray-500 z-30" v-if="game?.is_started === false">
+            <div class="font-medium text-4xl mb-12">
+                <div>
+                    Début : {{ game?.start?.replaceAll('_', ' ') }}
+                </div>
+                <div>
+                    Fin : {{ game?.target?.replaceAll('_', ' ') }}
+                </div>
+            </div>
 
-                        En attente du lancement de la partie...
+            <div class="scale-[2]">
+                <Loader></Loader>
+            </div>
 
-                        <div class="text-light text-center font-bold my-3 flex justify-center items-center">
-                            {{ game?.users?.length }} joueur(s)
-                            <icone-dynamique-composant icon="User" class="ml-3 w-5 h-5"></icone-dynamique-composant>
-                        </div>
+            En attente du lancement de la partie...
+        </div>
 
-                        <Button v-if="game?.host === id && game?.is_started === false && loadPage === false && socketJoined === true"
-                                class="btnv-success"
-                                @click="launch"
-                        >
-                            Start !
-                        </Button>
+        <div ref="door_deux" class="door col-span-12 flex flex-col items-center justify-start h-full gap-6 text-white bg-gray-500 z-30" v-if="game?.is_started === false">
+            <div class="text-light text-center font-bold my-3 flex justify-center items-center">
+                {{ game?.users?.length }} joueur(s)
+                <icone-dynamique-composant icon="User" class="ml-3 w-5 h-5"></icone-dynamique-composant>
+            </div>
+
+            <Button v-if="game?.host === id && game?.is_started === false && loadPage === false && socketJoined === true"
+                    class="btnv-success"
+                    @click="launch"
+            >
+                Start !
+            </Button>
+        </div>
+
+        <div class="leaderboard">
+            <h1 class="flex flex-col !mb-8">
+                <div class="flex gap-6 items-center">
+                    <icone-dynamique-composant icon="AdjustmentsHorizontal" class="!w-8 !h-8"></icone-dynamique-composant>
+                    <div class="text-2xl">
+                        Partie
                     </div>
                 </div>
-                <div class="page" :class="{'flipped': game?.is_started || game?.winner !== null}" ref="stats">
-                    <div class="leaderboard">
-                        <h1 class="flex flex-col !mb-8">
-                            <div class="flex gap-6 items-center">
-                                <icone-dynamique-composant icon="AdjustmentsHorizontal" class="!w-8 !h-8"></icone-dynamique-composant>
-                                <div class="text-2xl">
-                                    Partie
-                                </div>
-                            </div>
-                            <div class="grid text-[#101010] pt-3 grid-cols-10 gap-4">
-                                <div class="font-bold col-span-3">Départ</div>
-                                <div class="col-span-7" :title="game?.start"
-                                     @mouseenter="hoverLink"
-                                     @mouseleave="unhoverLink">
-                                    {{ game?.start?.replaceAll('_', ' ') }}
-                                </div>
-                            </div>
-                            <div class="grid text-[#101010] pt-3 grid-cols-10 gap-4">
-                                <div class="font-bold col-span-3">Arrivée</div>
-                                <div class="col-span-7" :title="game?.target"
-                                     @mouseenter="hoverLink"
-                                     @mouseleave="unhoverLink">
-                                    {{ game?.target?.replaceAll('_', ' ') }}
-                                </div>
-                            </div>
-                        </h1>
-                        <h1 class="flex flex-col">
-                            <div class="flex gap-6 items-center">
-                                <icone-dynamique-composant icon="Trophy" class="!w-8 !h-8"></icone-dynamique-composant>
-                                <div class="text-2xl">
-                                    Statistiques
-                                </div>
-                            </div>
-                            <div class="grid text-[#101010] pt-3 grid-cols-10 font-bold gap-4">
-                                <div class="col-span-3">Joueur</div>
-                                <div class="col-span-5">Page actuelle</div>
-                                <div class="col-span-2 text-center"># Clics</div>
-
-                            </div>
-                        </h1>
-                        <ol>
-                            <!--                    <li v-for="(player, index) in [{username: 'Pelagoss'},{username: 'Pelagoss'}]" v-if="game.users != null">-->
-                            <li v-for="(player, index) in game.users">
-                                <div class="grid text-[#101010] px-4 py-3 grid-cols-10 gap-4">
-                                    <div class="col-span-3">{{ player.username }}</div>
-                                    <div class="col-span-5 whitespace-nowrap text-ellipsis overflow-hidden">{{ game.clics[player.username].page }}</div>
-                                    <div class="col-span-2 text-center">{{ game.clics[player.username].clics }}</div>
-                                </div>
-                            </li>
-                        </ol>
+                <div class="grid text-[#101010] pt-3 grid-cols-10 gap-4">
+                    <div class="font-bold col-span-3">Départ</div>
+                    <div class="col-span-7" :title="game?.start"
+                         @mouseenter="hoverLink"
+                         @mouseleave="unhoverLink">
+                        {{ game?.start?.replaceAll('_', ' ') }}
                     </div>
                 </div>
-                <div class="page" ref="partie" :class="{'flipped': game?.winner !== null}">
-                    <div v-if="!loading" ref="wiki"
-                         class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col h-full"
-                         :class="{'overflow-hidden h-[100vh]': game?.is_started === false}"
-                         v-html="contenu">
-                    </div>
-
-                    <div v-else class="flex flex-col items-center justify-center h-full gap-6">
-                        <div class="scale-[2]">
-                            <Loader></Loader>
-                        </div>
-                        Chargement...
+                <div class="grid text-[#101010] pt-3 grid-cols-10 gap-4">
+                    <div class="font-bold col-span-3">Arrivée</div>
+                    <div class="col-span-7" :title="game?.target"
+                         @mouseenter="hoverLink"
+                         @mouseleave="unhoverLink">
+                        {{ game?.target?.replaceAll('_', ' ') }}
                     </div>
                 </div>
+            </h1>
+            <h1 class="flex flex-col">
+                <div class="flex gap-6 items-center">
+                    <icone-dynamique-composant icon="Trophy" class="!w-8 !h-8"></icone-dynamique-composant>
+                    <div class="text-2xl">
+                        Statistiques
+                    </div>
+                </div>
+                <div class="grid text-[#101010] pt-3 grid-cols-10 font-bold gap-4">
+                    <div class="col-span-3">Joueur</div>
+                    <div class="col-span-5">Page actuelle</div>
+                    <div class="col-span-2 text-center"># Clics</div>
 
-                <div class="page loader" :class="{'flipped': game?.winner !== null}" ref="loadPage_un">
+                </div>
+            </h1>
+            <ol>
+                <!--                    <li v-for="(player, index) in [{username: 'Pelagoss'},{username: 'Pelagoss'}]" v-if="game.users != null">-->
+                <li v-for="(player, index) in game.users">
+                    <div class="grid text-[#101010] px-4 py-3 grid-cols-10 gap-4">
+                        <div class="col-span-3">{{ player.username }}</div>
+                        <div class="col-span-5 whitespace-nowrap text-ellipsis overflow-hidden">{{ game.clics[player.username].page }}</div>
+                        <div class="col-span-2 text-center">{{ game.clics[player.username].clics }}</div>
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <div class="col-start-3 col-span-9" v-if="game?.is_started === true">
+            <div v-if="!loading" ref="wiki"
+                 class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col h-full"
+                 :class="{'overflow-hidden h-[100vh]': game?.is_started === false}"
+                 v-html="contenu">
+            </div>
+
+            <div v-else class="flex flex-col items-center justify-center h-full gap-6">
+                <div class="scale-[2]">
                     <Loader></Loader>
-                    Chargement...
                 </div>
-                <div class="page loader" :class="{'flipped': game?.winner !== null}" ref="loadPage_deux">
-                    <Loader></Loader>
-                    Chargement...
-                </div>
+                Chargement...
             </div>
         </div>
 
@@ -120,7 +107,7 @@
 
         <transition>
             <div ref="tooltip" class="mwe-popups mwe-popups-type-page mwe-popups-fade-in-up mwe-popups-no-image-pointer mwe-popups-is-not-tall absolute p-3"
-                 style="display: block;height:fit-content;z-index:4000"
+                 style="display: none;height:fit-content;z-index:4000"
                  v-show="showTooltip"
                  v-html="tooltipContent"
             >
@@ -268,9 +255,17 @@ export default {
             socket.off("START_GAME");
         },
         launch() {
-            this.$axios.post('/game/launch').finally(() => {
-                this.loading = false;
-            });
+
+            this.$refs.door_un.classList.add('opened');
+            this.$refs.door_deux.classList.add('opened');
+
+            setTimeout(() => {
+                this.$refs.door_un.classList.remove('opened');
+                this.$refs.door_deux.classList.remove('opened');
+            }, 5000)
+            // this.$axios.post('/game/launch').finally(() => {
+            //     this.loading = false;
+            // });
         },
         clickLink(event) {
             event.preventDefault();
@@ -501,8 +496,8 @@ body {
 Leaderboard
 --------------------*/
 .leaderboard {
-    position: absolute;
-    width: 100%;
+    position: fixed;
+    width: 25%;
     height: max-content;
     border-radius: 10px;
 }
@@ -523,139 +518,34 @@ Leaderboard
     z-index: 1;
 }
 
-
-.book {
-    transition: opacity 0.4s 0.2s;
-    align-self: center;
-}
-.page {
-    width: 30vw;
-    height: 44vw;
-    background-color: #111111;
-    float: left;
-    margin-bottom: 0.5em;
-    background: left top no-repeat;
-    background-size: cover;
-}
-.page:nth-child(even) {
-    clear: both;
-}
-.book {
-    perspective: 250vw;
-    width: 100vw;
+.door {
     overflow: hidden;
-}
-.book .pages {
-    width: 98vw;
-    height: 92vh;
-    position: relative;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    border-radius: 4px;
-    /*box-shadow: 0 0 0 1px #e3dfd8;*/
-}
-.book .page {
-    float: none;
-    clear: none;
-    margin: 0;
-    position: absolute;
-    top: 0;
-    width: 50vw;
-    height: 92vh;
-    transform-origin: 0 0;
-    transition: transform 1.4s;
-    backface-visibility: hidden;
-    transform-style: preserve-3d;
-    user-select: none;
-    background-color: #f0f0f0;
-}
-.book .page:nth-child(odd) {
-    transform: rotateY(0deg);
-    right: 0;
-    border-radius: 20px 20px 32px 32px;
-    background-image: linear-gradient(to right, rgba(0,0,0,.15) 0%, rgba(0,0,0,0) 10%);
-    width: 74vw;
-}
-.book .page:nth-child(odd):before {
-    background: rgba(0, 0, 0, 0);
-}
-.book .page:nth-child(even) {
-    transform: rotateY(180deg);
-    transform-origin: 100% 0;
-    left: 0;
-    border-radius: 20px 16px 12px 32px;
-    border-color: black;
-    background-image: linear-gradient(to left, rgba(0,0,0,.12) 0%, rgba(0,0,0,0) 10%);
-    width: 24vw;
-}
-.book .page:nth-child(even):before {
-    background: rgba(0, 0, 0, 0.2);
-}
-.book .page.grabbing {
-    transition: none;
-}
-.book .page.flipped:nth-child(odd) {
-    transform: rotateY(-180deg);
-}
-.book .page.flipped:nth-child(even) {
-    transform: rotateY(0deg);
-}
-.page:nth-child(odd){
-    background-position: right top;
-}
+    transition: ease-in-out transform 2s;
+    transform: translateY(0);
+    width: 100%;
+    height: 50vh;
 
-.page.loader {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3rem;
-    color: #101010;
-
-    &::v-deep(.lds-default div) {
-        background: #101010 !important;
+    &:nth-child(2) {
+        clip-path: polygon(0 0, 100% 0, 100% 80%, 70% 80%, 60% 100%, 40% 100%, 30% 80%, 0 80%);
+        top: 0;
+        padding-bottom: 1rem;
     }
 
-    &::v-deep(.lds-default) {
-        @apply scale-[2];
+    &:nth-child(3) {
+        clip-path: polygon(30% 0, 40% 20%, 60% 20%, 70% 0, 100% 0, 100% 100%, 0 100%, 0 0);
+        bottom: 0;
+        padding-top: 6rem;
     }
-}
 
-.book #pages .page.premiere {
-    background: #F33139;
-    border-radius: 20px 16px 12px 32px;
-    background-image: linear-gradient(to right,#D11F2F 130px, #ba0716 50px, transparent 50px);
-}
+    &.opened {
+        &:nth-child(2) {
+            transform: translateY(-100%);
+        }
 
-//.page.premiere:before {
-//    content: "";
-//    background: #D11F2F!important;
-//    height: 2rem;
-//    width: 70%;
-//    z-index: 6;
-//    left: 20%;
-//    box-shadow: 0px 73px #D11F2F;
-//    position: absolute;
-//    border-radius: 20px;
-//    top: 10%;
-//}
-
-.page.premiere:after {
-    content: "";
-    position: absolute;
-    background: white;
-    border-radius: 32px 4px 4px 32px;
-    box-shadow: inset 4px 6px 0px 0px #E4E0CE;
-    background-image: linear-gradient(to bottom, transparent 6px, #E4E0CE 8px, transparent 8px, transparent 12px, #E4E0CE 12px, transparent 14px, transparent 18px,#E4E0CE 18px, transparent 20px, transparent 24px, #E4E0CE 24px, transparent 26px, transparent 30px, #E4E0CE 30px, transparent 32px, transparent 36px, #E4E0CE 36px, transparent 38px, transparent 42px, #E4E0CE 42px, transparent 44px, transparent 48px, #E4E0CE 48px, transparent 50px);
-    height: 6vh;
-    bottom: 9px;
-    width: 99.5%;
-    z-index: 5;
-    right: 0;
-}
-
-.page.fin.flipped {
-    width: 100vw!important;
+        &:nth-child(3) {
+            transform: translateY(100%);
+        }
+    }
 }
 
 </style>
