@@ -1,9 +1,10 @@
 <template>
-    <div class="grid grid-cols-12 h-[100vh] relative overflow-hidden">
+    <div class="grid grid-cols-12 h-[100vh] relative overflow-hidden bgTable">
+        <div ref="frame" class="frame"></div>
         <link rel="stylesheet" href="/wiki.css"/>
 
-        <div ref="door_un" class="door col-span-12 flex flex-col items-center justify-end h-full gap-6 text-white bg-gray-500 z-30" v-if="game?.is_started === false">
-            <div class="font-medium text-4xl mb-12">
+        <div ref="door_un" class="door col-span-12 flex flex-col items-center justify-end h-full gap-6 text-white z-30" v-if="game?.is_started === false">
+            <div class="font-medium text-4xl mb-12 z-10">
                 <div>
                     Début : {{ game?.start?.replaceAll('_', ' ') }}
                 </div>
@@ -12,21 +13,23 @@
                 </div>
             </div>
 
-            <div class="scale-[2]">
+            <div class="scale-[2] z-10">
                 <Loader></Loader>
             </div>
 
-            En attente du lancement de la partie...
+            <div class="z-10 -mb-20">
+                En attente du lancement de la partie...
+            </div>
         </div>
 
-        <div ref="door_deux" class="door col-span-12 flex flex-col items-center justify-start h-full gap-6 text-white bg-gray-500 z-30" v-if="game?.is_started === false">
-            <div class="text-light text-center font-bold my-3 flex justify-center items-center">
+        <div ref="door_deux" class="door col-span-12 flex flex-col items-center justify-start h-full gap-6 text-white z-30" v-if="game?.is_started === false">
+            <div class="text-light text-center font-bold my-3 flex justify-center items-center z-10 pt-24">
                 {{ game?.users?.length }} joueur(s)
                 <icone-dynamique-composant icon="User" class="ml-3 w-5 h-5"></icone-dynamique-composant>
             </div>
 
             <Button v-if="game?.host === id && game?.is_started === false && loadPage === false && socketJoined === true"
-                    class="btnv-success"
+                    class="btnv-success z-10"
                     @click="launch"
             >
                 Start !
@@ -258,10 +261,12 @@ export default {
 
             this.$refs.door_un.classList.add('opened');
             this.$refs.door_deux.classList.add('opened');
+            this.$refs.frame.classList.add('opened');
 
             setTimeout(() => {
                 this.$refs.door_un.classList.remove('opened');
                 this.$refs.door_deux.classList.remove('opened');
+                this.$refs.frame.classList.remove('opened');
             }, 5000)
             // this.$axios.post('/game/launch').finally(() => {
             //     this.loading = false;
@@ -500,6 +505,8 @@ Leaderboard
     width: 25%;
     height: max-content;
     border-radius: 10px;
+    background-color: #6b6b6bf3;
+    backdrop-filter: blur(20px);
 }
 
 .leaderboard h1 {
@@ -518,32 +525,113 @@ Leaderboard
     z-index: 1;
 }
 
-.door {
-    overflow: hidden;
-    transition: ease-in-out transform 2s;
-    transform: translateY(0);
+.bgTable {
+    background: url("/images/table_bg.gif") no-repeat center !important;
+    background-size: cover !important;
+}
+
+.frame {
+    position: fixed;
     width: 100%;
-    height: 50vh;
+    height: 100%;
 
-    &:nth-child(2) {
-        clip-path: polygon(0 0, 100% 0, 100% 80%, 70% 80%, 60% 100%, 40% 100%, 30% 80%, 0 80%);
-        top: 0;
-        padding-bottom: 1rem;
-    }
+    background: #101215;
 
-    &:nth-child(3) {
-        clip-path: polygon(30% 0, 40% 20%, 60% 20%, 70% 0, 100% 0, 100% 100%, 0 100%, 0 0);
-        bottom: 0;
-        padding-top: 6rem;
+    z-index: 50;
+    clip-path: polygon(0% 0%, 0% 100%, 20% 90%, 10% 80%, 10% 25%, 25% 10%, 75% 10%, 90% 25%, 90% 80%, 80% 90%, 20% 90%, 0% 100%, 100% 100%, 100% 0%);
+    transition: cubic-bezier(.29,.01,.47,-0.1) 1s;
+    transition-delay: 1.25s;
+
+    &:after {
+        content: "";
+        position: absolute;
+
+        background-color: #666666;
+        background-image: url("https://www.transparenttextures.com/patterns/redox-01.png");
+
+        clip-path: polygon(0% 0%, 0% 100%, 19% 91%, 9.5% 81%, 9.5% 24%, 24% 9.5%, 76% 9.5%, 90.5% 24%, 90.5% 81%, 81% 91%, 19% 91%, 0% 100%, 100% 100%, 100% 0%);
+
+        width: 100%;
+        height: 100%;
     }
 
     &.opened {
-        &:nth-child(2) {
-            transform: translateY(-100%);
+        scale: 1.6;
+    }
+}
+
+.door {
+    transition: cubic-bezier(.74,.19,.23,.75) 2s;
+    transform: translateY(0);
+    opacity: 100%;
+    width: 100%;
+    height: 50vh;
+    position: relative;
+
+    & > * {
+        transition: ease-in-out 2s !important;
+    }
+
+    &:nth-of-type(2) {
+        &:before, &:after {
+            content: "";
+            width: 100%;
+            position: absolute;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 80% 85%, 78% 80%, 70% 80%, 60% 100%, 40% 100%, 30% 80%, 22% 80%, 20% 85%, 0 85%);
+            top: 0;
         }
 
-        &:nth-child(3) {
-            transform: translateY(100%);
+        &:before {
+            height: 121.5%;
+            background-color: #2F2F2FFF;
+        }
+
+        &:after {
+            height: 120.5%;
+            background-color: #6b6b6b;
+            background-image: url("https://www.transparenttextures.com/patterns/low-contrast-linen.png");
+            background-size: 20%;
+        }
+    }
+
+
+    &:nth-of-type(3) {
+        &:before, &:after {
+            content: "";
+            width: 100%;
+            position: absolute;
+            clip-path: polygon(20% 20%, 22% 15%, 30% 15%, 40% 35%, 60% 35%, 70% 15%, 78% 15%, 80% 20%, 100% 20%, 100% 100%, 0 100%, 0 20%);
+            bottom: 0;
+        }
+
+        &:before {
+             height: 121.5%;
+             background-color: #2F2F2FFF;
+        }
+
+        &:after {
+            height: 120.5%;
+            background-color: #6b6b6b;
+            background-image: url("https://www.transparenttextures.com/patterns/low-contrast-linen.png");
+            background-size: 15%;
+        }
+    }
+
+    &.opened {
+        &:nth-of-type(2) {
+            transform: translateY(-122%);
+
+            & > * {
+                opacity: 0%;
+            }
+        }
+
+        &:nth-of-type(3) {
+            transform: translateY(122%);
+
+            & > * {
+                opacity: 0%;
+            }
         }
     }
 }
