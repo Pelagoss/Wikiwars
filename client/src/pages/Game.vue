@@ -36,59 +36,10 @@
             </Button>
         </div>
 
-        <div class="leaderboard">
-            <h1 class="flex flex-col !mb-8">
-                <div class="flex gap-6 items-center">
-                    <icone-dynamique-composant icon="AdjustmentsHorizontal" class="!w-8 !h-8"></icone-dynamique-composant>
-                    <div class="text-2xl">
-                        Partie
-                    </div>
-                </div>
-                <div class="grid text-[#101010] pt-3 grid-cols-10 gap-4">
-                    <div class="font-bold col-span-3">Départ</div>
-                    <div class="col-span-7" :title="game?.start"
-                         @mouseenter="hoverLink"
-                         @mouseleave="unhoverLink">
-                        {{ game?.start?.replaceAll('_', ' ') }}
-                    </div>
-                </div>
-                <div class="grid text-[#101010] pt-3 grid-cols-10 gap-4">
-                    <div class="font-bold col-span-3">Arrivée</div>
-                    <div class="col-span-7" :title="game?.target"
-                         @mouseenter="hoverLink"
-                         @mouseleave="unhoverLink">
-                        {{ game?.target?.replaceAll('_', ' ') }}
-                    </div>
-                </div>
-            </h1>
-            <h1 class="flex flex-col">
-                <div class="flex gap-6 items-center">
-                    <icone-dynamique-composant icon="Trophy" class="!w-8 !h-8"></icone-dynamique-composant>
-                    <div class="text-2xl">
-                        Statistiques
-                    </div>
-                </div>
-                <div class="grid text-[#101010] pt-3 grid-cols-10 font-bold gap-4">
-                    <div class="col-span-3">Joueur</div>
-                    <div class="col-span-5">Page actuelle</div>
-                    <div class="col-span-2 text-center"># Clics</div>
+        <leaderboard :game="game" @hover-link="hoverLink" @unhover-link="unhoverLink"/>
 
-                </div>
-            </h1>
-            <ol>
-                <!--                    <li v-for="(player, index) in [{username: 'Pelagoss'},{username: 'Pelagoss'}]" v-if="game.users != null">-->
-                <li v-for="(player, index) in game.users">
-                    <div class="grid text-[#101010] px-4 py-3 grid-cols-10 gap-4">
-                        <div class="col-span-3">{{ player.username }}</div>
-                        <div class="col-span-5 whitespace-nowrap text-ellipsis overflow-hidden">{{ game.clics[player.username].page }}</div>
-                        <div class="col-span-2 text-center">{{ game.clics[player.username].clics }}</div>
-                    </div>
-                </li>
-            </ol>
-        </div>
-
-        <div class="col-start-3 col-span-9" v-if="game?.is_started === true">
-            <div v-if="!loading" ref="wiki"
+        <div class="col-start-3 col-span-9" v-show="game?.is_started === true">
+            <div v-if="loading === false" ref="wiki"
                  class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col h-full"
                  :class="{'overflow-hidden h-[100vh]': game?.is_started === false}"
                  v-html="contenu">
@@ -112,6 +63,7 @@
             <div ref="tooltip" class="mwe-popups mwe-popups-type-page mwe-popups-fade-in-up mwe-popups-no-image-pointer mwe-popups-is-not-tall absolute p-3"
                  style="display: none;height:fit-content;z-index:4000"
                  v-show="showTooltip"
+                 :class="{'block': showTooltip}"
                  v-html="tooltipContent"
             >
             </div>
@@ -128,13 +80,15 @@ import Button from "../components/ui/Button.vue";
 import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue";
 import Generique from "../components/Generique.vue";
 import Loader from "../components/ui/Loader.vue";
+import Leaderboard from "./Leaderboard.vue";
 
 export default {
     name: "Game",
-    components: {Loader, Generique, IconeDynamiqueComposant, Button},
+    components: {Leaderboard, Loader, Generique, IconeDynamiqueComposant, Button},
     data() {
         return {
             id: '',
+            isEventListenerActive: false,
             showTooltip: false,
             tooltipContent: '',
             initStarted: false,
@@ -150,50 +104,30 @@ export default {
         ...mapState(userStore, {isAuthenticated: "isAuthenticated", username: "username"}),
     },
     mounted() {
-        window.addEventListener("keydown",function (e) {
-            if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
-                e.preventDefault();
-                console.log("Timeout 5s");
+        this.fetchGames().then(() => {
+            window.addEventListener("keydown",function (e) {
+                if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+                    e.preventDefault();
+                    console.log("Timeout 5s");
+                }
+            })
+
+            let games = toRaw(userStore().games);
+            let filtered_games = games.filter(g => g.winner == null);
+            this.game = filtered_games[0]
+
+            if (this.game == null) {
+                this.$router.push({name: 'accueil'});
+                return;
             }
-        })
 
-        let games = toRaw(userStore().games);
-        let filtered_games = games.filter(g => g.winner == null);
-        this.game = filtered_games[0]
-
-        if (this.game == null) {
-            this.$router.push({name: 'accueil'});
-            return;
-        }
-
-        if (this.isAuthenticated === true) {
-            this.id = userStore().id;
-            this.initSocket();
-        }
-
-        this.fetchPage(this.game.clics[userStore().username].page);
-
-
-        var pages = document.getElementsByClassName('page');
-        for(var i = 0; i < pages.length; i++)
-        {
-            var page = pages[i];
-            if (i % 2 === 0)
-            {
-                page.style.zIndex = (pages.length - i);
+            if (this.isAuthenticated === true) {
+                this.id = userStore().id;
+                this.initSocket();
             }
-        }
 
-        document.addEventListener('DOMContentLoaded', function(){
-            for(var i = 0; i < pages.length; i++)
-            {
-                //Or var page = pages[i];
-                pages[i].pageNum = i + 1;
-            }
-        })
-    },
-    created() {
-        this.fetchGames();
+            this.fetchPage(this.game.clics[userStore().username].page);
+        });
     },
     methods: {
         closeGame() {
@@ -204,13 +138,16 @@ export default {
             });
         },
         fetchGames() {
-            this.loadPage = true;
-            this.$axios.get('/games').then(({data}) => {
-                this.games = data.reverse();
-                userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));
-            }).finally(() => {
-                this.loadPage = false;
-            });
+            return new Promise((resolve) => {
+                this.loadPage = true;
+                this.$axios.get('/games').then(({data}) => {
+                    this.games = data.reverse();
+                    userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));
+                }).finally(() => {
+                    this.loadPage = false;
+                    resolve();
+                });
+            })
         },
         initSocket() {
             if (this.initStarted) {
@@ -223,7 +160,6 @@ export default {
             socket.on("connect", () => {
                 socket.emit('join', this.game);
                 this.socketJoined = true;
-                this.loading = false;
                 this.initStarted = false;
 
                 this.error = false;
@@ -238,8 +174,7 @@ export default {
             });
 
             socket.on('START_GAME', (data) => {
-                this.$refs.premiere.classList.add('flipped');
-                this.$refs.stats.classList.add('flipped');
+                this.isEventListenerActive = true;
                 this.game = data;
             });
 
@@ -258,16 +193,15 @@ export default {
             socket.off("START_GAME");
         },
         launch() {
-
             this.$refs.door_un.classList.add('opened');
             this.$refs.door_deux.classList.add('opened');
             this.$refs.frame.classList.add('opened');
 
-            setTimeout(() => {
-                this.$refs.door_un.classList.remove('opened');
-                this.$refs.door_deux.classList.remove('opened');
-                this.$refs.frame.classList.remove('opened');
-            }, 5000)
+            // setTimeout(() => {
+            //     this.$refs.door_un.classList.remove('opened');
+            //     this.$refs.door_deux.classList.remove('opened');
+            //     this.$refs.frame.classList.remove('opened');
+            // }, 5000)
             // this.$axios.post('/game/launch').finally(() => {
             //     this.loading = false;
             // });
@@ -352,6 +286,16 @@ export default {
                 this.contenu = data.replace(/<\/body>/, '').replace(/<body["'=\w0-9a-zA-Z-,_ ]*>/, '');
             }).finally(() => {
                 this.loading = false;
+
+                if (this.isEventListenerActive === true) {
+                    this.$nextTick(() => {
+                        this.$refs.wiki.querySelectorAll('a').forEach((a) => {
+                            a.addEventListener("click", this.clickLink.bind(this), false);
+                            a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
+                            a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
+                        });
+                    });
+                }
             });
         },
         fetchLink(event) {
@@ -441,17 +385,6 @@ export default {
             },
             immediate: true
         },
-        loading() {
-            if (this.loading === false) {
-                this.$nextTick(() => {
-                    this.$refs.wiki.querySelectorAll('a').forEach((a) => {
-                        a.addEventListener("click", this.clickLink.bind(this), false);
-                        a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
-                        a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
-                    });
-                })
-            }
-        },
         id() {
             if (this.id === null) {
                 this.$router.push({'name': 'acceuil'})
@@ -500,14 +433,6 @@ body {
 /*--------------------
 Leaderboard
 --------------------*/
-.leaderboard {
-    position: fixed;
-    width: 25%;
-    height: max-content;
-    border-radius: 10px;
-    background-color: #6b6b6bf3;
-    backdrop-filter: blur(20px);
-}
 
 .leaderboard h1 {
     font-size: 18px;

@@ -3678,7 +3678,6 @@ body:not(.skin-vector-legacy) #p-lang-btn ul {
     z-index: 110;
     box-shadow: 0 30px 90px -20px rgba(0, 0, 0, 0.3), 0 0 1px 1px rgba(0, 0, 0, 0.05);
     padding: 0;
-    display: none;
     font-size: 14px;
     line-height: 20px;
     min-width: 300px;
