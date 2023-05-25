@@ -1,6 +1,6 @@
 <template>
     <div class="leaderboard">
-        <h1 class="flex flex-col !mb-8">
+        <h1 class="flex flex-col !mb-4 pb-4">
             <div class="flex gap-6 items-center justify-between">
                 <div class="flex gap-6 items-center">
                     <icone-dynamique-composant icon="AdjustmentsHorizontal" class="!w-8 !h-8"></icone-dynamique-composant>
@@ -19,8 +19,8 @@
                 </div>
 
                 <div class="flex gap-4 items-center">
-                    <icone-dynamique-composant icon="Home" class="!w-5 !h-5 font-bold"></icone-dynamique-composant>
-                    <div class="col-span-7" :title="game?.target"
+                    <icone-dynamique-composant icon="MapPin" class="!w-5 !h-5 font-bold"></icone-dynamique-composant>
+                    <div :title="game?.target"
                          @mouseenter="$emit('hoverLink', $event)"
                          @mouseleave="$emit('unhoverLink', $event)">
                         {{ game?.target?.replaceAll('_', ' ') }}
@@ -28,8 +28,9 @@
                 </div>
             </div>
 
-            <div class="flex text-white pt-3 justify-around">
-                <div>Temps écoulé : 45 min</div>
+            <div v-if="game?.started_at !== null" class="flex gap-2 text-white pt-3 justify-center items-center">
+                <icone-dynamique-composant icon="Clock" class="!w-5 !h-5 font-bold"></icone-dynamique-composant>
+                <div>{{ formatDateToText(startedDate) }}</div>
             </div>
         </h1>
         <h1 class="flex flex-col">
@@ -65,13 +66,24 @@
 </template>
 <script>
 import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue"
-
+import moment from "moment";
 export default {
     name: 'leaderboard',
     components: {IconeDynamiqueComposant},
     props: {
         game: {
             type: Object
+        }
+    },
+    methods: {
+        formatDateToText(str) {
+            moment.locale('fr');
+            return moment.duration(moment(str).diff(moment())).humanize();
+        }
+    },
+    computed: {
+        startedDate() {
+            return this.game?.started_at;
         }
     }
 }
