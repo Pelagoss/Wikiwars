@@ -1,9 +1,10 @@
 <template>
     <div class="grid grid-cols-12 h-[100vh] relative overflow-hidden bgTable">
-        <div ref="frame" class="frame"></div>
+        <div ref="frame" class="frame" :class="{'opened': game?.is_started === true}"></div>
         <link rel="stylesheet" href="/wiki.css"/>
 
-        <div ref="door_un" class="door col-span-12 flex flex-col items-center justify-end h-full gap-6 text-white z-30" v-if="game?.is_started === false">
+        <div ref="door_un" class="door col-span-12 flex flex-col items-center justify-end h-full gap-6 text-white z-30"
+             :class="{'opened': game?.is_started === true}">
             <div class="font-medium text-4xl mb-12 z-10">
                 <div>
                     Début : {{ game?.start?.replaceAll('_', ' ') }}
@@ -22,7 +23,8 @@
             </div>
         </div>
 
-        <div ref="door_deux" class="door col-span-12 flex flex-col items-center justify-start h-full gap-6 text-white z-30" v-if="game?.is_started === false">
+        <div ref="door_deux" class="door col-span-12 flex flex-col items-center justify-start h-full gap-6 text-white z-30"
+            :class="{'opened': game?.is_started === true}">
             <div class="text-light text-center font-bold my-3 flex justify-center items-center z-10 pt-24">
                 {{ game?.users?.length }} joueur(s)
                 <icone-dynamique-composant icon="User" class="ml-3 w-5 h-5"></icone-dynamique-composant>
@@ -38,9 +40,9 @@
 
         <leaderboard :game="game" @hover-link="hoverLink" @unhover-link="unhoverLink"/>
 
-        <div class="col-start-3 col-span-9" v-show="game?.is_started === true">
+        <div class="m-4 ml-8 col-start-4 col-span-9 game" v-show="game?.is_started === true">
             <div v-if="loading === false" ref="wiki"
-                 class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col h-full"
+                 class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col heightGame"
                  :class="{'overflow-hidden h-[100vh]': game?.is_started === false}"
                  v-html="contenu">
             </div>
@@ -53,7 +55,7 @@
             </div>
         </div>
 
-        <div v-if="game?.winner !== null" class="modal-mask">
+        <div v-if="game !== null && game?.winner !== null" class="modal-mask">
             <div class="flex flex-col gap-8 justify-center items-center modal-container">
                 <Generique v-if="game != null" :start="game?.winner !== null" :game="game" @close="closeGame"/>
             </div>
@@ -88,7 +90,6 @@ export default {
     data() {
         return {
             id: '',
-            isEventListenerActive: false,
             showTooltip: false,
             tooltipContent: '',
             initStarted: false,
@@ -118,15 +119,14 @@ export default {
 
             if (this.game == null) {
                 this.$router.push({name: 'accueil'});
-                return;
-            }
+            } else {
+                if (this.isAuthenticated === true) {
+                    this.id = userStore().id;
+                    this.initSocket();
+                }
 
-            if (this.isAuthenticated === true) {
-                this.id = userStore().id;
-                this.initSocket();
+                this.fetchPage(this.game.clics[userStore().username].page);
             }
-
-            this.fetchPage(this.game.clics[userStore().username].page);
         });
     },
     methods: {
@@ -150,7 +150,7 @@ export default {
             })
         },
         initSocket() {
-            if (this.initStarted) {
+            if (this.initStarted || Object.keys(this.game).length === 0) {
                 return;
             }
 
@@ -174,7 +174,6 @@ export default {
             });
 
             socket.on('START_GAME', (data) => {
-                this.isEventListenerActive = true;
                 this.game = data;
             });
 
@@ -202,69 +201,16 @@ export default {
             //     this.$refs.door_deux.classList.remove('opened');
             //     this.$refs.frame.classList.remove('opened');
             // }, 5000)
-            // this.$axios.post('/game/launch').finally(() => {
-            //     this.loading = false;
-            // });
+            this.$axios.post('/game/launch').finally(() => {
+                this.loading = false;
+            });
         },
         clickLink(event) {
             event.preventDefault();
 
-            this.$refs.partie.classList.add('flipped');
-            this.$refs.loadPage_un.classList.add('flipped');
+            this.fetchPage(event.target['data-title']);
 
-            this.fetchPage(event.target['data-title']).finally(() => {
-                this.$nextTick(() => {
-                    setTimeout(() => {
-                        this.$refs.stats.classList.add('hidden');
-                        this.$refs.stats.classList.remove('flipped');
-
-                        this.$refs.partie.classList.add('hidden');
-                        this.$refs.partie.classList.remove('flipped');
-
-                        this.$nextTick(() => {
-                            let fragmentPartie = document.createDocumentFragment();
-                            fragmentPartie.appendChild(this.$refs.partie);
-
-                            let fragmentStats = document.createDocumentFragment();
-                            fragmentStats.appendChild(this.$refs.stats);
-
-                            this.$refs.pages.append(fragmentStats);
-                            this.$refs.pages.append(fragmentPartie);
-
-                            this.$nextTick(() => {
-                                this.$refs.stats.classList.remove('hidden');
-                                setTimeout(() => {
-                                    this.$refs.stats.classList.add('flipped');
-                                    this.$refs.partie.classList.remove('hidden');
-
-                                    this.$refs.loadPage_deux.classList.add('flipped');
-
-                                    this.$nextTick(() => {
-                                        this.$nextTick(() => {
-                                            setTimeout(() => {
-                                                let fragmentLoadUn = document.createDocumentFragment();
-                                                let a = fragmentLoadUn.appendChild(this.$refs.loadPage_un);
-                                                a.classList.add('hidden');
-                                                a.classList.remove('flipped')
-                                                a.classList.remove('hidden')
-
-                                                let fragmentLoadDeux = document.createDocumentFragment();
-                                                a = fragmentLoadDeux.appendChild(this.$refs.loadPage_deux);
-                                                a.classList.add('hidden');
-                                                a.classList.remove('flipped')
-                                                a.classList.remove('hidden')
-
-                                                this.$refs.pages.append(fragmentLoadUn);
-                                                this.$refs.pages.append(fragmentLoadDeux);
-                                            }, 1000)
-                                        });
-                                    });
-                                }, 500)
-                            });
-                        });
-                    }, 500)
-                });
-            });
+            this.toggleTooltip(false, event);
         },
         hoverLink(event) {
             event.preventDefault();
@@ -278,7 +224,7 @@ export default {
 
             clearTimeout(this.timeoutHover);
 
-            this.toggleTooltip(false, event)
+            this.toggleTooltip(false, event);
         },
         fetchPage(title) {
             this.loading = true;
@@ -287,7 +233,7 @@ export default {
             }).finally(() => {
                 this.loading = false;
 
-                if (this.isEventListenerActive === true) {
+                if (this.game?.is_started === true) {
                     this.$nextTick(() => {
                         this.$refs.wiki.querySelectorAll('a').forEach((a) => {
                             a.addEventListener("click", this.clickLink.bind(this), false);
@@ -429,25 +375,18 @@ body {
     height: 100vh;
 }
 
-
-/*--------------------
-Leaderboard
---------------------*/
-
-.leaderboard h1 {
-    font-size: 18px;
-    color: #101010;
-    margin-bottom: 0;
-    @apply px-4;
+.game {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.80);
+    backdrop-filter: blur(10px);
+    position: absolute;
+    height: calc(100vh - 2rem);
+    width: calc(100% - 3rem);
 }
 
-.leaderboard ol {
-    margin: 0;
-}
-
-.leaderboard ol li {
-    position: relative;
-    z-index: 1;
+.heightGame {
+    height: calc(100vh - 2rem);
 }
 
 .bgTable {

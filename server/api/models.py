@@ -100,11 +100,13 @@ class Game(db.Model):
         d = dict(id=self.id,
                  is_started=self.is_started,
                  start=self.start,
-                 started_at=self.started_at,
                  target=self.target,
                  winner=self.winner_id,
                  host=self.host_id,
                  clics=self.clics)
+
+        if self.started_at is not None:
+            d['started_at'] = datetime.timestamp(self.started_at)
 
         if type == 'game':
             d['users'] = [u.to_dict(type) for u in self.users]
