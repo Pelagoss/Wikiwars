@@ -71,7 +71,7 @@
                             <h3 class="font-bold sm:text-xl text-xs">Victoires</h3>
                             <div class="font-medium sm:text-xl text-xs">{{
                                     /*user.wins ??*/
-                                    0
+                                    wins
                                 }}
                             </div>
                         </div>
@@ -82,7 +82,7 @@
                             <h3 class="font-bold sm:text-xl text-xs">Défaites</h3>
                             <div class="font-medium sm:text-xl text-xs">{{
                                     /*user.loses ??*/
-                                    0
+                                    loses
                                 }}
                             </div>
                         </div>
@@ -93,7 +93,7 @@
                             <h3 class="font-bold sm:text-xl text-xs">Ratio V/D</h3>
                             <div class="font-medium sm:text-xl text-xs">{{
                                     /*user.ratio ??*/
-                                    0
+                                    ratio
                                 }}
                             </div>
                         </div>
@@ -120,6 +120,15 @@ export default {
         };
     },
     computed: {
+        wins() {
+            return toRaw(userStore().wins).length;
+        },
+        loses() {
+            return toRaw(userStore().games).length - this.wins;
+        },
+        ratio() {
+            return this.wins / (this.loses === 0 ? 1.00 : this.loses);
+        },
         partieEnCours() {
             return this.games.filter(g => g.winner === null && !g.users.map(u => u.username).includes(userStore().username));
         },
@@ -138,7 +147,8 @@ export default {
             return this.$axios.get('/games').then(({data}) => {
                 this.games = data.reverse();
                 userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));
-            })
+                userStore().wins = this.games.filter(g => g.winner?.id === userStore().id);
+            });
         },
         joinGame(game_id = null) {
             if (this.isInGame === null && game_id === null) {
