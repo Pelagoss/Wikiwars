@@ -141,8 +141,8 @@ Leaderboard
     position: fixed;
     width: 25%;
     height: max-content;
-    border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     background-color: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(20px);
     @apply mt-4 ml-4;

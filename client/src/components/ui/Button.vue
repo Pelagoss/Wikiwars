@@ -1,5 +1,5 @@
 <template>
-    <button class="flex items-center md:px-4 md:py-3 px-2 py-1 btnv md:text-base !text-xs">
+    <button class="flex items-center md:px-4 md:py-3 px-2 py-1 btnv md:text-base !text-xs w-fit">
         <slot></slot>
         <IconeDynamiqueComposant v-if="icon !== null" class="ml-3 sm:w-5 sm:h-5 w-3 h-3" :icon="icon"/>
     </button>
@@ -33,7 +33,6 @@ export default {
     text-decoration: none;
     text-transform: uppercase;
     border-radius: 1vh;
-    width: fit-content;
 }
 
 .btnv:hover {
