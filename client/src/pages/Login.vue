@@ -10,6 +10,7 @@
             <Form class="w-full">
                 <template #fields>
                     <div class="w-full flex flex-col gap-4 center">
+                        <span class="text-2xl font-bold">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
                         <TextField
                             v-if="step === 'register'"
                             name="email"
