@@ -1,16 +1,16 @@
 <template>
-    <div id="login" class="bgTable h-full flex items-center justify-center m-auto">
-        <div class="h-full w-1/2">
-                <div class="text-3xl font-black px-12 pt-16"><span
-                    style="color: white; font-family: 'Squada One', cursive;">WIKI</span><span
-                    style="color: #008b2a; font-family: 'Squada One', cursive;">WARS</span></div>
+    <div id="login" class="bgTable h-full flex items-center justify-center m-auto relative">
+        <div class="h-full w-1/2 z-10 absolute" :class="step === 'register' ? 'right-0' : 'right-[50%]'">
+                <div class="text-3xl text-squadaOne font-black px-12 pt-16"><span
+                    class="text-white">WIKI</span><span
+                    class="text-accent">WARS</span></div>
                 <div class="text-white text-base px-12 pb-16">Bienvenue sur WikiWars, connectez-vous !</div>
         </div>
-        <div class="form h-full w-1/2 flex flex-col center">
+        <div class="form h-full w-1/2 flex flex-col center absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
             <Form class="w-full">
                 <template #fields>
-                    <div class="w-full flex flex-col gap-4 center">
-                        <span class="text-2xl font-bold">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
+                    <div class="w-full flex flex-col gap-6 center">
+                        <span class="text-3xl font-bold tracking-wide">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
                         <TextField
                             v-if="step === 'register'"
                             name="email"
@@ -18,7 +18,7 @@
                             v-model="credentials.email"
                             help-text="Entrez votre email"
                             type="email"
-                            class="w-1/2"
+                            class="w-1/2 flex flex-col gap-2"
                         ></TextField>
 
                         <TextField
@@ -26,7 +26,7 @@
                             label="Pseudo"
                             v-model="credentials.username"
                             help-text="Entrez votre pseudo"
-                            class="w-1/2"
+                            class="w-1/2 flex flex-col gap-2"
                         ></TextField>
 
                         <TextField
@@ -35,7 +35,7 @@
                             v-model="credentials.password"
                             help-text="Entrez votre mot de passe"
                             type="password"
-                            class="w-1/2"
+                            class="w-1/2 flex flex-col gap-2"
                         ></TextField>
 
                         <TextField
@@ -45,15 +45,15 @@
                             v-model="credentials.passwordConfirm"
                             help-text="Confirmez votre mot de passe"
                             type="password"
-                            class="w-1/2"
+                            class="w-1/2 flex flex-col gap-2"
                         ></TextField>
 
-                        <div class="mb-2 w-1/2 flex flex-col">
+                        <div class="mb-2 w-1/2 flex flex-col gap-2 flex flex-col">
                             <Button @click="submitForm" class="btnv-success !w-full justify-center" icon="ArrowRightCircle">
                                 {{ step === 'login' ? 'Se connecter' : 'Créer mon compte'}}
                             </Button>
 
-                            <div class="cursor-pointer text-xs text-[#6c757d] pt-4" @click="flipMenu">
+                            <div class="cursor-pointer text-xs text-grey0 pt-4" @click="flipMenu">
                                 {{ step === 'login' ? 'Pas de compte ? Créez vous en un !' : 'Déjà un compte ? Connectez-vous !'}}
                             </div>
                         </div>
@@ -99,6 +99,12 @@ export default {
 
 <style lang="scss" scoped>
 @import '../assets/style/style';
+
+#login {
+    & * {
+        transition: cubic-bezier(0,.15,.56,.77) 200ms;
+    }
+}
 
 .center {
     @apply justify-center items-center;

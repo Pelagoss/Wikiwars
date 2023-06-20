@@ -6,7 +6,7 @@
             <input v-model="content" :name="name" required="required" :id="name" :type="type">
         </div>
 
-        <div v-if="helpText" :id="name+'help'" class="text-xs text-[#6c757d]">{{ helpText }}</div>
+        <div v-if="helpText" :id="name+'help'" class="text-xs text-grey0">{{ helpText }}</div>
     </div>
 </template>
 <script>
