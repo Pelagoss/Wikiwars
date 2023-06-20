@@ -4,7 +4,7 @@
                 <div class="text-3xl text-squadaOne font-black px-12 pt-16"><span
                     class="text-white">WIKI</span><span
                     class="text-accent">WARS</span></div>
-                <div class="text-white text-base px-12 pb-16">Bienvenue sur WikiWars, connectez-vous !</div>
+                <div class="text-white text-base px-12 pb-16">Devenez un WikiJedi/WikiSith !</div>
         </div>
         <div class="form h-full w-1/2 flex flex-col center absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
             <Form class="w-full">
