@@ -1,7 +1,7 @@
 <template>
     <div id="login" class="bgTable h-full flex items-center justify-center m-auto relative">
-        <div class="h-full w-1/2 z-10 absolute" :class="step === 'register' ? 'right-0' : 'right-[50%]'">
-            <div class="text-3xl text-squadaOne font-black px-12 pt-16"><span
+        <div class="h-full w-1/2 absolute" :class="step === 'register' ? 'right-0' : 'right-[50%]'">
+            <div class="text-5xl text-squadaOne font-black px-12 pt-16"><span
                 class="text-white">WIKI</span><span
                 class="text-accent">WARS</span></div>
             <div class="text-white text-base px-12 pb-16">Devenez un WikiJedi/WikiSith !</div>
@@ -10,7 +10,7 @@
                 <img src="/images/death_wiki_star.png" alt="floatin death star">
             </div>
         </div>
-        <div class="form h-full w-1/2 flex flex-col center absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
+        <div class="form h-full w-1/2 flex flex-col center z-10 absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
             <Form class="w-full">
                 <template #fields>
                     <div class="w-full flex flex-col gap-6 center">
@@ -57,7 +57,7 @@
                                 {{ step === 'login' ? 'Se connecter' : 'Créer mon compte'}}
                             </Button>
 
-                            <div class="cursor-pointer text-xs text-grey0 pt-4" @click="flipMenu">
+                            <div class="cursor-pointer text-xs text-grey0 hover:text-accent pt-4 w-fit" @click="flipMenu">
                                 {{ step === 'login' ? 'Pas de compte ? Créez vous en un !' : 'Déjà un compte ? Connectez-vous !'}}
                             </div>
                         </div>
@@ -112,27 +112,24 @@ export default {
     width: 35%;
     box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.6);
     transform: translatey(0px);
-    animation: float 6s ease-in-out infinite;
+    animation: float 5s ease-in-out infinite;
 }
 
 @keyframes float {
     0% {
-        box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.6);
         transform: translatey(0px);
     }
     50% {
-        box-shadow: 0 25px 15px 0px rgba(0, 0, 0, 0.2);
         transform: translatey(-20px);
     }
     100% {
-        box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.6);
         transform: translatey(0px);
     }
 }
 
 #login {
     & * {
-        transition: cubic-bezier(0,.15,.56,.77) 200ms;
+        transition: cubic-bezier(0,.15,.56,.77) 300ms;
     }
 }
 
