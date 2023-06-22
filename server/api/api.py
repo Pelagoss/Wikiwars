@@ -66,6 +66,17 @@ def login():
 
     return jsonify(body)
 
+@api.route('/register', methods=('POST',))
+def register():
+    data = request.get_json()
+
+    if not User.verifyForm(**data, 'register'):
+        return jsonify({ 'message': 'Informations de connexion invalides', 'authenticated': False }), 401
+
+    #Create account, send email and generate a validation token
+
+    return jsonify(body)
+
 @api.route('/game/create', methods=('POST',))
 @token_required
 def create_game(current_user):

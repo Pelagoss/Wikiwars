@@ -72,6 +72,30 @@ class User(db.Model):
 
         return user
 
+    @classmethod
+    def verifyForm(cls, **kwargs, formType):
+        formFields = []
+        if formType is 'register':
+            formFields = ['email', 'username', 'password', 'passwordConfirm']
+
+        for field in formFields:
+            if  validateField(kwargs.get(field), field) is not True:
+                return False
+
+        return True
+
+    @classmethod
+    def validateField(cls, fieldValue, fieldType):
+        if fieldValue is None:
+            return False
+
+        if fieldType is 'email':
+            return #Check if email valid
+        elif fieldType is 'password' or fieldType is 'passwordConfirm':
+            return len(fieldValue) > 8 and fieldValue #check si un chiffre et une majuscule
+        elif fieldType is 'username':
+            return len(fieldValue) > 2
+
     def to_dict(self, type = None):
         d = dict(id=self.id, username=self.username)
 
