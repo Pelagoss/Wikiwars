@@ -7,7 +7,7 @@
             <div class="text-white text-base px-12 pb-16">Devenez un WikiJedi/WikiSith !</div>
 
             <div class="floating-img">
-                <img src="/images/death_wiki_star.png" alt="floatin death star">
+                <img src="/images/death_wiki_star.png" alt="floating death star">
             </div>
         </div>
         <div class="form h-full w-1/2 flex flex-col center z-10 absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
