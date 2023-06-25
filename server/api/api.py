@@ -70,7 +70,7 @@ def login():
 def register():
     data = request.get_json()
 
-    if not User.verifyForm(**data, 'register'):
+    if not User.verify_form('register', **data):
         return jsonify({ 'message': 'Informations de connexion invalides', 'authenticated': False }), 401
 
     #Create account, send email and generate a validation token

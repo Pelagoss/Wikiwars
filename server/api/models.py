@@ -1,3 +1,4 @@
+import re
 from abc import ABC
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
@@ -73,28 +74,58 @@ class User(db.Model):
         return user
 
     @classmethod
-    def verifyForm(cls, **kwargs, formType):
-        formFields = []
+    def verify_form(cls, formType, **kwargs):
+        form_fields = []
         if formType is 'register':
-            formFields = ['email', 'username', 'password', 'passwordConfirm']
+            form_fields = ['email', 'username', 'password', 'passwordConfirm']
 
-        for field in formFields:
-            if  validateField(kwargs.get(field), field) is not True:
+        for field in form_fields:
+            if cls.validate_field(kwargs.get(field), field) is not True:
                 return False
 
         return True
 
     @classmethod
-    def validateField(cls, fieldValue, fieldType):
-        if fieldValue is None:
-            return False
+    def validate_field(cls, field_value, field_type):
+        errors = []
+        is_valid = True
 
-        if fieldType is 'email':
-            return #Check if email valid
-        elif fieldType is 'password' or fieldType is 'passwordConfirm':
-            return len(fieldValue) > 8 and fieldValue #check si un chiffre et une majuscule
-        elif fieldType is 'username':
-            return len(fieldValue) > 2
+        if field_value is None:
+            return False, "La valeur ne peut pas être vide"
+
+        if field_type is 'email':
+            regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+
+            if not re.fullmatch(regex, field_value):
+                is_valid = False
+                errors = 'Votre email est invalide'
+
+            return is_valid, errors
+        elif field_type is 'password' or field_type is 'passwordConfirm':
+            if not any(x.isupper() for x in field_type):
+                errors.append('contenir au moins 1 majuscule')
+            if not any(x.islower() for x in field_type):
+                errors.append('contenir au moins 1 minuscule')
+            if not any(x.isdigit() for x in field_type):
+                errors.append('contenir au moins 1 chiffre')
+            if not len(field_type) >= 7:
+                errors.append('contenir au moins 7 caractères')
+
+            if len(errors) > 0:
+                is_valid = False
+                errors = "Votre mot de passe doit" + ", ".join(errors) + "."
+
+            return is_valid, errors
+
+        elif field_type is 'username':
+            if not len(field_type) >= 7:
+                errors.append('contenir au moins 7 caractères')
+
+            if len(errors) > 0:
+                is_valid = False
+                errors = "Votre nom doit" + ", ".join(errors) + "."
+
+            return is_valid, errors
 
     def to_dict(self, type = None):
         d = dict(id=self.id, username=self.username)

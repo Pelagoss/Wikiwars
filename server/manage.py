@@ -29,8 +29,6 @@ def leave(data):
     leave_room(f'{data["start"]}_{data["target"]}')
 
 
-
-
 # enable python shell with application context
 @with_appcontext
 def shell_ctx():
