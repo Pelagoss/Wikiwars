@@ -1,4 +1,7 @@
 from functools import wraps
+
+from parse import *
+from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
@@ -76,14 +79,20 @@ def register():
         return jsonify({ 'message': error, 'field': field, 'authenticated': False }), 401
 
     #Create account, send email and generate a validation token
-    user = User(email = data.email, username = data.username, password = user.password)
-    user.validation_token = uuid.uuid4
+    try:
+        user = User(email = data.get('email'), username = data.get('username'), password = data.get('password'))
+        user.validation_token = uuid.uuid4()
 
-    db.session.add(user)
-    db.session.flush()
-    db.session.commit()
+        db.session.add(user)
+        db.session.flush()
+        db.session.commit()
+    except IntegrityError as e:
+        p = parse('UNIQUE constraint failed: users.{field}', str(e.orig))
+        field = p['field']
 
-    return jsonify(body)
+        return jsonify({ 'message': f'[{field}] : {data.get(field)} existe déjà', 'field': field, 'authenticated': False }), 403
+
+    return jsonify(True)
 
 @api.route('/game/create', methods=('POST',))
 @token_required

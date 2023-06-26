@@ -4,8 +4,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
 from werkzeug.security import check_password_hash, generate_password_hash
-from sqlalchemy import MetaData, Uuid
-from sqlalchemy_utils import EmailType
+from sqlalchemy import MetaData, Uuid, String, UniqueConstraint
 
 from .tools import to_dict
 
@@ -49,9 +48,13 @@ u_g = db.Table('user_game',
 
 class User(db.Model):
     __tablename__ = 'users'
+    __table_args__ = (
+        UniqueConstraint('email', name='uix_user_email'),
+        UniqueConstraint('username', name='uix_user_username'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(EmailType)
+    email = db.Column(String)
     username = db.Column(db.Text)
     password = db.Column(db.Text)
     validation_token = db.Column(db.Uuid)
@@ -87,7 +90,6 @@ class User(db.Model):
             form_fields = ['email', 'username', 'password', 'passwordConfirm']
 
         for field in form_fields:
-            print(field, kwargs.get(field))
             (is_valid, error) = cls.validate_field(kwargs.get(field), field)
             if is_valid is False:
                 return is_valid, error, field

@@ -1,16 +1,16 @@
 <template>
-    <div>
+    <div :ref="name">
         <label :class="{'!text-accent': focus, '!text-error': errors.length > 0}" :for="name"
                class="text-base">{{ label }}</label>
 
         <div>
             <input :class="{'!border-error': errors.length > 0}" class="focus:border-accent"
-                   @focusin="focus = true" @focusout="focus = false" v-model="content" :name="name" required="required"
+                   @focusin="focus = true" @focusout="focus = false" @blur="handleChange" v-model="value" :name="name" required="required"
                    :id="name" :type="type">
         </div>
 
         <div v-if="helpText" :id="name+'help'" class="text-xs text-grey0"
-             :class="{'!text-accent50': focus, '!text-error50': errors.length > 0}">{{ helpText }}
+             :class="{'!text-accent50': focus, '!text-error50': errors.length > 0}">{{ errors.length > 0 ? errors[0] : helpText }}
         </div>
     </div>
 </template>
@@ -44,27 +44,23 @@ const props = defineProps({
 });
 
 const {
-    value: inputValue,
+    value,
     errors,
+    handleChange,
+    setErrors
 } = useField(() => props.name, props.rules,  {
     initialValue: props.modelValue,
+    label: props.label
 });
 
 const emit = defineEmits(['update:modelValue'])
 
-const content = props.modelValue;
 const focus = ref(false);
 
-watch(content, () => {
-    emit('update:modelValue', content);
+watch(value, () => {
+    emit('update:modelValue', value);
 });
 
-</script>
-
-<script>
-export default {
-    name: 'TextField'
-}
 </script>
 
 <style lang="scss" scoped>

@@ -11,12 +11,13 @@
             </div>
         </div>
         <div class="form h-full w-1/2 flex flex-col center z-10 absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
-            <Form class="w-full" @submit="submitForm">
+            <FormWrapper ref="form" class="w-full" @submit="submitForm">
                 <template #fields>
                     <div class="w-full flex flex-col gap-6 center">
                         <span class="text-3xl font-bold tracking-wide">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
                         <TextField
                             v-if="step === 'register'"
+                            rules="required|email"
                             name="email"
                             label="Email"
                             v-model="credentials.email"
@@ -26,6 +27,7 @@
                         ></TextField>
 
                         <TextField
+                            rules="required"
                             name="username"
                             label="Pseudo"
                             v-model="credentials.username"
@@ -34,6 +36,7 @@
                         ></TextField>
 
                         <TextField
+                            rules="required|oneUpper|oneLower|oneDigit|min:7"
                             name="password"
                             label="Mot de passe"
                             v-model="credentials.password"
@@ -44,6 +47,7 @@
 
                         <TextField
                             v-if="step === 'register'"
+                            rules="confirmed:@password"
                             name="passwordConfirm"
                             label="Confirmation du mot de passe"
                             v-model="credentials.passwordConfirm"
@@ -63,7 +67,7 @@
                         </div>
                     </div>
                 </template>
-            </Form>
+            </FormWrapper>
         </div>
     </div>
 </template>
@@ -73,11 +77,12 @@ import Button from "../components/ui/Button.vue";
 import {mapActions} from "pinia";
 import {userStore} from "../store/index.js";
 import TextField from "../components/ui/form/TextField.vue";
-import Form from "../components/ui/form/Form.vue";
+import Form from "../components/ui/form/FormWrapper.vue";
+import FormWrapper from "../components/ui/form/FormWrapper.vue";
 
 export default {
     name: "Login",
-    components: {TextField, Form, Button},
+    components: {FormWrapper, TextField, Form, Button},
     data() {
         return {
             credentials: {},
@@ -95,13 +100,20 @@ export default {
                 this.register(this.credentials)
                     .then((r) => console.log(r))
                     .catch((e) => {
-                        console.log(e);
-                        this.error = {
-                            message: e.response.data.message.replaceAll("["+e.response.data.field+"]", this.errorMessage[e.response.data.field]),
-                            field: e.response.data.field
-                        };
-                    }
-                );
+                            console.log(e);
+                            if (e.response.status === 403) {
+                                let error = {};
+
+                                error[e.response.data.field] = e.response.data.message.replaceAll('[username]', 'Le pseudo')
+                                    .replaceAll('[email]', 'L\'adresse email');
+                                this.$refs.form.$refs.form.setErrors(error);
+                                this.error = e.response.data.message.replaceAll('[username]', 'Le pseudo')
+                                    .replaceAll('[email]', 'L\'adresse email')
+                            } else {
+                                this.error = e.response.data.message.replaceAll("["+e.response.data.field+"]", this.errorMessage[e.response.data.field]);
+                            }
+                        }
+                    );
             }
         },
         flipMenu() {
