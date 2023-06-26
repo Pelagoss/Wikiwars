@@ -11,8 +11,8 @@
             </div>
         </div>
         <div class="form h-full w-1/2 flex flex-col center z-10 absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
-            <Form class="w-full" :error="error">
-                <template #fields="{formError}">
+            <Form class="w-full" @submit="submitForm">
+                <template #fields>
                     <div class="w-full flex flex-col gap-6 center">
                         <span class="text-3xl font-bold tracking-wide">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
                         <TextField
@@ -23,7 +23,6 @@
                             help-text="Entrez votre email"
                             type="email"
                             class="w-1/2 flex flex-col gap-2"
-                            :error="error"
                         ></TextField>
 
                         <TextField
@@ -32,7 +31,6 @@
                             v-model="credentials.username"
                             help-text="Entrez votre pseudo"
                             class="w-1/2 flex flex-col gap-2"
-                            :error="error"
                         ></TextField>
 
                         <TextField
@@ -42,7 +40,6 @@
                             help-text="Entrez votre mot de passe"
                             type="password"
                             class="w-1/2 flex flex-col gap-2"
-                            :error="error"
                         ></TextField>
 
                         <TextField
@@ -53,11 +50,10 @@
                             help-text="Confirmez votre mot de passe"
                             type="password"
                             class="w-1/2 flex flex-col gap-2"
-                            :error="error"
                         ></TextField>
 
                         <div class="mb-2 w-1/2 flex flex-col gap-2 flex flex-col">
-                            <Button @click="submitForm" class="btnv-success !w-full justify-center" icon="ArrowRightCircle">
+                            <Button class="btnv-success !w-full justify-center" icon="ArrowRightCircle">
                                 {{ step === 'login' ? 'Se connecter' : 'Créer mon compte'}}
                             </Button>
 

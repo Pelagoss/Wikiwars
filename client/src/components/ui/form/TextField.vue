@@ -1,50 +1,69 @@
 <template>
     <div>
-        <label :class="{'!text-accent': focus, '!text-error': error !== null && error?.field === name}" :for="name" class="text-base">{{ label }}</label>
+        <label :class="{'!text-accent': focus, '!text-error': errors.length > 0}" :for="name"
+               class="text-base">{{ label }}</label>
 
         <div>
-            <input :class="{'!border-error': error !== null && error?.field === name}" class="focus:border-accent" @focusin="focus = true" @focusout="focus = false" v-model="content" :name="name" required="required" :id="name" :type="type">
+            <input :class="{'!border-error': errors.length > 0}" class="focus:border-accent"
+                   @focusin="focus = true" @focusout="focus = false" v-model="content" :name="name" required="required"
+                   :id="name" :type="type">
         </div>
 
-        <div v-if="helpText" :id="name+'help'" class="text-xs text-grey0" :class="{'!text-accent50': focus, '!text-error50': error !== null && error?.field === name}">{{ helpText }}</div>
+        <div v-if="helpText" :id="name+'help'" class="text-xs text-grey0"
+             :class="{'!text-accent50': focus, '!text-error50': errors.length > 0}">{{ helpText }}
+        </div>
     </div>
 </template>
+
+<script setup>
+import {ref, toRefs, watch} from "vue";
+import {useField} from "vee-validate";
+
+const props = defineProps({
+    name: {
+        type: String,
+        default: 'field'
+    },
+    modelValue: {},
+    helpText: {
+        type: String,
+        default: null
+    },
+    label: {
+        type: String,
+        default: ''
+    },
+    type: {
+        type: String,
+        default: 'text'
+    },
+    rules: {
+        type: [String, Object],
+        default: ''
+    }
+});
+
+const {
+    value: inputValue,
+    errors,
+} = useField(() => props.name, props.rules,  {
+    initialValue: props.modelValue,
+});
+
+const emit = defineEmits(['update:modelValue'])
+
+const content = props.modelValue;
+const focus = ref(false);
+
+watch(content, () => {
+    emit('update:modelValue', content);
+});
+
+</script>
+
 <script>
 export default {
-    name: 'TextField',
-    props: {
-        name: {
-            type: String,
-            default: 'field'
-        },
-        modelValue: {},
-        helpText: {
-            type: String,
-            default: null
-        },
-        label: {
-            type: String,
-            default: ''
-        },
-        type: {
-            type: String,
-            default: 'text'
-        },
-        error: {}
-    },
-    data() {
-        return {
-            content: this.modelValue,
-            focus: false
-        }
-    },
-    watch: {
-        content: {
-            handler() {
-                this.$emit('update:modelValue', this.content);
-            }
-        }
-    }
+    name: 'TextField'
 }
 </script>
 
@@ -53,7 +72,7 @@ export default {
 
 .form {
     & * {
-        transition: color cubic-bezier(0,.15,.56,.77) 300ms;
+        transition: color cubic-bezier(0, .15, .56, .77) 300ms;
     }
 }
 
