@@ -28,10 +28,7 @@ export const userStore = defineStore('user', {
             });
         },
         register(data) {
-            return $axios.post('/register', data).then(({data}) => {
-            }).catch(error => {
-                emitter.$emit('failedAuthentication', error)
-            });
+            return $axios.post('/register', data).then(({data}) => {});
         },
         logout() {
             this.id = null;

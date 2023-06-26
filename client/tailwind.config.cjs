@@ -8,6 +8,8 @@ module.exports = {
         work: ['Work Sans', 'sans-serif']
       },
       colors: {
+        'error': '#ec155e',
+        'error50': '#c02b5a',
         'accent': '#008b2a',
         'primary': '#f2f2f2',
         'accent50': '#74a183',

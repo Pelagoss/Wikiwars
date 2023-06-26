@@ -7,6 +7,7 @@ from .tools import randomize_page, get_wiki_page, getSummaryWikiPage
 from datetime import datetime, timedelta
 
 import jwt
+import uuid
 
 api = Blueprint('api', __name__)
 
@@ -48,10 +49,10 @@ def token_required(f):
 @api.route('/login', methods=('POST',))
 def login():
     data = request.get_json()
-    user = User.authenticate(**data)
+    (user, message) = User.authenticate(**data)
 
-    if not user:
-        return jsonify({ 'message': 'Informations de connexion invalides', 'authenticated': False }), 401
+    if message:
+        return jsonify({ 'message': message, 'authenticated': False }), 401
 
     session['user'] = user.to_dict()
 
@@ -70,10 +71,17 @@ def login():
 def register():
     data = request.get_json()
 
-    if not User.verify_form('register', **data):
-        return jsonify({ 'message': 'Informations de connexion invalides', 'authenticated': False }), 401
+    (is_valid, error, field) = User.verify_form('register', **data)
+    if not is_valid:
+        return jsonify({ 'message': error, 'field': field, 'authenticated': False }), 401
 
     #Create account, send email and generate a validation token
+    user = User(email = data.email, username = data.username, password = user.password)
+    user.validation_token = uuid.uuid4
+
+    db.session.add(user)
+    db.session.flush()
+    db.session.commit()
 
     return jsonify(body)
 

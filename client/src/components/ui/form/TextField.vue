@@ -1,12 +1,12 @@
 <template>
     <div>
-        <label :class="{'!text-accent': focus}" :for="name" class="text-base">{{ label }}</label>
+        <label :class="{'!text-accent': focus, '!text-error': error !== null && error?.field === name}" :for="name" class="text-base">{{ label }}</label>
 
         <div>
-            <input class="focus:border-accent" @focusin="focus = true" @focusout="focus = false" v-model="content" :name="name" required="required" :id="name" :type="type">
+            <input :class="{'!border-error': error !== null && error?.field === name}" class="focus:border-accent" @focusin="focus = true" @focusout="focus = false" v-model="content" :name="name" required="required" :id="name" :type="type">
         </div>
 
-        <div v-if="helpText" :id="name+'help'" class="text-xs text-grey0" :class="{'!text-accent50': focus}">{{ helpText }}</div>
+        <div v-if="helpText" :id="name+'help'" class="text-xs text-grey0" :class="{'!text-accent50': focus, '!text-error50': error !== null && error?.field === name}">{{ helpText }}</div>
     </div>
 </template>
 <script>
@@ -29,7 +29,8 @@ export default {
         type: {
             type: String,
             default: 'text'
-        }
+        },
+        error: {}
     },
     data() {
         return {

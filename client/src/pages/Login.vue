@@ -11,8 +11,8 @@
             </div>
         </div>
         <div class="form h-full w-1/2 flex flex-col center z-10 absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
-            <Form class="w-full">
-                <template #fields>
+            <Form class="w-full" :error="error">
+                <template #fields="{formError}">
                     <div class="w-full flex flex-col gap-6 center">
                         <span class="text-3xl font-bold tracking-wide">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
                         <TextField
@@ -23,6 +23,7 @@
                             help-text="Entrez votre email"
                             type="email"
                             class="w-1/2 flex flex-col gap-2"
+                            :error="error"
                         ></TextField>
 
                         <TextField
@@ -31,25 +32,28 @@
                             v-model="credentials.username"
                             help-text="Entrez votre pseudo"
                             class="w-1/2 flex flex-col gap-2"
+                            :error="error"
                         ></TextField>
 
                         <TextField
-                            name="mdp"
+                            name="password"
                             label="Mot de passe"
                             v-model="credentials.password"
                             help-text="Entrez votre mot de passe"
                             type="password"
                             class="w-1/2 flex flex-col gap-2"
+                            :error="error"
                         ></TextField>
 
                         <TextField
                             v-if="step === 'register'"
-                            name="mdpConfirm"
+                            name="passwordConfirm"
                             label="Confirmation du mot de passe"
                             v-model="credentials.passwordConfirm"
                             help-text="Confirmez votre mot de passe"
                             type="password"
                             class="w-1/2 flex flex-col gap-2"
+                            :error="error"
                         ></TextField>
 
                         <div class="mb-2 w-1/2 flex flex-col gap-2 flex flex-col">
@@ -91,13 +95,33 @@ export default {
             if (this.step === 'login'){
                 this.login(this.credentials);
             } else if (this.step === 'register') {
-                this.register(this.credentials);
+                this.error = null;
+                this.register(this.credentials)
+                    .then((r) => console.log(r))
+                    .catch((e) => {
+                        console.log(e);
+                        this.error = {
+                            message: e.response.data.message.replaceAll("["+e.response.data.field+"]", this.errorMessage[e.response.data.field]),
+                            field: e.response.data.field
+                        };
+                    }
+                );
             }
         },
         flipMenu() {
             this.step = this.step === 'login' ? 'register' : 'login';
         }
     },
+    computed: {
+        errorMessage() {
+            return {
+                'email': 'email',
+                'username': 'pseudo',
+                'password': 'mot de passe',
+                'passwordConfirm': 'confirmation du mot de passe'
+            }
+        }
+    }
 }
 </script>
 

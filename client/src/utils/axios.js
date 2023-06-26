@@ -16,11 +16,9 @@ myAxios.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 
-myAxios.interceptors.response.use(function (response) {
-    return response;
-}, function (error) {
+myAxios.interceptors.response.use(r => r, (error) => {
     if (error.response.status === 401) {
-        emitter.$emit('unAuthorized', error)
+        emitter.$emit('unAuthorized', error);
     }
 
     return Promise.reject(error);
