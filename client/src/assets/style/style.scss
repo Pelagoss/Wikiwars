@@ -1,5 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Squada+One&family=Work+Sans&display=swap');
 
+@keyframes dash {
+    0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35px;
+    }
+    100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124px;
+    }
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 #lobby, #login {
     color: #fafafa;
     font-size: 16px;

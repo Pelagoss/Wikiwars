@@ -1,7 +1,7 @@
 <template>
     <div id="login" class="bgTable h-full flex items-center justify-center m-auto relative">
         <div class="h-full w-1/2 absolute" :class="step === 'register' ? 'right-0' : 'right-[50%]'">
-            <div class="text-5xl text-squadaOne font-black px-12 pt-16"><span
+            <div class="text-5xl font-squadaOne font-black px-12 pt-16"><span
                 class="text-white">WIKI</span><span
                 class="text-accent">WARS</span></div>
             <div class="text-white text-base px-12 pb-16">Devenez un WikiJedi/WikiSith !</div>
@@ -14,7 +14,7 @@
             <FormWrapper ref="form" class="w-full" @submit="submitForm">
                 <template #fields>
                     <div class="w-full flex flex-col gap-6 center">
-                        <span class="text-3xl font-bold tracking-wide">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
+                        <span class="text-4xl font-squadaOne font-bold tracking-widest">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
                         <TextField
                             v-if="step === 'register'"
                             rules="required|email"
@@ -57,7 +57,7 @@
                         ></TextField>
 
                         <div class="mb-2 w-1/2 flex flex-col gap-2 flex flex-col">
-                            <Button class="btnv-success !w-full justify-center" icon="ArrowRightCircle">
+                            <Button :loading="loading" class="btnv-success !w-full justify-center" icon="ArrowRightCircle">
                                 {{ step === 'login' ? 'Se connecter' : 'Créer mon compte'}}
                             </Button>
 
@@ -69,6 +69,23 @@
                 </template>
             </FormWrapper>
         </div>
+
+        <Modal v-model="showModalConfirmation">
+            <div class="flex flex-col items-center h-fit shadow-custom-elevate p-14">
+                <div class="text-5xl font-squadaOne text-center">
+                    Merci !
+                </div>
+
+                <div class="w-8 mt-6 mb-3">
+                    <IconeDynamiqueComposant class="w-5 h-5" icon="EnvelopeOpen"/>
+                </div>
+
+                <div class="text-white font-medium text-center">
+                    Validez votre compte via l’email qui vous a été<br class="sm:hidden">
+                    envoyé pour accéder à votre espace client.
+                </div>
+            </div>
+        </Modal>
     </div>
 </template>
 
@@ -79,26 +96,36 @@ import {userStore} from "../store/index.js";
 import TextField from "../components/ui/form/TextField.vue";
 import Form from "../components/ui/form/FormWrapper.vue";
 import FormWrapper from "../components/ui/form/FormWrapper.vue";
+import Modal from "../components/ui/Modal.vue";
+import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue";
 
 export default {
     name: "Login",
-    components: {FormWrapper, TextField, Form, Button},
+    components: {IconeDynamiqueComposant, Modal, FormWrapper, TextField, Form, Button},
     data() {
         return {
             credentials: {},
             error: null,
-            step: 'login'
+            step: 'login',
+            loading: false,
+            showModalConfirmation: false
         }
     },
     methods: {
         ...mapActions(userStore, {login: "login", register: "register"}),
         submitForm() {
+            this.loading = true;
             if (this.step === 'login'){
                 this.login(this.credentials);
             } else if (this.step === 'register') {
                 this.error = null;
                 this.register(this.credentials)
-                    .then((r) => console.log(r))
+                    .then(({data}) => {
+                        if (data === true) {
+                            this.showModalConfirmation = true;
+                            this.step = 'login';
+                        }
+                    })
                     .catch((e) => {
                             console.log(e);
                             if (e.response.status === 403) {
@@ -115,6 +142,7 @@ export default {
                         }
                     );
             }
+            this.loading = false;
         },
         flipMenu() {
             this.step = this.step === 'login' ? 'register' : 'login';
@@ -134,8 +162,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/style/style';
-
 .floating-img {
     position: absolute;
     top: 35%;

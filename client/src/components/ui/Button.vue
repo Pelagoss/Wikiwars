@@ -1,21 +1,33 @@
 <template>
-    <button class="flex items-center md:px-4 md:py-3 px-2 py-1 btnv md:text-base !text-xs w-fit">
-        <slot></slot>
-        <IconeDynamiqueComposant v-if="icon !== null" class="ml-3 sm:w-5 sm:h-5 w-3 h-3" :icon="icon"/>
+    <button @click="loading ? $event.preventDefault() : $emit('click')" class="flex items-center md:px-4 md:py-3 px-2 py-1 btnv md:text-base !text-xs w-fit">
+        <div v-if="loading === true">
+            <LoaderButton class="text-white" width="1.25rem"></LoaderButton>
+        </div>
+
+        <template v-else>
+            <slot></slot>
+            <IconeDynamiqueComposant v-if="icon !== null && loading === false" class="ml-3 sm:w-5 sm:h-5 w-3 h-3" :icon="icon"/>
+        </template>
     </button>
 </template>
 
 <script>
 import IconeDynamiqueComposant from "../IconeDynamiqueComposant.vue";
+import LoaderButton from "./LoaderButton.vue";
 
 export default {
     name: "Button",
-    components: {IconeDynamiqueComposant},
+    components: {LoaderButton, IconeDynamiqueComposant},
+    emits: ['click'],
     props: {
         icon: {
             type: String,
             required: false,
             default: null
+        },
+        loading: {
+            type: Boolean,
+            default: false
         }
     }
 }

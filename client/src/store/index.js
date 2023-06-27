@@ -28,7 +28,7 @@ export const userStore = defineStore('user', {
             });
         },
         register(data) {
-            return $axios.post('/register', data).then(({data}) => {});
+            return $axios.post('/register', data);
         },
         logout() {
             this.id = null;
