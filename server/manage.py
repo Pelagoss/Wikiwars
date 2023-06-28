@@ -1,11 +1,12 @@
 from flask import request, session
 from flask.cli import FlaskGroup, with_appcontext
+from flask_mailalchemy.core import MailAlchemy
 from flask_migrate import Migrate
 from flask_socketio import join_room, leave_room
 from sqlalchemy.sql.functions import current_user
 
 from api.application import create_app, create_socket
-from api.models import db, User, Game, u_g
+from api.models import db, User, Game, u_g, mailer
 
 app = create_app()
 
@@ -14,6 +15,7 @@ migrate.init_app(app, db)
 
 socketio = create_socket(app)
 
+mailer.init_app(app)
 cli = FlaskGroup(app)
 
 @socketio.on('join')

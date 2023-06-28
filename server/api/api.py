@@ -6,7 +6,7 @@ from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
 from .models import db, Game, User
-from .tools import randomize_page, get_wiki_page, getSummaryWikiPage
+from .tools import randomize_page, get_wiki_page, getSummaryWikiPage, send_mail
 from datetime import datetime, timedelta
 
 import jwt
@@ -79,18 +79,22 @@ def register():
         return jsonify({ 'message': error, 'field': field, 'authenticated': False }), 401
 
     #Create account, send email and generate a validation token
-#     try:
-#         user = User(email = data.get('email'), username = data.get('username'), password = data.get('password'))
-#         user.validation_token = uuid.uuid4()
-#
-#         db.session.add(user)
-#         db.session.flush()
-#         db.session.commit()
-#     except IntegrityError as e:
-#         p = parse('UNIQUE constraint failed: users.{field}', str(e.orig))
-#         field = p['field']
-#
-#         return jsonify({ 'message': f'[{field}] : {data.get(field)} existe déjà', 'field': field, 'authenticated': False }), 403
+    try:
+        user = User(email = data.get('email'), username = data.get('username'), password = data.get('password'))
+        user.validation_token = uuid.uuid4()
+
+        # db.session.add(user)
+        # db.session.flush()
+        # db.session.commit()
+    except IntegrityError as e:
+        p = parse('UNIQUE constraint failed: users.{field}', str(e.orig))
+        field = p['field']
+
+        return jsonify({ 'message': f'[{field}] : {data.get(field)} existe déjà', 'field': field, 'authenticated': False }), 403
+
+    msg = send_mail('register', [user.email], data={'token': str(user.validation_token)})
+
+    ##Todo save in db Mail sended
 
     return jsonify(True)
 

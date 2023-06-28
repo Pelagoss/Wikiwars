@@ -1,12 +1,12 @@
 import re
 from abc import ABC
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+
+from flask_mail import Mail, Message
+from flask_sqlalchemy.extension import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import MetaData, Uuid, String, UniqueConstraint
-
-from .tools import to_dict
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -19,7 +19,7 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(metadata=metadata)
-
+mailer = Mail()
 
 from sqlalchemy.types import TypeDecorator, VARCHAR
 import json
@@ -44,6 +44,73 @@ u_g = db.Table('user_game',
                db.Column('game_id', db.Integer, db.ForeignKey('games.id'), primary_key=True),
                db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True)
                )
+
+class Email(db.Model):
+    __tablename__ = 'emails'
+
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    sender_address = db.Column(db.String(255), nullable=False, index=True)
+    sender_name = db.Column(db.String(80))
+    subject = db.Column(db.String(80), nullable=False, index=True)
+    recipient = db.Column(db.String(255), nullable=False, index=True)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    type = db.Column(String)
+    message_txt = db.Column(db.Text)
+    message_html = db.Column(db.Text)
+
+    sent_at = db.Column(
+        db.DateTime,
+        index=True
+    )
+    error = db.Column(db.Text)
+
+    @property
+    def message(self) -> Message:
+        sender = self.sender_address \
+            if self.sender_name is None \
+            else (self.sender_name, self.sender_address)
+        msg = Message(
+            self.subject,
+            [self.recipient],
+            self.message_txt,
+            self.message_html,
+            sender
+        )
+
+        return msg
+
+    @classmethod
+    def from_message(cls, msg: Message) -> tuple:
+        messages = []
+        if isinstance(msg.recipients, str):
+            recipients = [msg.recipients]
+        else:
+            recipients = msg.recipients
+
+        if msg.sender.endswith(">"):
+            separator = msg.sender.rfind("<")
+            sender_address = msg.sender[separator + 1:-1]
+            sender_name = msg.sender[:separator].strip()
+        else:
+            sender_address = msg.sender
+            sender_name = None
+
+        subject = msg.subject
+        message_html = msg.html
+        message_txt = msg.body
+
+        for recipient in recipients:
+            email = cls()
+            email.recipient = recipient
+            email.sender_address = sender_address
+            email.sender_name = sender_name
+            email.subject = subject
+            email.message_html = message_html
+            email.message_txt = message_txt
+
+            messages.append(email)
+
+        return tuple(messages)
 
 
 class User(db.Model):

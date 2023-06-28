@@ -1,7 +1,12 @@
 import requests
 import urllib.parse
 from bs4 import BeautifulSoup
+from flask_mail import Message
+from werkzeug.local import LocalProxy
 
+from flask import current_app, render_template
+
+mailer = LocalProxy(lambda: current_app.extensions.get("mail"))
 
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
@@ -69,3 +74,25 @@ def to_dict(o):
     if o is None:
         return o
     return o.to_dict()
+
+
+def send_mail(type_mail, recipients, data):
+    if type_mail == 'register':
+        subject = 'Confirmez votre inscription !'
+    else:
+        subject = 'Consultez les WikiNews !'
+
+    msg = Message(
+        subject=subject,
+        sender=(current_app.config['MAIL_SENDER'], current_app.config['MAIL_ADDRESS']),
+        recipients=recipients
+    )
+
+    msg.html = render_template(
+            "mail/{}.html".format(type_mail),
+            **data
+        )
+
+    mailer.send(msg)
+
+    return None
