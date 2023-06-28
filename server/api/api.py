@@ -92,7 +92,7 @@ def register():
 
         return jsonify({ 'message': f'[{field}] : {data.get(field)} existe déjà', 'field': field, 'authenticated': False }), 403
 
-    msg = send_mail('register', [user.email], data={'token': str(user.validation_token)})
+    msg = send_mail('register', [user.email], data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': 'https://google.com'})
 
     ##Todo save in db Mail sended
 

@@ -1,1 +1,45 @@
-<div style="color: green">Bienvenue {{data}}</div>
+{% extends "mail/components/browserLink.html" %}
+
+{% block content %}
+<container>
+    <spacer size="20"></spacer>
+    {% include 'mail/components/bonjourPseudo.html'%}
+
+    <spacer size="5"></spacer>
+
+    <row>
+        <columns>
+            <p style="font-weight:400;font-size:15px;line-height:24px;">
+                Pour valider la création de votre compte client, merci de cliquer sur ce bouton :
+            </p>
+        </columns>
+    </row>
+
+    <!--[if mso]>
+    <center>
+        <br>
+
+        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
+                     xmlns:w="urn:schemas-microsoft-com:office:word" style="v-text-anchor:middle;width:276px;height:44px;font-family: 'Work Sans'"
+                     arcsize="3%" strokecolor="#F56E58" fillcolor="#008b2a" href="{{ linkValider }}"
+        >
+            <p style="color:#FFFFFF;font-weight:700;font-size:15px;text-align:center;padding-top:20px!important;padding-left:20px!important;line-height:24px;margin-top:2px">
+                Valider la création de mon compte
+            </p>
+        </v:roundrect>
+    </center>
+    <![endif]-->
+
+    <!--[if !mso]><!-->
+    <center>
+        <div style="background: #008b2a;border-radius: 4px; width: 30%">
+            <a href="{{ linkValider }}" style="color:#FFFFFF;font-weight:700;font-size:15px;line-height:24px;text-align:center;display:flex;justify-content:center;padding:12px 15px;">
+                Valider la création de mon compte
+            </a>
+        </div>
+    </center>
+    <!--<![endif]-->
+
+    <spacer size="70"></spacer>
+</container>
+{% endblock %}

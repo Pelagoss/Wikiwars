@@ -1,0 +1,27 @@
+<style type="text/css">
+    {% include 'style.css' %}
+</style>
+<table align="center" class="container" style="font-family: 'Work Sans', sans-serif; border-spacing: 0; border-collapse: collapse; padding: 0; vertical-align: top; background: #fefefe; width: 600px; margin: 0 auto; Margin: 0 auto; text-align: inherit;"><tbody style="font-family: Arial, sans-serif;"><tr style="font-family: Arial, sans-serif; padding: 0; vertical-align: top; text-align: left;"><td style="word-wrap: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; vertical-align: top; color: #0a0a0a; font-family: Helvetica, Arial, sans-serif; font-weight: normal; padding: 0; margin: 0; Margin: 0; text-align: left; font-size: 16px; line-height: 130%;">
+    <container>
+        <row>
+            <columns>
+                <center>
+                    <a href="{{ browserLink }}" style="font-weight: 400; font-size: 11px; line-height: 11px; text-decoration: underline; color: #888b8f">
+                        Voir cet email dans votre navigateur
+                    </a>
+
+                    <spacer size="10"></spacer>
+                </center>
+            </columns>
+        </row>
+
+        <meta charset="UTF-8" />
+        <container>
+            {% include "mail/components/header.html" %}
+
+            <container>
+                {% block content %}{% endblock %}
+            </container>
+        </container>
+    </container>
+</td></tr></tbody></table>

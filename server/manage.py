@@ -1,6 +1,5 @@
 from flask import request, session
 from flask.cli import FlaskGroup, with_appcontext
-from flask_mailalchemy.core import MailAlchemy
 from flask_migrate import Migrate
 from flask_socketio import join_room, leave_room
 from sqlalchemy.sql.functions import current_user
