@@ -92,7 +92,7 @@ def send_mail(type_mail, recipients, data):
             "mail/{}.html".format(type_mail),
             **data
         )
-
+    print(msg.html)
     mailer.send(msg)
 
     return None

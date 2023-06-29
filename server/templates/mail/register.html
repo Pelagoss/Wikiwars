@@ -1,45 +1,29 @@
 {% extends "mail/components/browserLink.html" %}
 
 {% block content %}
-<container>
-    <spacer size="20"></spacer>
-    {% include 'mail/components/bonjourPseudo.html'%}
+<!-- Meet Bobby Red -->
+<div class="fluid-img" style="font-size:0pt; line-height:0pt; text-align:left">
+    <div style="color:#ffffff; font-family:Arial,sans-serif; font-size:40px; line-height:40px; text-align:center; font-weight:bold">
+        Rejoignez la force.
+    </div>
+</div>
+<!-- END Meet Bobby Red -->
 
-    <spacer size="5"></spacer>
+<!-- Intro Text -->
+<div class="fluid-img" style="font-size:0pt; line-height:0pt; text-align:left"><div class="img-center" style="font-size:0pt; line-height:0pt; text-align:center">
+    <div style="color:#ffffff; font-family:Arial,sans-serif; font-size:13px; line-height:16px; text-align:center">
+        Bonjour Dark {{ pseudo }}, validez votre compte et commencez à défier vos amis !
+    </div>
+</div></div>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="25" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%">&nbsp;</td></tr></table>
 
-    <row>
-        <columns>
-            <p style="font-weight:600;font-size:15px;line-height:24px;">
-                Pour valider la création de votre compte client, merci de cliquer sur ce bouton :
-            </p>
-        </columns>
-    </row>
+<!-- END Intro Text -->
 
-    <!--[if mso]>
-    <center>
-        <br>
+<!-- Button More About -->
+<div class="img-center" style="font-size:0pt; line-height:0pt; text-align:center"><a href="{{ linkValider }}" target="_blank"><img src="file:///C:/Users/cherrera/Wikiwars/server/static/valider_inscription.png" border="0" width="268" height="54" alt="Valider mon inscription" /></a></div>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="30" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%">&nbsp;</td></tr></table>
 
-        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
-                     xmlns:w="urn:schemas-microsoft-com:office:word" style="v-text-anchor:middle;width:276px;height:44px;font-family: 'Work Sans'"
-                     arcsize="3%" strokecolor="#F56E58" fillcolor="#008b2a" href="{{ linkValider }}"
-        >
-            <p style="color:#FFFFFF;font-weight:700;font-size:15px;text-align:center;padding-top:20px!important;padding-left:20px!important;line-height:24px;margin-top:2px">
-                Valider la création de mon compte
-            </p>
-        </v:roundrect>
-    </center>
-    <![endif]-->
-
-    <!--[if !mso]><!-->
-    <center>
-        <div style="background: #008b2a;border-radius: 4px; width: 50%">
-            <a href="{{ linkValider }}" style="text-decoration: none;color:#FFFFFF;font-weight:700;font-size:15px;line-height:24px;text-align:center;display:flex;justify-content:center;padding:12px 15px;">
-                Valider la création de mon compte
-            </a>
-        </div>
-    </center>
-    <!--<![endif]-->
-
-    <spacer size="70"></spacer>
-</container>
+<div class="hide-for-mobile"><table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="10" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%">&nbsp;</td></tr></table>
+</div>
+<!--END Button More About -->
 {% endblock %}

@@ -1,27 +1,57 @@
-<style type="text/css">
-    {% include 'style.css' %}
-</style>
-<table align="center" class="container" style="font-family: 'Work Sans', sans-serif; border-spacing: 0; border-collapse: collapse; padding: 0; vertical-align: top; background: #fefefe; width: 600px; margin: 0 auto; Margin: 0 auto; text-align: inherit;"><tbody style="font-family: Arial, sans-serif;"><tr style="font-family: Arial, sans-serif; padding: 0; vertical-align: top; text-align: left;"><td style="word-wrap: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; vertical-align: top; color: #0a0a0a; font-family: Helvetica, Arial, sans-serif; font-weight: normal; padding: 0; margin: 0; Margin: 0; text-align: left; font-size: 16px; line-height: 130%;">
-    <container>
-        <row>
-            <columns>
-                <center>
-                    <a href="{{ browserLink }}" style="font-weight: 400; font-size: 11px; line-height: 11px; text-decoration: underline; color: #888b8f">
-                        Voir cet email dans votre navigateur
-                    </a>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+    <head>
+        <!--[if gte mso 9]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="format-detection" content="date=no" />
+        <meta name="format-detection" content="address=no" />
+        <meta name="format-detection" content="telephone=no" />
+        <title>WikiWars</title>
 
-                    <spacer size="10"></spacer>
-                </center>
-            </columns>
-        </row>
 
-        <meta charset="UTF-8" />
-        <container>
-            {% include "mail/components/header.html" %}
+        <style type="text/css" media="screen">
+            {% include 'style.css' %}
+        </style>
+    </head>
+    <body class="body" style="padding:0 !important; margin:0 !important; display:block !important; min-width:100% !important; width:100% !important; background:#000000; -webkit-text-size-adjust:none">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#000000">
+            <tr>
+                <td align="center" valign="top">
+                    <table width="600" border="0" cellspacing="0" cellpadding="0" class="mobile-shell">
+                        <tr>
+                            <td class="td" style="width:600px; min-width:600px; font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal; margin:0">
+                                <row>
+                                    <columns>
+                                        <center>
+                                            <a href="{{ browserLink }}" style="font-weight: 400; font-size: 11px; line-height: 11px; text-decoration: underline; color: #888b8f">
+                                                Voir cet email dans votre navigateur
+                                            </a>
 
-            <container>
-                {% block content %}{% endblock %}
-            </container>
-        </container>
-    </container>
-</td></tr></tbody></table>
+                                            <spacer size="10"></spacer>
+                                        </center>
+                                    </columns>
+                                </row>
+
+                                {% include "mail/components/header.html" %}
+
+                                {% block content %}{% endblock %}
+
+                                {% include "mail/components/footer.html" %}
+
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
