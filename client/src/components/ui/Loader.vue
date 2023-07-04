@@ -13,6 +13,7 @@ export default {
 .lds-default {
     display: inline-block;
     position: relative;
+    @apply w-full h-full;
 }
 .lds-default div {
     position: absolute;

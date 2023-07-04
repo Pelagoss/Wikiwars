@@ -8,7 +8,7 @@ dotenv_path = os.path.join(os.getcwd(), f'.env.{env}')
 ## Load .env file
 configGlobal = dotenv_values()
 ## Load .env.{ENV}
-config = dotenv_values(dotenv_path) | configGlobal
+config = configGlobal | dotenv_values(dotenv_path)
 config = config | {
     'ENV': env,
     'DEBUG': True,

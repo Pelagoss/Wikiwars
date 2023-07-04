@@ -14,9 +14,8 @@ pinia.use(piniaPluginPersistedState)
 
 const app = createApp(App);
 
-app.config.globalProperties.$axios = { ...$axios }
-
 app.use(pinia);
 app.use(router);
+app.provide('axios', $axios);
 
 app.mount('#app');

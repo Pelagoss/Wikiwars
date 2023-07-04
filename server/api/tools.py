@@ -3,10 +3,13 @@ import urllib.parse
 from bs4 import BeautifulSoup
 from flask_mail import Message
 from werkzeug.local import LocalProxy
+import uuid
+from .models import Email
 
 from flask import current_app, render_template
 
 mailer = LocalProxy(lambda: current_app.extensions.get("mail"))
+db = LocalProxy(lambda: current_app.extensions.get("sqlalchemy"))
 
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
@@ -77,6 +80,18 @@ def to_dict(o):
 
 
 def send_mail(type_mail, recipients, data):
+    if isinstance(recipients, str):
+        recipients = [recipients]
+    else:
+        recipients = [r.email for r in [recipients]]
+
+    appUrl = current_app.config['APP_URL']
+
+    data['appUrl'] = appUrl
+
+    for key, value in data.items():
+        data[key] = value.replace('[appUrl]', appUrl)
+
     if type_mail == 'register':
         subject = 'Confirmez votre inscription !'
     else:
@@ -88,11 +103,24 @@ def send_mail(type_mail, recipients, data):
         recipients=recipients
     )
 
+    unique_token = uuid.uuid4()
+
+    data['browserLink'] = f'{appUrl}/emails/{unique_token}'
+
     msg.html = render_template(
             "mail/{}.html".format(type_mail),
             **data
         )
-    print(msg.html)
+
+    emails = Email.from_message(msg)
+    for email in emails:
+        email.unique_token = unique_token
+        email.type = type_mail
+
+        # db.session.add(email)
+        # db.session.flush()
+        # db.session.commit()
+
     mailer.send(msg)
 
     return None

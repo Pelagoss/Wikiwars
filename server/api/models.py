@@ -102,6 +102,9 @@ class Email(db.Model):
         for recipient in recipients:
             email = cls()
             email.recipient = recipient
+            if isinstance(recipient, User):
+                email.recipient_id = recipient.id
+            email.recipient = recipient
             email.sender_address = sender_address
             email.sender_name = sender_name
             email.subject = subject
