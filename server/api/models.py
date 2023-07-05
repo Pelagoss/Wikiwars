@@ -55,6 +55,7 @@ class Email(db.Model):
     recipient = db.Column(db.String(255), nullable=False, index=True)
     recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     type = db.Column(String)
+    unique_token = db.Column(db.Uuid)
     message_txt = db.Column(db.Text)
     message_html = db.Column(db.Text)
 
@@ -148,8 +149,8 @@ class User(db.Model):
         user = cls.query.filter_by(username=username).first()
         if not user or not check_password_hash(user.password, password):
             return None, 'Informations de connexion invalides'
-        if user.validation_token != None:
-            return None, 'Adresse email non validée'
+        if user.validation_token is not None:
+            return user, 'Adresse email non validée'
 
         return user, None
 

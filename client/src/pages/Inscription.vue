@@ -23,8 +23,12 @@
                                 Une erreur est survenue !
                             </div>
 
-                            <div class="my-6 items-center">
+                            <div class="mt-6 items-center">
                                 Ce lien d'inscription est invalide ou expiré.
+                            </div>
+
+                            <div class="mt-2 mb-6 items-center">
+                                Pour en recevoir un nouveau, essayez de vous connecter.
                             </div>
 
                             <Button class="btnv-success !w-full justify-center" icon="ArrowRightCircle">
@@ -59,7 +63,7 @@ const loading = ref(true);
 const error = ref(false);
 const $axios = inject('axios');
 
-$axios.post('/inscription/' + useRoute().params.token).finally(() => {
+$axios.post('/register/confirm/' + useRoute().params.token).finally(() => {
     loading.value = false;
     error.value = false;
 }).catch((r) => error.value = true);

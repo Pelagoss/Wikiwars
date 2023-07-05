@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
-from .models import db, Game, User
+from .models import db, Game, User, Email
 from .tools import randomize_page, get_wiki_page, getSummaryWikiPage, send_mail
 from datetime import datetime, timedelta
 
@@ -55,6 +55,14 @@ def login():
     (user, message) = User.authenticate(**data)
 
     if message:
+        if user is not None:
+            user.validation_token = uuid.uuid4()
+
+            # db.session.add(user)
+            # db.session.flush()
+            # db.session.commit()
+            send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token),
+                                              'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
         return jsonify({ 'message': message, 'authenticated': False }), 401
 
     session['user'] = user.to_dict()
@@ -94,9 +102,28 @@ def register():
 
     msg = send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 
-    ##Todo save in db Mail sended
+    return jsonify(True)
+
+@api.route('/register/confirm/<uuid:token>', methods=('POST',))
+def confirmation(token):
+    user = User.query.filter_by(validation_token=token).first()
+
+    try:
+        user.validation_token = None
+
+        db.session.add(user)
+        db.session.flush()
+        db.session.commit()
+    except Exception as e:
+        return jsonify({ 'message': f'Compte non validé', 'authenticated': False }), 403
 
     return jsonify(True)
+
+@api.route('/email/download/<uuid:unique_token>', methods=('POST',))
+def download_email(unique_token):
+    email = Email.query.filter_by(unique_token=unique_token).first()
+
+    return jsonify(email.message_html)
 
 @api.route('/game/create', methods=('POST',))
 @token_required

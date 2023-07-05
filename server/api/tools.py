@@ -86,8 +86,10 @@ def send_mail(type_mail, recipients, data):
         recipients = [r.email for r in [recipients]]
 
     appUrl = current_app.config['APP_URL']
+    appUrlBack = current_app.config['APP_URL_BACK']
 
     data['appUrl'] = appUrl
+    data['appUrlBack'] = appUrlBack
 
     for key, value in data.items():
         data[key] = value.replace('[appUrl]', appUrl)
@@ -117,9 +119,9 @@ def send_mail(type_mail, recipients, data):
         email.unique_token = unique_token
         email.type = type_mail
 
-        # db.session.add(email)
-        # db.session.flush()
-        # db.session.commit()
+        db.session.add(email)
+        db.session.flush()
+        db.session.commit()
 
     mailer.send(msg)
 
