@@ -55,15 +55,17 @@ def login():
     (user, message) = User.authenticate(**data)
 
     if message:
+        code = 401
         if user is not None:
+            code = 403
             user.validation_token = uuid.uuid4()
 
-            # db.session.add(user)
-            # db.session.flush()
-            # db.session.commit()
+            db.session.add(user)
+            db.session.flush()
+            db.session.commit()
             send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token),
                                               'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
-        return jsonify({ 'message': message, 'authenticated': False }), 401
+        return jsonify({ 'message': message, 'authenticated': False }), code
 
     session['user'] = user.to_dict()
 
@@ -91,9 +93,9 @@ def register():
         user = User(email = data.get('email'), username = data.get('username'), password = data.get('password'))
         user.validation_token = uuid.uuid4()
 
-        # db.session.add(user)
-        # db.session.flush()
-        # db.session.commit()
+        db.session.add(user)
+        db.session.flush()
+        db.session.commit()
     except IntegrityError as e:
         p = parse('UNIQUE constraint failed: users.{field}', str(e.orig))
         field = p['field']
@@ -168,7 +170,7 @@ def join_game(current_user):
         db.session.flush()
         db.session.commit()
 
-    # socketio.emit("PLAYERS_CHANGED", len(game.users), broadcast=True, to=game.id)
+    # socketio().emit("PLAYERS_CHANGED", len(game.users), broadcast=True, to=game.id)
 
     response = game.to_dict('game')
     return jsonify(response)
@@ -180,7 +182,6 @@ def get_page(current_user, title):
     try:
         game = Game.query.filter(Game.users.contains(current_user), Game.winner == None).first()
 
-        # g.clics["Pelagoss"]["page"] = "France"
         game.clics[current_user.username] = {"clics": game.clics[current_user.username]["clics"] + 1, "page": title}
     except Exception as e:
         print(f'{e} ici')

@@ -118,10 +118,11 @@ export default {
             if (this.step === 'login'){
                 this.login(this.credentials).catch((e) => {
                         console.log(e);
-                        if (e.response.status === 401) {
+                        if (e.response.status === 401 || e.response.status === 403) {
                             this.error = e.response.data.message.replaceAll('[username]', 'Le pseudo')
                                 .replaceAll('[email]', 'L\'adresse email')
                         }
+                        //todo en cas de 403 => popup avec bouton pour renvoyer un email
                     }
                 );
             } else if (this.step === 'register') {

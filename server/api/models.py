@@ -150,7 +150,7 @@ class User(db.Model):
         if not user or not check_password_hash(user.password, password):
             return None, 'Informations de connexion invalides'
         if user.validation_token is not None:
-            return user, 'Adresse email non validée'
+            return user, 'Adresse email non validée, vérifiez vos emails'
 
         return user, None
 
