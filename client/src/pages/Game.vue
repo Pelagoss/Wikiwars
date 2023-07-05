@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <div class="scale-[2] z-10">
+            <div class="w-64 h-64 z-10">
                 <Loader></Loader>
             </div>
 
@@ -48,7 +48,7 @@
             </div>
 
             <div v-else class="flex flex-col items-center justify-center h-full gap-6">
-                <div class="scale-[2]">
+                <div class="w-64 h-64">
                     <Loader></Loader>
                 </div>
                 Chargement...

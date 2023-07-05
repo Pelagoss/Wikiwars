@@ -50,7 +50,7 @@ h3 {
     text-transform:uppercase;
 }
 
-.mediawiki {
+#TabGames {
     table {
         border-radius:3px;
         border-collapse: collapse;
@@ -205,16 +205,4 @@ p a:hover {
 .nav-nav:hover {
     opacity: 1;
     cursor: pointer;
-}
-
-.left{
-    position: fixed;
-    top: 8%;
-    left:8%;
-}
-
-.right{
-    position: fixed;
-    top: 20%;
-    left: 60%;
 }

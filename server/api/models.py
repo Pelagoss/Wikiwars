@@ -244,7 +244,7 @@ class Game(db.Model):
                  clics=self.clics)
 
         if self.started_at is not None:
-            d['started_at'] = datetime.timestamp(self.started_at)
+            d['started_at'] = datetime.isoformat(self.started_at)
 
         if type == 'game':
             d['users'] = [u.to_dict(type) for u in self.users]

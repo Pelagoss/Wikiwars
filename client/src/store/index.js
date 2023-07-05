@@ -23,8 +23,6 @@ export const userStore = defineStore('user', {
                 this.wins = data.wins;
                 this.jwt = data.jwt;
                 localStorage.setItem('token', this.jwt);
-            }).catch(error => {
-                emitter.$emit('failedAuthentication', error)
             });
         },
         register(data) {

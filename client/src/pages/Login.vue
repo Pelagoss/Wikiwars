@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="form h-full w-1/2 flex flex-col center z-10 absolute" :class="step === 'register' ? 'left-0' : 'left-[50%]'">
-            <FormWrapper ref="form" class="w-full" @submit="submitForm">
+            <FormWrapper :error="error" ref="form" class="w-full" @submit="submitForm">
                 <template #fields>
                     <div class="w-full flex flex-col gap-6 center">
                         <span class="text-4xl font-squadaOne font-bold tracking-widest">{{ step === 'login' ? 'Connexion' : 'Inscription'}}</span>
@@ -36,7 +36,7 @@
                         ></TextField>
 
                         <TextField
-                            rules="required|oneUpper|oneLower|oneDigit|min:7"
+                            rules="required"
                             name="password"
                             label="Mot de passe"
                             v-model="credentials.password"
@@ -116,7 +116,14 @@ export default {
         submitForm() {
             this.loading = true;
             if (this.step === 'login'){
-                this.login(this.credentials);
+                this.login(this.credentials).catch((e) => {
+                        console.log(e);
+                        if (e.response.status === 401) {
+                            this.error = e.response.data.message.replaceAll('[username]', 'Le pseudo')
+                                .replaceAll('[email]', 'L\'adresse email')
+                        }
+                    }
+                );
             } else if (this.step === 'register') {
                 this.error = null;
                 this.register(this.credentials)
@@ -145,6 +152,7 @@ export default {
             this.loading = false;
         },
         flipMenu() {
+            this.error = '';
             this.step = this.step === 'login' ? 'register' : 'login';
         }
     },

@@ -104,7 +104,7 @@ export default {
     methods: {
         formatDateToText(str) {
             moment.locale('fr');
-            return moment.duration(moment().diff(moment(str)));
+            return moment.duration(moment().diff(moment(str).utc(true)));
         },
         zeroPad(nr, base) {
             let len = (String(base).length - String(nr).length) + 1;
