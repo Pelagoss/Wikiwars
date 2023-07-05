@@ -12,7 +12,6 @@ config = configGlobal | dotenv_values(dotenv_path)
 config = config | {
     'ENV': env,
     'DEBUG': True,
-    'SQLALCHEMY_DATABASE_URI': 'sqlite:///wikiwars.db',
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
     # used for encryption and session management
     'SECRET_KEY': bytes(config.get('SECRET_KEY'), "latin-1")
