@@ -36,7 +36,7 @@
                         ></TextField>
 
                         <TextField
-                            rules="required"
+                            rules="required|oneUpper|oneLower|oneDigit|min:7"
                             name="password"
                             label="Mot de passe"
                             v-model="credentials.password"
