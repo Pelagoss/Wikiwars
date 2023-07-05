@@ -229,7 +229,7 @@ class Game(db.Model):
     start = db.Column(db.String(500), nullable=False)
     target = db.Column(db.String(500), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    started_at = db.Column(db.DateTime, default=datetime.utcnow)
+    started_at = db.Column(db.DateTime)
     winner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     host_id = db.Column(db.Integer, nullable=False)
     clics = db.Column(MutableDict.as_mutable(JSONEncodedDict))

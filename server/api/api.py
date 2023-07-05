@@ -184,9 +184,8 @@ def get_page(current_user, title):
 
         game.clics[current_user.username] = {"clics": game.clics[current_user.username]["clics"] + 1, "page": title}
     except Exception as e:
-        print(f'{e} ici')
         return jsonify({"message": str(e)}), 500
-    print(request.args)
+
     if len(request.args):
         title = f'{title}?'
         if 'pagefrom' in request.args.keys():
@@ -206,7 +205,7 @@ def get_page(current_user, title):
 
     db.session.commit()
 
-    socketio().emit(event, game.to_dict('game'), broadcast=True, to = room)
+    socketio().emit(event, game.to_dict('game'), to = room)
     return page
 
 
@@ -221,10 +220,9 @@ def launch(current_user):
     try:
         game = Game.query.filter(Game.users.contains(current_user), Game.winner == None).first()
 
-        print(current_user)
-        print(game.host_id)
         if game.host_id == current_user.id:
             game.is_started = True
+            game.started_at = datetime.utcnow()
 
         db.session.commit()
     except Exception as e:
@@ -233,7 +231,7 @@ def launch(current_user):
 
     if game.is_started:
         room = f'{game.start}_{game.target}'
-        socketio().emit("START_GAME", game.to_dict('game'), broadcast=True, to=room)
+        socketio().emit("START_GAME", game.to_dict('game'), to=room)
         return jsonify({'started': True})
 
     return jsonify({'started': False})
