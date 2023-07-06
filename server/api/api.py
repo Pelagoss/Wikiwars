@@ -1,6 +1,8 @@
 from functools import wraps
 
 from parse import *
+
+import urllib.parse
 from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
@@ -199,7 +201,7 @@ def get_page(current_user, title):
 
     event = "PAGE_CHANGED"
 
-    if game.target == title.replace(' ', '_'):
+    if game.target == urllib.parse.unquote(title).replace(' ', '_'):
         event = "GAME_FINISHED"
         game.winner_id = current_user.id
 
