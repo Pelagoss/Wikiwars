@@ -16,4 +16,4 @@ def create_app(app_name='WIKI_API'):
     return app
 
 def create_socket(app):
-    return SocketIO(app, logger=True, engineio_logger=True, cors_allowed_origins="*", Threaded=True)
+    return SocketIO(app, logger=True, engineio_logger=True, async_mode='gevent', cors_allowed_origins="*", Threaded=True)
