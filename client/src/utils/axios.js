@@ -3,7 +3,7 @@ import {emitter} from "./index.js";
 
 const myAxios = axios.create();
 
-myAxios.defaults.baseURL = "http://127.0.0.1:5000/api";
+myAxios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 myAxios.interceptors.request.use(function (config) {
     if (config.url !== '/login') {

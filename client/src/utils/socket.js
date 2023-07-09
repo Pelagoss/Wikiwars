@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const URL = "localhost:5000";
+const URL = import.meta.env.VITE_SOCKET_URL;
 const socket = io(URL, { autoConnect: false, transports: ['polling', 'flashsocket'] });
 // const socket = io('localhost:5000');
 
