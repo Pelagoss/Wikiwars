@@ -10,12 +10,16 @@ services:
       - ./.env
     depends_on:
       - wiki-db
+    labels:
+      - "traefik.http.routers.wiki-server.rule=Host(`api.wiki-wars.fr`)"
 
   wiki-client:
     build: ./client
     command: nginx -g "daemon off;"
     ports:
       - 80:80
+    labels:
+      - "traefik.http.routers.wiki-client.rule=Host(`wiki-wars.fr`)"
 
   wiki-db:
     image: postgres:13
@@ -26,6 +30,8 @@ services:
     env_file:
       - ./.env.db
       - ./.env.${ENV}.db
+    labels:
+      - "traefik.http.routers.wiki-db.rule=Host(`wiki-wars.fr`)"
 
 volumes:
   postgres_data:
