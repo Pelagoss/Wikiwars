@@ -7,15 +7,15 @@ services:
     volumes:
       - ./server/app/:/usr/src/app/
     ports:
-      - 5001:5000
+      - 5000:5000
     env_file:
       - ./.env
 
   wiki-client:
     build: ./client
-    command: nginx -g daemon off;
+    command: nginx -g "daemon off;"
     ports:
-      - 80:80
+      - 8080:80
 
   wiki-db:
     image: postgres:13
