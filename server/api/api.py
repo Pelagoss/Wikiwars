@@ -51,6 +51,11 @@ def token_required(f):
     return _verify
 
 
+
+@api.route('/')
+def index():
+    return jsonify(current_app.config['SQL_DSN'])
+
 @api.route('/login', methods=('POST',))
 def login():
     data = request.get_json()

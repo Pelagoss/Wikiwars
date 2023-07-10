@@ -18,6 +18,8 @@ RUN apt-get update && \
 
 COPY . /app/
 
+RUN chmod +x ./entrypoint.sh
+
 # install python dependencies
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt

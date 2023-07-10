@@ -3,7 +3,7 @@ version: '3.8'
 services:
   wiki-server:
     build: ./server
-    command: gunicorn -b :5000 --workers 4 --threads 100 manage:app
+    command: gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -b :5000 --workers 4 --threads 100 manage:app
     ports:
       - 5000:5000
     env_file:
@@ -15,12 +15,14 @@ services:
     build: ./client
     command: nginx -g "daemon off;"
     ports:
-      - 8080:80
+      - 80:80
 
   wiki-db:
     image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
     env_file:
       - ./.env.db
 

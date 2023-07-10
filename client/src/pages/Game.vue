@@ -5,7 +5,7 @@
 
         <div ref="door_un" class="door col-span-12 flex flex-col items-center justify-end h-full gap-6 text-white z-30"
              :class="{'opened': game?.is_started === true}">
-            <div class="font-medium text-4xl mb-12 z-10">
+            <div class="font-medium text-4xl mb-8 z-10">
                 <div>
                     Début : {{ game?.start?.replaceAll('_', ' ') }}
                 </div>
@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <div class="w-64 h-64 z-10">
+            <div class="w-56 h-56 z-10">
                 <Loader></Loader>
             </div>
 
@@ -48,7 +48,7 @@
             </div>
 
             <div v-else class="flex flex-col items-center justify-center h-full gap-6">
-                <div class="w-64 h-64">
+                <div class="w-56 h-56">
                     <Loader></Loader>
                 </div>
                 Chargement...
