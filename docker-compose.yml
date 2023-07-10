@@ -15,7 +15,7 @@ services:
     build: ./client
     command: nginx -g daemon off;
     ports:
-      - 80:80
+      - 80:5173
 
   wiki-db:
     image: postgres:13
