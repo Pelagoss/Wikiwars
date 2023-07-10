@@ -4,12 +4,12 @@ services:
   wiki-server:
     build: ./server
     command: gunicorn -b :5000 --workers 4 --threads 100 manage:app
-    volumes:
-      - ./server/app/:/usr/src/app/
     ports:
       - 5000:5000
     env_file:
       - ./.env
+    depends_on:
+      - wiki-db
 
   wiki-client:
     build: ./client
