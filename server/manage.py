@@ -30,6 +30,12 @@ def leave(data):
     leave_room(f'{data["start"]}_{data["target"]}')
 
 
+@cli.command("create_db")
+def create_db():
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
+
 # enable python shell with application context
 @with_appcontext
 def shell_ctx():

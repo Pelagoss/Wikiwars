@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  wiki-server:
+    build: ./server
+    command: gunicorn -b :5000 --workers 4 --threads 100 manage:app
+    volumes:
+      - ./server/app/:/usr/src/app/
+    ports:
+      - 5001:5000
+    env_file:
+      - ./.env
+
+  wiki-client:
+    build: ./client
+    command: nginx -g daemon off;
+    ports:
+      - 80:80
+
+  wiki-db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.db
+
+volumes:
+  postgres_data:
