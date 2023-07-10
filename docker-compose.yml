@@ -4,20 +4,17 @@ services:
   wiki-server:
     build: ./server
     command: gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -b :5000 --workers 4 --threads 100 manage:app
-    ports:
-      - 5000:5000
     env_file:
       - ./.env
     depends_on:
       - wiki-db
     labels:
       - "traefik.http.routers.wiki-server.rule=Host(`api.wiki-wars.fr`)"
+      - "traefik.http.services.wiki-server.loadbalancer.server.port=5000"
 
   wiki-client:
     build: ./client
     command: nginx -g "daemon off;"
-    ports:
-      - 80:80
     labels:
       - "traefik.http.routers.wiki-client.rule=Host(`wiki-wars.fr`)"
 
