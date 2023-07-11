@@ -36,3 +36,9 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+    web:
+      external: true
+    internal:    
+      external: false
