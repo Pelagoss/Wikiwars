@@ -36,7 +36,7 @@ services:
       - ./.env.db
       - ./.env.${ENV}.db
     labels:
-      - traefik.http.routers.wiki-db.rule=Host(`wiki-wars.fr`)
+      - traefik.tcp.routers.wiki-db.rule=Host(`wiki-wars.fr`)
       - traefik.port=5432
     networks:
       - web
