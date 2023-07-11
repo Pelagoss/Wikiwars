@@ -14,6 +14,7 @@ services:
       - traefik.http.routers.wiki-server.rule=Host(`api.wiki-wars.fr`)
       - traefik.http.routers.wiki-server.tls=true
       - traefik.http.routers.wiki-server.tls.certresolver=lets-encrypt
+      - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto = https
     networks:
       - web
 
