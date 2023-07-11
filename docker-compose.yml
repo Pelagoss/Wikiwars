@@ -13,7 +13,9 @@ services:
       - traefik.http.routers.monsiteweb.tls=true
       - traefik.http.routers.monsiteweb.tls.certresolver=lets-encrypt
       - traefik.port=80
-
+    networks:
+      - web
+      
   wiki-client:
     build: ./client
     command: nginx -g "daemon off;"
@@ -22,6 +24,8 @@ services:
       - traefik.http.routers.monsiteweb.tls=true
       - traefik.http.routers.monsiteweb.tls.certresolver=lets-encrypt
       - traefik.port=80
+    networks:
+      - web
 
   wiki-db:
     image: postgres:13
@@ -33,6 +37,8 @@ services:
     labels:
       - traefik.http.routers.monsiteweb.rule=Host(`wiki-wars.fr`)
       - traefik.port=80
+    networks:
+      - web
 
 volumes:
   postgres_data:
