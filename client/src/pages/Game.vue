@@ -175,6 +175,14 @@ export default {
 
             socket.on('START_GAME', (data) => {
                 this.game = data;
+
+                this.$nextTick(() => {
+                    this.$refs.wiki.querySelectorAll('a').forEach((a) => {
+                        a.addEventListener("click", this.clickLink.bind(this), false);
+                        a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
+                        a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
+                    });
+                });
             });
 
             socket.on('connect_error', (e) => {
