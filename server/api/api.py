@@ -1,5 +1,6 @@
 from functools import wraps
 
+import flask
 from parse import *
 
 import urllib.parse
@@ -54,7 +55,7 @@ def token_required(f):
 
 @api.route('/')
 def index():
-    return jsonify(current_app.config['SQL_DSN'])
+    return flask.render_template('index.html')
 
 @api.route('/login', methods=('POST',))
 def login():
