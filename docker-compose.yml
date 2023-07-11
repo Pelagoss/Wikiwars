@@ -39,7 +39,7 @@ services:
       - ./.env.db
       - ./.env.${ENV}.db
     labels:
-      - traefik.tcp.routers.wiki-db.rule=Host(`wiki-wars.fr`)
+      - traefik.tcp.routers.wiki-db.rule=HostSNI(`wiki-wars.fr`)
       - traefik.tcp.routers.wiki-db.service=wiki-db
       - traefik.tcp.services.wiki-db.loadbalancer.server.port=5432
     networks:
