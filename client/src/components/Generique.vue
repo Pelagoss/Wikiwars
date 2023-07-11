@@ -7,12 +7,12 @@
         <div :class="{'crawl': start}">
             <div>
                 <p>Le valeureux joueur {{ game?.winner?.username }} à réussi à ne faire qu'un avec la force !</p>
-                <p>Sa capacité à maitriser la force lui à permis de remplir sa mission...</p>
+                <p>Sa capacité à maitriser la force lui a permis de remplir sa mission...</p>
                 <p>
-                    {{ game?.winner?.username }} a traversé la galaxie à bord du Faucon Millenium pour rallier {{game?.target}} depuis
-                    {{ game?.start }} !
+                    {{ game?.winner?.username }} a traversé la galaxie à bord du Faucon Millenium pour rallier {{game?.target?.replaceAll('_', ' ')}} depuis
+                    {{ game?.start?.replaceAll('_', ' ') }} !
                 </p>
-                <p>
+                <p v-if="game?.users?.filter(u => u.username !== game?.winner?.username)?.length !== 0">
                     Il aura au passage écrasé bon nombre de Sith (web) tels que : {{game?.users?.filter(u => u.username !== game?.winner?.username).map(u => u.username).join(', ')}}.
                 </p>
             </div>
