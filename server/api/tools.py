@@ -79,11 +79,11 @@ def to_dict(o):
     return o.to_dict()
 
 
-def send_mail(type_mail, recipients, data):
-    if isinstance(recipients, str):
-        recipients = [recipients]
+def send_mail(type_mail, user, data):
+    if isinstance(user, str):
+        recipients = [user]
     else:
-        recipients = [r.email for r in [recipients]]
+        recipients = [user.email]
 
     appUrl = current_app.config['APP_URL']
     appUrlBack = current_app.config['APP_URL_BACK']
@@ -118,6 +118,7 @@ def send_mail(type_mail, recipients, data):
     for email in emails:
         email.unique_token = unique_token
         email.type = type_mail
+        email.recipient_id = user.id
 
         db.session.add(email)
         db.session.flush()
