@@ -1,6 +1,6 @@
 <template>
     <div id="login" class="bgTable h-full flex items-center justify-center m-auto relative">
-        <Modal persistent :closable="false" v-model="showModalConfirmation">
+        <Modal persistent :closable="false" :width="loading === true ? '18rem' : 'auto'" v-model="showModalConfirmation">
             <div v-if="loading === false && error === false" v-html="mailContent"></div>
             <FormWrapper v-else-if="loading === false" ref="form" class="w-full" @submit="$router.push({name: 'accueil'})">
                 <template #fields>
@@ -19,10 +19,12 @@
                     </div>
                 </template>
             </FormWrapper>
-            <div v-else class="w-64 h-64 flex flex-col items-center">
-                <Loader></Loader>
-                <div class="font-squadaOne text-2xl">
-                    Chargement ...
+            <div v-else class="w-full h-full flex flex-col justify-center items-center">
+                <div class="w-64 h-64 flex flex-col items-center">
+                    <Loader></Loader>
+                    <div class="font-squadaOne text-2xl">
+                        Chargement ...
+                    </div>
                 </div>
             </div>
         </Modal>
