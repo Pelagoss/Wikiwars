@@ -12,8 +12,8 @@
                 <table :class="{'h-full':  partieEnCours.length === 0}">
                     <thead>
                     <tr>
-                        <th class="text-left">#</th>
-                        <!--                        <th class="text-left">Host</th>-->
+                        <!-- <th class="text-left">#</th>-->
+                        <!-- <th class="text-left">Host</th>-->
                         <th class="text-left">Joueurs</th>
                         <th class="text-left">Départ</th>
                         <th class="text-left">Arrivée</th>
@@ -21,10 +21,10 @@
                     </tr>
                     </thead>
                     <tbody class="table-hover">
-                    <tr v-if="partieEnCours.length !== 0" v-for="(game, index) in games">
-                        <td>
-                            {{ index }}
-                        </td>
+                    <tr v-if="partieEnCours.length !== 0" v-for="(game, index) in partieEnCours">
+                        <!-- <td>-->
+                        <!--     {{ index }}-->
+                        <!-- </td>-->
                         <!--                        <td>-->
                         <!--                            {{ game.host }}-->
                         <!--                        </td>-->
@@ -41,10 +41,10 @@
                             <Button v-if="game.is_started === false" class="btnv-success" @click="joinGame(game.id)">
                                 Rejoindre
                             </Button>
-                            <Button v-else-if="game.is_started === true && game.winner === false" class="bg-yellow-700">
+                            <Button v-else-if="game.is_started === true && game.winner === null" class="bg-yellow-700">
                                 Partie en cours...
                             </Button>
-                            <Button v-else-if="game.is_started === true && game.winner === true" class="bg-red-700">
+                            <Button v-else-if="game.is_started === true && game.winner !== null" class="bg-red-700">
                                 Partie terminée
                             </Button>
                         </td>
@@ -174,5 +174,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/style/style.scss';
 </style>
