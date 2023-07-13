@@ -173,14 +173,14 @@ class User(db.Model):
         is_valid = True
 
         if field_value is None:
-            return False, f'La valeur du champ [{field_type}] ne peut pas être vide'
+            return False, f'La valeur du champ [field] ne peut pas être vide'
 
         if field_type == 'email':
             regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
             if not re.fullmatch(regex, field_value):
                 is_valid = False
-                errors = f'Votre [{field_type}] est invalide'
+                errors = f'Votre [field] est invalide'
 
             return is_valid, errors
 
@@ -196,17 +196,14 @@ class User(db.Model):
 
             if len(errors) > 0:
                 is_valid = False
-                errors = f'Votre [{field_type}] doit contenir au moins {", ".join(errors)}.'
+                errors = f'Votre [field] doit contenir au moins {", ".join(errors)}.'
 
             return is_valid, errors
 
         elif field_type == 'username':
-            if not len(field_value) >= 7:
-                errors.append('contenir au moins 7 caractères')
-
             if len(errors) > 0:
                 is_valid = False
-                errors = f'Votre [{field_type}] doit {", ".join(errors)}.'
+                errors = f'Votre [field] doit {", ".join(errors)}.'
 
             return is_valid, errors
 

@@ -4,7 +4,7 @@ import flask
 from parse import *
 
 import urllib.parse
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
@@ -94,21 +94,24 @@ def register():
 
     (is_valid, error, field) = User.verify_form('register', **data)
     if not is_valid:
-        return jsonify({ 'message': error, 'field': field, 'authenticated': False }), 401
+        return jsonify({ 'message': error, 'fields': [field], 'authenticated': False }), 401
+
+    fields = []
+
+    if User.query.filter(func.lower(User.username) == func.lower(data.get('username'))).first() is not None:
+        fields.append('username')
+    if User.query.filter(func.lower(User.email) == func.lower(data.get('email'))).first() is not None:
+        fields.append('email')
+    if len(fields) > 0:
+        return jsonify({ 'message': f'Votre [field] : [field_value] existe déjà', 'fields': fields, 'authenticated': False }), 403
 
     #Create account, send email and generate a validation token
-    try:
-        user = User(email = data.get('email'), username = data.get('username'), password = data.get('password'))
-        user.validation_token = uuid.uuid4()
+    user = User(email = data.get('email').lower(), username = data.get('username'), password = data.get('password'))
+    user.validation_token = uuid.uuid4()
 
-        db.session.add(user)
-        db.session.flush()
-        db.session.commit()
-    except IntegrityError as e:
-        p = parse('UNIQUE constraint failed: users.{field}', str(e.orig))
-        field = p['field']
-
-        return jsonify({ 'message': f'[{field}] : {data.get(field)} existe déjà', 'field': field, 'authenticated': False }), 403
+    db.session.add(user)
+    db.session.flush()
+    db.session.commit()
 
     msg = send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 

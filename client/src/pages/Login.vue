@@ -136,16 +136,17 @@ export default {
                     })
                     .catch((e) => {
                             console.log(e);
-                            if (e.response.status === 403) {
+                            if ([401, 403].includes(e.response.status)) {
                                 let error = {};
 
-                                error[e.response.data.field] = e.response.data.message.replaceAll('[username]', 'Le pseudo')
-                                    .replaceAll('[email]', 'L\'adresse email');
-                                this.$refs.form.$refs.form.setErrors(error);
-                                this.error = e.response.data.message.replaceAll('[username]', 'Le pseudo')
-                                    .replaceAll('[email]', 'L\'adresse email')
-                            } else {
-                                this.error = e.response.data.message.replaceAll("["+e.response.data.field+"]", this.errorMessage[e.response.data.field]);
+                                for (const field of e.response.data.fields) {
+                                    let fieldValue = this.credentials[field].toLowerCase();
+
+                                    error[field] = e.response.data.message
+                                        .replaceAll('[field]', this.errorMessage[field])
+                                        .replaceAll('[field_value]', fieldValue);
+                                    this.$refs.form.$refs.form.setErrors(error);
+                                }
                             }
                         }
                     );
