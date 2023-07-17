@@ -105,6 +105,10 @@ export default {
         ...mapState(userStore, {isAuthenticated: "isAuthenticated", username: "username"}),
     },
     mounted() {
+        this.$refs.wiki.addEventListener("click", this.clickLink.bind(this), false);
+        this.$refs.wiki.addEventListener("mouseenter", this.hoverLink.bind(this), false);
+        this.$refs.wiki.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
+
         this.fetchGames().then(() => {
             window.addEventListener("keydown",function (e) {
                 if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
@@ -176,13 +180,13 @@ export default {
             socket.on('START_GAME', (data) => {
                 this.game = data;
 
-                this.$nextTick(() => {
-                    this.$refs.wiki.querySelectorAll('a').forEach((a) => {
-                        a.addEventListener("click", this.clickLink.bind(this), false);
-                        a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
-                        a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
-                    });
-                });
+                // this.$nextTick(() => {
+                //     this.$refs.wiki.querySelectorAll('a').forEach((a) => {
+                //         a.addEventListener("click", this.clickLink.bind(this), false);
+                //         a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
+                //         a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
+                //     });
+                // });
             });
 
             socket.on('connect_error', (e) => {
@@ -204,35 +208,32 @@ export default {
             this.$refs.door_deux.classList.add('opened');
             this.$refs.frame.classList.add('opened');
 
-            // setTimeout(() => {
-            //     this.$refs.door_un.classList.remove('opened');
-            //     this.$refs.door_deux.classList.remove('opened');
-            //     this.$refs.frame.classList.remove('opened');
-            // }, 5000)
             this.$axios.post('/game/launch').finally(() => {
                 this.loading = false;
             });
         },
         clickLink(event) {
-            event.preventDefault();
+            if (event.target.tagName.toLowerCase() === 'a') {
+                event.preventDefault();
+                this.fetchPage(event.target['data-title']);
 
-            this.fetchPage(event.target['data-title']);
-
-            this.toggleTooltip(false, event);
+                this.toggleTooltip(false, event);
+            }
         },
         hoverLink(event) {
-            event.preventDefault();
-
-            this.timeoutHover = setTimeout(() => {
-                this.fetchLink(event);
-            }, 250);
+            if (event.target.tagName.toLowerCase() === 'a') {
+                event.preventDefault();
+                this.timeoutHover = setTimeout(() => {
+                    this.fetchLink(event);
+                }, 250);
+            }
         },
         unhoverLink(event) {
-            event.preventDefault();
-
-            clearTimeout(this.timeoutHover);
-
-            this.toggleTooltip(false, event);
+            if (event.target.tagName.toLowerCase() === 'a') {
+                event.preventDefault();
+                clearTimeout(this.timeoutHover);
+                this.toggleTooltip(false, event);
+            }
         },
         fetchPage(title) {
             this.loading = true;
@@ -240,16 +241,16 @@ export default {
                 this.contenu = data.replace(/<\/body>/, '').replace(/<body["'=\w0-9a-zA-Z-,_ ]*>/, '');
             }).finally(() => {
                 this.loading = false;
-
-                if (this.game?.is_started === true) {
-                    this.$nextTick(() => {
-                        this.$refs.wiki.querySelectorAll('a').forEach((a) => {
-                            a.addEventListener("click", this.clickLink.bind(this), false);
-                            a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
-                            a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
-                        });
-                    });
-                }
+                //
+                // if (this.game?.is_started === true) {
+                //     this.$nextTick(() => {
+                //         this.$refs.wiki.querySelectorAll('a').forEach((a) => {
+                //             a.addEventListener("click", this.clickLink.bind(this), false);
+                //             a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
+                //             a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
+                //         });
+                //     });
+                // }
             });
         },
         fetchLink(event) {
