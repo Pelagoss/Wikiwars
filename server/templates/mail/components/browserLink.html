@@ -1,30 +1,73 @@
-<table width="100%" border="0" cellspacing="0" cellpadding="0" class="!bg-transparent" bgcolor="#000000">
-    <tr>
-        <td align="center" valign="top">
-            <table width="600" border="0" cellspacing="0" cellpadding="0" class="mobile-shell">
-                <tr>
-                    <td class="td" style="width:600px; min-width:600px; font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal; margin:0">
-                        <row class="hidden">
-                            <columns>
-                                <center>
-                                    <a href="{{ browserLink }}" style="font-weight: 400; font-size: 11px; line-height: 11px; text-decoration: underline; color: #888b8f">
-                                        Voir cet email dans votre navigateur
-                                    </a>
+<html>
+    <head>
+        <title>WikiWars</title>
 
-                                    <spacer size="10"></spacer>
-                                </center>
-                            </columns>
-                        </row>
-
-                        {% include "mail/components/header.html" %}
-
-                        {% block content %}{% endblock %}
-
-                        {% include "mail/components/footer.html" %}
-
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
+        <style type="text/css" media="screen">
+            {% include 'style.css' %}
+        </style>
+    </head>
+    <body>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="!bg-transparent" bgcolor="#000000" style="white-space:pre-line;">
+            <tr>
+                <td align="center" valign="top">
+                    <table width="600" border="0" cellspacing="0" cellpadding="0" class="mobile-shell">
+                        <tr>
+                            <td class="td" style="font-family:'Work Sans',serif;width:600px;min-width:600px;padding:0;margin:0;font-weight:normal;">
+                                <row class="hidden">
+                                    <columns>
+                                        <center>
+                                            <a href="{{ browserLink }}" style="font-weight: 400; font-size: 11px; line-height: 11px; text-decoration: underline; color: #888b8f">
+                                                Voir cet email dans votre navigateur
+                                            </a>
+                                            <div style="width:10px;height:10px;"></div>
+                                            <spacer size="10"></spacer>
+                                        </center>
+                                    </columns>
+                                </row>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td" style="font-family:'Work Sans',serif;width:600px;min-width:600px;padding:0;margin:0;font-weight:normal;">
+                                <row class="hidden">
+                                    <columns>
+                                        <center>
+                                            {% include "mail/components/header.html" %}
+                                            <div style="width:10px;height:10px;"></div>
+                                            <spacer size="10"></spacer>
+                                        </center>
+                                    </columns>
+                                </row>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td" style="font-family:'Work Sans',serif;width:600px;min-width:600px;padding:0;margin:0;font-weight:normal;">
+                                <row class="hidden">
+                                    <columns>
+                                        <center>
+                                            {% block content %}{% endblock %}
+                                            <div style="width:10px;height:10px;"></div>
+                                            <spacer size="10"></spacer>
+                                        </center>
+                                    </columns>
+                                </row>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td" style="font-family:'Work Sans',serif;width:600px;min-width:600px;padding:0;margin:0;font-weight:normal;">
+                                <row class="hidden">
+                                    <columns>
+                                        <center>
+                                            {% include "mail/components/footer.html" %}
+                                            <div style="width:10px;height:10px;"></div>
+                                            <spacer size="10"></spacer>
+                                        </center>
+                                    </columns>
+                                </row>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
