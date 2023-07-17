@@ -1,0 +1,76 @@
+{% extends "mail/components/browserLink.html" %}
+
+{% block content %}
+
+<table>
+    <tr>
+        <td style="font-family:'Squada One',serif;color:#ffffff;font-size:40px;line-height:40px;text-align:center;font-weight:700">
+            Rejoignez la force
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:18px;margin-bottom:15px;">
+            {% if dark is true %}Dark{% else %}Maitre{% endif %} {{ pseudo }},
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:15px;">
+            &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:18px;margin-bottom:10px;">
+            L'équipe WIKIWARS est heureuse de vous compter parmi ses joueurs.
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:15px;">
+            &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:20px;">
+            Que vous soyez un jeune padawan ou un maitre {% if dark is true %}Sith{% else %}Jedi{% endif %}, notre plateforme est conçue pour vous offrir une expérience de jeu incomparable.
+            Plongez au cœur de l'action, affrontez des adversaires redoutables et formez des liens avec une communauté de joueurs passionnés.
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:15px;">
+            &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:20px;">
+            Validez votre inscription pour commencer votre aventure.
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:20px;">
+            &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td align="center" valign="center" style="text-align:center;vertical-align:middle;">
+            <a href="{{ linkValider }}" style="text-align:center;vertical-align:middle;line-height:54px;width:268px;height:54px;font-size:14px;background: #1f9051;border: 1px solid #0d5f38;box-shadow: 0px 2px 0 #0e6d40, 2px 4px 6px #038447;font-weight: 900;letter-spacing: 1px;transition: all 150ms linear;padding:1.25rem 1rem;color:#fff;position:relative;text-decoration:none;text-transform:uppercase;border-radius:1vh;">
+                Valider mon inscription
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:15px;">
+            &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td align="center" valign="center" style="color:#ffffff;line-height:25px;font-size:10px;text-align:center;">
+            Ceci est un email de relance automatique car vous n'avez pas encore validé votre inscription.
+        </td>
+    </tr>
+    <tr>
+        <td style="color:#ffffff;line-height:15px;">
+            &nbsp;
+        </td>
+    </tr>
+</table>
+
+{% endblock %}

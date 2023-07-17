@@ -96,6 +96,8 @@ def send_mail(type_mail, user, data):
 
     if type_mail == 'register':
         subject = 'Confirmez votre inscription !'
+    elif type_mail == 'registerRelance':
+        subject = '[Relance] Confirmez votre inscription !'
     else:
         subject = 'Consultez les WikiNews !'
 

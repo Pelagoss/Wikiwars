@@ -48,7 +48,7 @@ def re_send_confirmation():
         db.session.add(u)
         db.session.flush()
         db.session.commit()
-        send_mail('register', u, data={'pseudo': u.username, 'token': str(u.validation_token),
+        send_mail('registerRelance', u, data={'pseudo': u.username, 'token': str(u.validation_token),
                                           'linkValider': f'[appUrl]/inscription/{u.validation_token}'})
 
 # enable python shell with application context
