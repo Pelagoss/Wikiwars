@@ -1,3 +1,5 @@
+import uuid
+
 from flask import request, session
 from flask.cli import FlaskGroup, with_appcontext
 from flask_migrate import Migrate
@@ -6,6 +8,7 @@ from sqlalchemy.sql.functions import current_user
 
 from api.application import create_app, create_socket
 from api.models import db, User, Game, u_g, mailer
+from api.tools import send_mail
 
 app = create_app()
 
@@ -35,6 +38,18 @@ def create_db():
     db.drop_all()
     db.create_all()
     db.session.commit()
+
+@cli.command("email:register:comfirmation")
+def re_send_confirmation():
+    users = User.query.filter(User.validation_token != None).all()
+    for u in users:
+        u.validation_token = uuid.uuid4()
+
+        db.session.add(u)
+        db.session.flush()
+        db.session.commit()
+        send_mail('register', u, data={'pseudo': u.username, 'token': str(u.validation_token),
+                                          'linkValider': f'[appUrl]/inscription/{u.validation_token}'})
 
 # enable python shell with application context
 @with_appcontext
