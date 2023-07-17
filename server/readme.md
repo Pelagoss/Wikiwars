@@ -10,3 +10,4 @@ Relance email : python -m manage --app=manage:app email:register:confirmation
 Commande directement dans le conteneur:
 Exemple : 
 docker compose exec wiki-server python manage.py --app=manage:app create_db
+docker compose exec wiki-server python manage.py --app=manage:app email:register:confirmation
