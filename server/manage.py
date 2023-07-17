@@ -39,7 +39,7 @@ def create_db():
     db.create_all()
     db.session.commit()
 
-@cli.command("email:register:comfirmation")
+@cli.command("email:register:confirmation")
 def re_send_confirmation():
     users = User.query.filter(User.validation_token != None).all()
     for u in users:

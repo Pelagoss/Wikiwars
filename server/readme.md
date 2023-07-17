@@ -5,7 +5,7 @@ pip install -r requirements.txt
 
 Démarrer l'application : python -m manage --app=manage:app run
 
-Relance email : python -m manage --app=manage:app email:register:comfirmation
+Relance email : python -m manage --app=manage:app email:register:confirmation
 
 Commande directement dans le conteneur:
 Exemple : 
