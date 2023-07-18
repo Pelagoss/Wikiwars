@@ -9,7 +9,7 @@
         </div>
         <div class="sm:h-full w-full h-1/2 flex flex-col col-span-6">
             <div class="h-1/2 mt-6 w-[90%]" id="TabGames">
-                <table class="w-full border-spacing-y-1 border-spacing-x-0" :class="{'h-full':  partieEnCours.length === 0}">
+                <table class="w-full border-spacing-y-1 border-spacing-x-0 h-full">
                     <thead>
                         <tr>
                             <!-- <th class="text-left">#</th>-->
