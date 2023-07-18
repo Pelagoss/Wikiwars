@@ -1,5 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Squada+One&family=Work+Sans&display=swap');
 
+.scroll-light {
+    &::-webkit-scrollbar {
+        width: .3vw;
+    }
+
+    /* Track */
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+}
+
 @keyframes dash {
     0% {
         stroke-dasharray: 1, 200;
@@ -51,26 +72,23 @@ h3 {
 }
 
 #TabGames {
+    @apply mx-auto;
+
     table {
-        border-radius:3px;
-        border-collapse: collapse;
-        max-height: 100%;
-        margin: auto;
-        max-width: 90%;
-        padding: 5px;
-        width: 100%;
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-        animation: float 5s infinite;
+        height: 100%;
+        overflow: hidden;
+
+        border-bottom-right-radius:3px;
+        border-bottom-left-radius:3px;
 
         th {
-            color:#D5DDE5;;
+            @apply p-3 text-lg text-left;
+            position: sticky;
+            top: 0;
+            color:#D5DDE5;
             background:#1b1e24;
-            font-size:23px;
             font-weight: 100;
-            padding:0px 10px 0px 10px;
-            text-align:left;
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-            vertical-align:middle;
 
             &:first-child {
                 border-top-left-radius:3px;
@@ -78,72 +96,35 @@ h3 {
 
             &:last-child {
                 border-top-right-radius:3px;
-                border-right:none;
-            }
-
-            &.text-left {
-                text-align: left;
-            }
-
-            &.text-center {
-                text-align: center;
-            }
-
-            &.text-right {
-                text-align: right;
             }
         }
 
         tr {
-            border-top: 1px solid #C1C3D1;
-            border-bottom: 1px solid #C1C3D1;
-            color:#666B85;
-            font-size:16px;
-            font-weight:normal;
+            color: #4a4f62;
             text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
-
-            &:first-child {
-                border-top:none;
-            }
-
-            &:last-child {
-                border-bottom:none;
-            }
-
-            &:nth-child(odd) td {
-                background:#EBEBEB;
-            }
-        }
-
-        tr:last-child td:first-child {
-            border-bottom-left-radius:3px;
-        }
-
-        tr:last-child td:last-child {
-            border-bottom-right-radius:3px;
         }
 
         td {
-            background:#FFFFFF;
-            padding: 1rem;
-            text-align:left;
+            line-height: 1.25rem;
             vertical-align:middle;
             font-weight:300;
-            font-size:18px;
             text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
-            border-right: 1px solid #C1C3D1;
+        }
 
-            &:last-child {
-                border-right: 0px;
-            }
-            &.text-left {
-                text-align: left;
-            }
-            &.text-center {
-                text-align: center;
-            }
-            &.text-right {
-                text-align: right;
+        table {
+            @apply w-full;
+            tr {
+                td {
+                    padding: 1rem 1rem;
+                }
+
+                &:nth-child(even) td {
+                    background: #c0c0c0;
+                }
+
+                &:nth-child(odd) td {
+                    background: #a6a6a6;
+                }
             }
         }
     }

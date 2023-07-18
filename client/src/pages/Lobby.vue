@@ -8,55 +8,64 @@
             </div>
         </div>
         <div class="sm:h-full w-full h-1/2 flex flex-col col-span-6">
-            <div class="h-1/2 pt-6" id="TabGames">
-                <table :class="{'h-full':  partieEnCours.length === 0}">
+            <div class="h-1/2 mt-6 w-[90%]" id="TabGames">
+                <table class="w-full border-spacing-y-1 border-spacing-x-0" :class="{'h-full':  partieEnCours.length === 0}">
                     <thead>
-                    <tr>
-                        <!-- <th class="text-left">#</th>-->
-                        <!-- <th class="text-left">Host</th>-->
-                        <th class="text-left">Joueurs</th>
-                        <th class="text-left">Départ</th>
-                        <th class="text-left">Arrivée</th>
-                        <th class="text-left w-1/6"></th>
-                    </tr>
+                        <tr>
+                            <!-- <th class="text-left">#</th>-->
+                            <!-- <th class="text-left">Host</th>-->
+                            <th class="w-2/12">Joueurs</th>
+                            <th class="w-1/3">Départ</th>
+                            <th class="w-1/3">Arrivée</th>
+                            <th class="w-full"></th>
+                        </tr>
                     </thead>
-                    <tbody class="table-hover">
-                    <tr v-if="partieEnCours.length !== 0" v-for="(game, index) in partieEnCours">
-                        <!-- <td>-->
-                        <!--     {{ index }}-->
-                        <!-- </td>-->
-                        <!--                        <td>-->
-                        <!--                            {{ game.host }}-->
-                        <!--                        </td>-->
-                        <td>
-                            {{ game.users.length }}
-                        </td>
-                        <td>
-                            {{ game.start.replaceAll('_', ' ') }}
-                        </td>
-                        <td>
-                            {{ game.target.replaceAll('_', ' ') }}
-                        </td>
-                        <td class="flex justify-center w-full">
-                            <Button v-if="game.is_started === false" class="btnv-success" @click="joinGame(game.id)">
-                                Rejoindre
-                            </Button>
-                            <Button v-else-if="game.is_started === true && game.winner === null" class="bg-yellow-700">
-                                Partie en cours...
-                            </Button>
-                            <Button v-else-if="game.is_started === true && game.winner !== null" class="bg-red-700">
-                                Partie terminée
-                            </Button>
-                        </td>
-
-                    </tr>
-                    <tr v-else>
-                        <td colspan="6" class="text-center bgTable">
-                            <h1 class="sm:text-3xl text-lg">
-                                {{ isInGame === 1 ? "Vous avez une partie en cours, rejoignez la !" : "Aucune partie n'est encore créée !"}}
-                            </h1>
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr v-if="partieEnCours.length !== 0">
+                            <td colspan="6" class="w-full">
+                                <div class="overflow-y-auto scroll-light h-full">
+                                    <table>
+                                        <tbody>
+                                            <tr v-for="(game, index) in partieEnCours">
+                                                <!-- <td>-->
+                                                <!--     {{ index }}-->
+                                                <!-- </td>-->
+                                                <!--                        <td>-->
+                                                <!--                            {{ game.host }}-->
+                                                <!--                        </td>-->
+                                                <td class="w-2/12">
+                                                    {{ game.users.length }}
+                                                </td>
+                                                <td class="w-1/3">
+                                                    {{ game.start.replaceAll('_', ' ') }}
+                                                </td>
+                                                <td class="w-1/3">
+                                                    {{ game.target.replaceAll('_', ' ') }}
+                                                </td>
+                                                <td class="flex justify-center w-full">
+                                                    <Button v-if="game.is_started === false" class="btnv-success" @click="joinGame(game.id)">
+                                                        Rejoindre
+                                                    </Button>
+                                                    <Button v-else-if="game.is_started === true && game.winner === null" class="bg-yellow-700">
+                                                        Partie en cours...
+                                                    </Button>
+                                                    <Button v-else-if="game.is_started === true && game.winner !== null" class="bg-red-700">
+                                                        Partie terminée
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-else>
+                            <td colspan="6" class="text-center bgTable">
+                                <h1 class="sm:text-3xl text-lg">
+                                    {{ isInGame === 1 ? "Vous avez une partie en cours, rejoignez la !" : "Aucune partie n'est encore créée !"}}
+                                </h1>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -130,7 +139,11 @@ export default {
             return this.wins / (this.loses === 0 ? 1.00 : this.loses);
         },
         partieEnCours() {
-            return this.games.filter(g => g.winner === null && !g.users.map(u => u.username).includes(userStore().username));
+            return this.games.filter(
+                g => g.winner === null && !g.users.map(u => u.username).includes(userStore().username)
+            ).sort(
+                (a, b) => a.is_started - b.is_started
+            );
         },
         isInGame() {
             let games = toRaw(userStore().games);
