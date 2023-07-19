@@ -119,6 +119,7 @@ import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue";
 import {mapActions, mapState} from "pinia";
 import {gameStore, userStore} from "../store/index.js";
 import {toRaw} from "vue";
+import socket from "../utils/socket.js";
 
 export default {
     name: "Lobby",
@@ -154,13 +155,18 @@ export default {
     },
     created() {
         this.fetchGames();
+
+        socket.on('newGames', () => this.handleGames())
     },
     methods: {
+        handleGames(data) {
+            this.games = data.reverse();
+            userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));
+            userStore().wins = this.games.filter(g => g.winner?.id === userStore().id);
+        },
         fetchGames() {
             return this.$axios.get('/games').then(({data}) => {
-                this.games = data.reverse();
-                userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));
-                userStore().wins = this.games.filter(g => g.winner?.id === userStore().id);
+                this.handleGames(data);
             });
         },
         joinGame(game_id = null) {

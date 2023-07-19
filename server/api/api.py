@@ -159,6 +159,8 @@ def create_game(current_user):
     db.session.flush()
     db.session.commit()
 
+    socketio().emit("newGames", [g.to_dict('game') for g in Game.query.all()], broadcast=True)
+
     response = game.to_dict('game')
     return jsonify(response)
 
@@ -180,8 +182,6 @@ def join_game(current_user):
         db.session.add(game)
         db.session.flush()
         db.session.commit()
-
-    # socketio().emit("PLAYERS_CHANGED", len(game.users), broadcast=True, to=game.id)
 
     response = game.to_dict('game')
     return jsonify(response)

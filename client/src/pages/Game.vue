@@ -40,8 +40,8 @@
 
         <leaderboard :game="game" @hover-link="hoverLink" @unhover-link="unhoverLink"/>
 
-        <div class="m-4 ml-8 col-start-4 col-span-9 game" v-show="game?.is_started === true">
-            <div v-if="loading === false" ref="wiki"
+        <div ref="wiki" class="m-4 ml-8 col-start-4 col-span-9 game" v-show="game?.is_started === true">
+            <div v-if="loading === false"
                  class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col heightGame"
                  :class="{'overflow-hidden h-[100vh]': game?.is_started === false}"
                  v-html="contenu">
@@ -65,7 +65,7 @@
             <div ref="tooltip" class="mwe-popups mwe-popups-type-page mwe-popups-fade-in-up mwe-popups-no-image-pointer mwe-popups-is-not-tall absolute p-3"
                  style="display: none;height:fit-content;z-index:4000"
                  v-show="showTooltip"
-                 :class="{'block': showTooltip}"
+                 :class="{'block': showTooltip, 'flipped-x-y': flipxy, 'flipped-x': flipx, 'flipped-y': flipy}"
                  v-html="tooltipContent"
             >
             </div>
@@ -98,7 +98,10 @@ export default {
             contenu: '',
             loading: true,
             loadPage: true,
-            game: {}
+            game: {},
+            flipxy: false,
+            flipx: false,
+            flipy: false
         }
     },
     computed: {
@@ -106,8 +109,8 @@ export default {
     },
     mounted() {
         this.$refs.wiki.addEventListener("click", this.clickLink.bind(this), false);
-        this.$refs.wiki.addEventListener("mouseenter", this.hoverLink.bind(this), false);
-        this.$refs.wiki.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
+        // this.$refs.wiki.addEventListener("mouseenter", this.hoverLink.bind(this), {passive: false, capture: true});
+        // this.$refs.wiki.addEventListener("mouseleave", this.unhoverLink.bind(this), {passive: false, capture: true});
 
         this.fetchGames().then(() => {
             window.addEventListener("keydown",function (e) {
@@ -160,14 +163,11 @@ export default {
 
             this.initStarted = true;
 
-            socket.connect();
-            socket.on("connect", () => {
-                socket.emit('join', this.game);
-                this.socketJoined = true;
-                this.initStarted = false;
+            socket.emit('join', this.game);
+            this.socketJoined = true;
+            this.initStarted = false;
 
-                this.error = false;
-            });
+            this.error = false;
 
             socket.on("PAGE_CHANGED", (data) => {
                 this.game = data;
@@ -180,13 +180,13 @@ export default {
             socket.on('START_GAME', (data) => {
                 this.game = data;
 
-                // this.$nextTick(() => {
-                //     this.$refs.wiki.querySelectorAll('a').forEach((a) => {
+                this.$nextTick(() => {
+                    this.$refs.wiki.querySelectorAll('a').forEach((a) => {
                 //         a.addEventListener("click", this.clickLink.bind(this), false);
-                //         a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
-                //         a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
-                //     });
-                // });
+                        a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
+                        a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
+                    });
+                });
             });
 
             socket.on('connect_error', (e) => {
@@ -196,7 +196,7 @@ export default {
             this.initStarted = false;
         },
         destroy() {
-            socket.disconnect();
+            socket.emit('leave', this.game);
 
             socket.off("connect");
             socket.off("PAGE_CHANGED");
@@ -215,13 +215,16 @@ export default {
         clickLink(event) {
             if (event.target.tagName.toLowerCase() === 'a') {
                 event.preventDefault();
-                this.fetchPage(event.target['data-title']);
-
                 this.toggleTooltip(false, event);
+
+                this.fetchPage(event.target['data-title']);
             }
         },
         hoverLink(event) {
             if (event.target.tagName.toLowerCase() === 'a') {
+                event.target["data-title"] = event.target.title;
+                event.target.title = '';
+
                 event.preventDefault();
                 this.timeoutHover = setTimeout(() => {
                     this.fetchLink(event);
@@ -242,21 +245,19 @@ export default {
             }).finally(() => {
                 this.loading = false;
                 //
-                // if (this.game?.is_started === true) {
-                //     this.$nextTick(() => {
-                //         this.$refs.wiki.querySelectorAll('a').forEach((a) => {
+                if (this.game?.is_started === true) {
+                    this.$nextTick(() => {
+                        this.$refs.wiki.querySelectorAll('a').forEach((a) => {
                 //             a.addEventListener("click", this.clickLink.bind(this), false);
-                //             a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
-                //             a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
-                //         });
-                //     });
-                // }
+                            a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
+                            a.addEventListener("mouseleave", this.unhoverLink.bind(this), false);
+                        });
+                    });
+                }
             });
         },
         fetchLink(event) {
-            if (event.target.title != null) {
-                event.target["data-title"] = event.target.title;
-                event.target.title = '';
+            if (event.target["data-title"] != null) {
                 this.$axios.get('/game/link/' + event.target["data-title"]).then(({data}) => {
                     if (data.extract_html != null && data.extract_html !== '') {
                         this.toggleTooltip(true, event);
@@ -277,37 +278,36 @@ export default {
                 let right;
 
                 if (depasseY && depasseX) {
-                    this.$refs.tooltip.classList.add("flipped-x-y");
-                    this.$refs.tooltip.classList.remove("flipped-x");
-                    this.$refs.tooltip.classList.remove("flipped-y");
+                    this.flipxy = true;
+                    this.flipx = false;
+                    this.flipy = false;
 
                     top = `auto`;
                     bottom = `${window.innerHeight - event.target.getBoundingClientRect().y + (event.target.offsetHeight / 2)}px`;
                     right = `${window.innerWidth - (event.target.getBoundingClientRect().x + 20)}px`;
                     left = `auto`;
 
-                } else if (depasseY) {
-                    this.$refs.tooltip.classList.add("flipped-y");
-                    this.$refs.tooltip.classList.remove("flipped-x-y");
-                    this.$refs.tooltip.classList.remove("flipped-x");
+                } else if (depasseY) {this.flipxy = false;
+                    this.flipx = false;
+                    this.flipy = true;
 
                     top = `auto`;
                     bottom = `${window.innerHeight - event.target.getBoundingClientRect().y + (event.target.offsetHeight / 2)}px`;
                     right = `auto`;
                     left = `${event.target.getBoundingClientRect().x}px`;
                 } else if (depasseX) {
-                    this.$refs.tooltip.classList.add("flipped-x");
-                    this.$refs.tooltip.classList.remove("flipped-x-y");
-                    this.$refs.tooltip.classList.remove("flipped-y");
+                    this.flipxy = false;
+                    this.flipx = true;
+                    this.flipy = false;
 
                     top = `${event.target.getBoundingClientRect().y + event.target.offsetHeight + (event.target.offsetHeight / 3)}px`;
                     bottom = `auto`;
                     right = `${window.innerWidth - (event.target.getBoundingClientRect().x + 20)}px`;
                     left = `auto`;
                 } else {
-                    this.$refs.tooltip.classList.remove("flipped-x-y");
-                    this.$refs.tooltip.classList.remove("flipped-y");
-                    this.$refs.tooltip.classList.remove("flipped-x");
+                    this.flipxy = false;
+                    this.flipx = false;
+                    this.flipy = false;
 
                     top = `${event.target.getBoundingClientRect().y + event.target.offsetHeight + (event.target.offsetHeight / 3)}px`;
                     bottom = `auto`;
