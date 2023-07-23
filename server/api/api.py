@@ -159,7 +159,7 @@ def create_game(current_user):
     db.session.flush()
     db.session.commit()
 
-    socketio().emit("newGames", [g.to_dict('game') for g in Game.query.all()], broadcast=True)
+    socketio().emit("NEW_GAME", game.to_dict('game'), to='lobby')
 
     response = game.to_dict('game')
     return jsonify(response)
@@ -213,6 +213,7 @@ def get_page(current_user, title):
     if game.target == urllib.parse.unquote(title).replace(' ', '_'):
         event = "GAME_FINISHED"
         game.winner_id = current_user.id
+        socketio().emit("FINISH_GAME", game, to='lobby')
 
     db.session.commit()
 
@@ -243,6 +244,8 @@ def launch(current_user):
     if game.is_started:
         room = f'{game.start}_{game.target}'
         socketio().emit("START_GAME", game.to_dict('game'), to=room)
+        socketio().emit("GAME_STARTED", game.to_dict('game'), to='lobby')
+
         return jsonify({'started': True})
 
     return jsonify({'started': False})

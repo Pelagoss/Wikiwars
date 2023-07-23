@@ -50,13 +50,13 @@
 </template>
 
 <script setup>
-import Button from "../components/ui/Button.vue"
-import Modal from "../components/ui/Modal.vue"
-import FormWrapper from "../components/ui/form/FormWrapper.vue"
-import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue"
+import Button from "@/components/ui/Button.vue"
+import Modal from "@/components/ui/Modal.vue"
+import FormWrapper from "@/components/ui/form/FormWrapper.vue"
+import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue"
 import {ref, inject} from "vue";
 import {useRoute} from "vue-router";
-import Loader from "../components/ui/Loader.vue";
+import Loader from "@/components/ui/Loader.vue";
 
 const showModalConfirmation = ref(true);
 const loading = ref(true);

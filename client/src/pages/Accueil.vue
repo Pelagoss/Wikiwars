@@ -4,10 +4,10 @@
 </template>
 
 <script>
-import Lobby from "./Lobby.vue";
-import Login from "./Login.vue";
+import Lobby from "@/pages/Lobby.vue";
+import Login from "@/pages/Login.vue";
 import { mapState } from 'pinia'
-import {userStore} from "../store/index.js";
+import {userStore} from "@/store/index.js";
 
 export default {
     name: "Accueil",

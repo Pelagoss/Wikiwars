@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import IconeDynamiqueComposant from "../IconeDynamiqueComposant.vue";
-import LoaderButton from "./LoaderButton.vue";
+import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
+import LoaderButton from "@/components/ui/LoaderButton.vue";
 
 export default {
     name: "Button",

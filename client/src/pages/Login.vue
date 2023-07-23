@@ -90,14 +90,14 @@
 </template>
 
 <script>
-import Button from "../components/ui/Button.vue";
+import Button from "@/components/ui/Button.vue";
 import {mapActions} from "pinia";
-import {userStore} from "../store/index.js";
-import TextField from "../components/ui/form/TextField.vue";
-import Form from "../components/ui/form/FormWrapper.vue";
-import FormWrapper from "../components/ui/form/FormWrapper.vue";
-import Modal from "../components/ui/Modal.vue";
-import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue";
+import {userStore} from "@/store/index.js";
+import TextField from "@/components/ui/form/TextField.vue";
+import Form from "@/components/ui/form/FormWrapper.vue";
+import FormWrapper from "@/components/ui/form/FormWrapper.vue";
+import Modal from "@/components/ui/Modal.vue";
+import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
 
 export default {
     name: "Login",

@@ -80,7 +80,7 @@
     </div>
 </template>
 <script>
-import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue"
+import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue"
 import moment from "moment";
 
 export default {

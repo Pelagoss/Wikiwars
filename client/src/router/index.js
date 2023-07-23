@@ -1,8 +1,8 @@
-import Game from "../pages/Game.vue";
+import Game from "@/pages/Game.vue";
 import {createRouter, createWebHistory} from "vue-router"
-import Accueil from "../pages/Accueil.vue";
-import Inscription from "../pages/Inscription.vue";
-import Email from "../pages/Email.vue";
+import Accueil from "@/pages/Accueil.vue";
+import Inscription from "@/pages/Inscription.vue";
+import Email from "@/pages/Email.vue";
 
 const routes = [
     {

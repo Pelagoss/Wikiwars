@@ -75,14 +75,14 @@
 
 <script>
 import {toRaw} from "vue";
-import {userStore} from "../store/index.js";
-import socket from '../utils/socket.js'
+import {userStore} from "@/store/index.js";
+import {socket, state} from '@/utils/socket.js'
 import {mapState} from "pinia";
-import Button from "../components/ui/Button.vue";
-import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue";
-import Generique from "../components/Generique.vue";
-import Loader from "../components/ui/Loader.vue";
-import Leaderboard from "./Leaderboard.vue";
+import Button from "@/components/ui/Button.vue";
+import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
+import Generique from "@/components/Generique.vue";
+import Loader from "@/components/ui/Loader.vue";
+import Leaderboard from "@/pages/Leaderboard.vue";
 
 export default {
     name: "Game",
@@ -215,7 +215,8 @@ export default {
         clickLink(event) {
             if (event.target.tagName.toLowerCase() === 'a') {
                 event.preventDefault();
-                this.toggleTooltip(false, event);
+
+                this.showTooltip = false;
 
                 this.fetchPage(event.target['data-title']);
             }
@@ -247,6 +248,8 @@ export default {
                 //
                 if (this.game?.is_started === true) {
                     this.$nextTick(() => {
+                        this.showTooltip = false;
+
                         this.$refs.wiki.querySelectorAll('a').forEach((a) => {
                 //             a.addEventListener("click", this.clickLink.bind(this), false);
                             a.addEventListener("mouseenter", this.hoverLink.bind(this), false);
@@ -324,7 +327,7 @@ export default {
             } else {
                 this.showTooltip = false;
 
-                if (event.target["data-title"] != null) {
+                if (event !== null && event?.target["data-title"] != null) {
                     event.target.title = event.target["data-title"];
                 }
             }

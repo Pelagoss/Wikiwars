@@ -114,12 +114,13 @@
 </template>
 
 <script>
-import Button from "../components/ui/Button.vue";
-import IconeDynamiqueComposant from "../components/IconeDynamiqueComposant.vue";
+import Button from "@/components/ui/Button.vue";
+import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
 import {mapActions, mapState} from "pinia";
-import {gameStore, userStore} from "../store/index.js";
+import {gameStore, userStore} from "@/store/index.js";
 import {toRaw} from "vue";
-import socket from "../utils/socket.js";
+import {socket, state} from "@/utils/socket.js";
+import {emitter} from "@/utils/index.js";
 
 export default {
     name: "Lobby",
@@ -155,10 +156,26 @@ export default {
     },
     created() {
         this.fetchGames();
+        emitter.$on('SOCKET_CONNECTED', () => socket.emit('join', 'lobby'));
 
-        socket.on('newGames', () => this.handleGames())
+        if (state.connected) {
+            socket.emit('join', 'lobby');
+            socket.on('NEW_GAME', (data) => this.addGame(data));
+            socket.on('GAME_STARTED', (data) => this.updateGame(data));
+            socket.on('FINISH_GAME', (data) => this.removeGame(data));
+        }
     },
     methods: {
+        addGame(data) {
+            this.games.push(data);
+        },
+        updateGame(data) {
+            let game = this.games.find(g => g.id === data.id);
+            game.is_started = data.is_started;
+        },
+        removeGame(data) {
+          this.games = this.games.filter(g => g.id !== data.id);
+        },
         handleGames(data) {
             this.games = data.reverse();
             userStore().games = this.games.filter(g => g.users.map(u => u.username).includes(userStore().username));

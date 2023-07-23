@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import IconeDynamiqueComposant from "../IconeDynamiqueComposant.vue";
+import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
 
 export default {
     name: "Modal",

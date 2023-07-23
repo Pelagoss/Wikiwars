@@ -1,5 +1,5 @@
 import axios from "axios";
-import {emitter} from "./index.js";
+import {emitter} from "@/utils/index.js";
 
 const myAxios = axios.create();
 

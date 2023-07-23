@@ -22,8 +22,11 @@ cli = FlaskGroup(app)
 
 @socketio.on('join')
 def join(data):
-    print("Joined room")
-    session['room'] = f'{data["start"]}_{data["target"]}'
+    if isinstance(data, str):
+        session['room'] = 'lobby'
+    else:
+        session['room'] = f'{data["start"]}_{data["target"]}'
+    print(f'Room : {session["room"]} joined !')
     join_room(session['room'])
     socketio.emit('ROOM_JOINED', to=current_user)
 

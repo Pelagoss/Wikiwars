@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import Button from "../components/ui/Button.vue";
+import Button from "@/components/ui/Button.vue";
 
 export default {
     name: "Generique",
