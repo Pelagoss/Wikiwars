@@ -157,15 +157,7 @@ export default {
             })
         },
         initSocket() {
-            if (this.initStarted || Object.keys(this.game).length === 0) {
-                return;
-            }
-
-            this.initStarted = true;
-
             socket.emit('join', this.game);
-            this.socketJoined = true;
-            this.initStarted = false;
 
             this.error = false;
 
@@ -222,7 +214,7 @@ export default {
             }
         },
         hoverLink(event) {
-            if (event.target.tagName.toLowerCase() === 'a') {
+            if ('a' === event.target.tagName.toLowerCase() || event.target.classList.contains('link')) {
                 event.target["data-title"] = event.target.title;
                 event.target.title = '';
 
@@ -233,7 +225,7 @@ export default {
             }
         },
         unhoverLink(event) {
-            if (event.target.tagName.toLowerCase() === 'a') {
+            if ('a' === event.target.tagName.toLowerCase() || event.target.classList.contains('link')) {
                 event.preventDefault();
                 clearTimeout(this.timeoutHover);
                 this.toggleTooltip(false, event);
@@ -334,15 +326,6 @@ export default {
         }
     },
     watch: {
-        isAuthenticated: {
-            handler() {
-                if (this.isAuthenticated !== false) {
-                    this.initSocket();
-                }
-
-            },
-            immediate: true
-        },
         id() {
             if (this.id === null) {
                 this.$router.push({'name': 'acceuil'})

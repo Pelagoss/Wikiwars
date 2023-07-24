@@ -29,7 +29,7 @@
                     <div :title="game?.start"
                          @mouseenter="$emit('hoverLink', $event)"
                          @mouseleave="$emit('unhoverLink', $event)"
-                        class="overflow-hidden whitespace-nowrap overflow-ellipsis">
+                        class="overflow-hidden whitespace-nowrap overflow-ellipsis link">
                         {{ game?.start?.replaceAll('_', ' ') }}
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                     <div :title="game?.target"
                          @mouseenter="$emit('hoverLink', $event)"
                          @mouseleave="$emit('unhoverLink', $event)"
-                        class="overflow-hidden whitespace-nowrap overflow-ellipsis">
+                        class="overflow-hidden whitespace-nowrap overflow-ellipsis link">
                         {{ game?.target?.replaceAll('_', ' ') }}
                     </div>
                 </div>
@@ -67,7 +67,7 @@
             <li v-for="(player, index) in game.users">
                 <div class="grid text-white px-4 py-3 grid-cols-10 gap-4">
                     <div class="col-span-3">{{ player.username }}</div>
-                    <div class="col-span-5 whitespace-nowrap text-ellipsis overflow-hidden"
+                    <div class="col-span-5 whitespace-nowrap text-ellipsis overflow-hidden link"
                          :title="game.clics[player.username].page"
                          @mouseenter="$emit('hoverLink', $event)"
                          @mouseleave="$emit('unhoverLink', $event)">

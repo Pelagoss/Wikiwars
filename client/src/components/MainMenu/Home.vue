@@ -1,0 +1,90 @@
+<template>
+    <div class="w-full grid grid-cols-12 h-2/3 mainGrid">
+        <div
+            @click="joinGame(isInGame)"
+            class="col-span-6 text-2xl border border-r-0 border-gray-400 border-opacity-50 row-span-2 p-8 font-squadaOne uppercase play text-white">
+            Play now!
+        </div>
+        <div
+            @click="navTo('career')"
+            class="col-span-6 text-2xl border border-b-0 border-gray-400 border-opacity-50 p-8 font-squadaOne uppercase career text-white">
+            Career
+        </div>
+        <div
+            @click="navTo('friends')"
+            class="col-span-6 text-2xl border border-gray-400 border-opacity-50 p-8 font-squadaOne uppercase friends text-white">
+            Friends
+        </div>
+    </div>
+</template>
+
+<script>
+import {toRaw} from "vue";
+import {gameStore, userStore} from "@/store/index.js";
+import {mapActions} from "pinia";
+
+export default {
+    name: "Home",
+    emits: ['change-page'],
+    computed: {
+        isInGame() {
+            let games = toRaw(userStore().games);
+            let filtered_games = games.filter(g => g.winner === null);
+
+            return filtered_games.length === 0 ? null : filtered_games[0].id;
+        }
+    },
+    methods: {
+        navTo(route) {
+            this.$emit('changePage', route);
+        },
+        joinGame(game_id = null) {
+            if (this.isInGame === null && game_id === null) {
+                this.createGame().then(() => {
+                    this.fetchGames().finally(() => {
+                        this.$nextTick(() => {
+                            this.$router.push({name: 'game'});
+                        })
+                    });
+                })
+            } else {
+                if (this.isInGame) {
+                    this.join({id: game_id}).then(() => {
+                        this.$router.push({name: 'game'});
+                    })
+                } else {
+                    this.navTo('play');
+                }
+            }
+        },
+        ...mapActions(gameStore, {createGame: "createGame", join: "joinGame"})
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+.mainGrid {
+    & div {
+        @apply cursor-pointer;
+    }
+
+    .play {
+        background: url("/images/WikiWarsGif.gif") no-repeat center;
+        background-size: cover;
+        //background: url("/images/death_wiki_star.png") no-repeat center;
+        //background-size: 50%;
+    }
+
+    .friends {
+        background: url(/images/players.png);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    .career {
+        background: url(/images/career.png);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+}
+</style>

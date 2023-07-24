@@ -15,7 +15,7 @@ socket.on("connect", () => {
     emitter.$emit("SOCKET_CONNECTED", true);
 });
 
-socket.onAny("disconnect", () => {
+socket.on("disconnect", () => {
     state.connected = false;
 });
 
