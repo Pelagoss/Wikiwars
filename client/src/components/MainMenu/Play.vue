@@ -89,7 +89,7 @@ import {emitter} from "@/utils/index.js";
 import {socket, state} from "@/utils/socket.js";
 
 export default {
-    name: "Home",
+    name: "Play",
     components: {IconeDynamiqueComposant, Button},
     emits: ['change-page'],
     data() {

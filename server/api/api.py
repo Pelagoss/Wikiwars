@@ -66,13 +66,13 @@ def login():
         code = 401
         if user is not None:
             code = 403
-            user.validation_token = uuid.uuid4()
-
-            db.session.add(user)
-            db.session.flush()
-            db.session.commit()
-            send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token),
-                                              'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
+            # user.validation_token = uuid.uuid4()
+            #
+            # db.session.add(user)
+            # db.session.flush()
+            # db.session.commit()
+            # send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token),
+            #                                   'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
         return jsonify({ 'message': message, 'authenticated': False }), code
 
     session['user'] = user.to_dict()

@@ -10,6 +10,7 @@
 
             <Home @change-page="tabToShow = $event" v-if="tabToShow === 'home'"/>
             <Play @change-page="tabToShow = $event" v-if="tabToShow === 'play'"/>
+            <Career @change-page="tabToShow = $event" v-if="tabToShow === 'career'"/>
 
             <div @click="logout" class="quit">
                 Quit
@@ -21,12 +22,13 @@
 <script>
 import Home from "@/components/MainMenu/Home.vue";
 import Play from "@/components/MainMenu/Play.vue";
+import Career from "@/components/MainMenu/Career.vue";
 import {mapActions} from "pinia";
 import {userStore} from "@/store/index.js";
 
 export default {
     name: "MainMenu",
-    components: {Home, Play},
+    components: {Home, Play, Career},
     data() {
         return {
             tabToShow: 'home'
@@ -77,7 +79,7 @@ export default {
     @apply flex mb-12;
 
     & div {
-        @apply w-36 text-gray-400 flex items-center justify-center py-2 border border-y-0 border-l border-r-0 border-gray-400 uppercase font-squadaOne cursor-pointer;
+        @apply ease-out duration-300 w-36 text-gray-400 flex items-center justify-center py-2 border border-y-0 border-l border-r-0 border-gray-400 uppercase font-squadaOne cursor-pointer;
         background-color: rgba(190, 190, 190, 0.15);
         backdrop-filter: blur(20px);
 

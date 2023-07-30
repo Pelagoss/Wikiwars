@@ -2,17 +2,17 @@
     <div class="w-full grid grid-cols-12 h-2/3 mainGrid">
         <div
             @click="joinGame(isInGame)"
-            class="col-span-6 text-2xl border border-r-0 border-gray-400 border-opacity-50 row-span-2 p-8 font-squadaOne uppercase play text-white">
+            class="col-span-6 border border-r-0 border-gray-400 border-opacity-50 row-span-2 text-2xl p-8 font-squadaOne uppercase text-white play">
             Play now!
         </div>
         <div
             @click="navTo('career')"
-            class="col-span-6 text-2xl border border-b-0 border-gray-400 border-opacity-50 p-8 font-squadaOne uppercase career text-white">
+            class="col-span-6 border border-b-0 border-gray-400 border-opacity-50 text-2xl p-8 font-squadaOne uppercase text-white career">
             Career
         </div>
         <div
             @click="navTo('friends')"
-            class="col-span-6 text-2xl border border-gray-400 border-opacity-50 p-8 font-squadaOne uppercase friends text-white">
+            class="col-span-6 border border-gray-400 border-opacity-50 text-2xl p-8 font-squadaOne uppercase text-white friends">
             Friends
         </div>
     </div>
@@ -65,7 +65,7 @@ export default {
 <style lang="scss" scoped>
 .mainGrid {
     & div {
-        @apply cursor-pointer;
+        @apply cursor-pointer hover:text-[1.875rem] hover:brightness-150 ease-out duration-300;
     }
 
     .play {
