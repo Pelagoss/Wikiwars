@@ -11,7 +11,7 @@
                 id="TabGames"
                 class="grow">
                 <table class="w-full border-spacing-y-1 border-spacing-x-0 h-full">
-                    <thead>
+                    <thead v-if="partieEnCours.length !== 0">
                     <tr>
                         <!-- <th class="text-left">#</th>-->
                         <!-- <th class="text-left">Host</th>-->
