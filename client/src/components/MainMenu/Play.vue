@@ -6,6 +6,7 @@
             </div>
 
             <div
+                v-if="loading === false"
                 @click="joinGame(isInGame)"
                 id="TabGames"
                 class="grow">
@@ -75,26 +76,29 @@
                     </tbody>
                 </table>
             </div>
+
+            <saber-loader v-else class="self-center grow"/>
         </div>
     </div>
 </template>
 
 <script>
 import Button from "@/components/ui/Button.vue";
-import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
 import {toRaw} from "vue";
 import {gameStore, userStore} from "@/store/index.js";
 import {mapActions} from "pinia";
 import {emitter} from "@/utils/index.js";
 import {socket, state} from "@/utils/socket.js";
+import SaberLoader from "@/components/ui/SaberLoader.vue";
 
 export default {
     name: "Play",
-    components: {IconeDynamiqueComposant, Button},
+    components: {SaberLoader, Button},
     emits: ['change-page'],
     data() {
         return {
-            games: []
+            games: [],
+            loading: true
         };
     },
     created() {
@@ -146,7 +150,7 @@ export default {
         fetchGames() {
             return this.$axios.get('/games').then(({data}) => {
                 this.handleGames(data);
-            });
+            }).finally(() => this.loading = false);
         },
         navTo(route) {
             this.$emit('changePage', route);
