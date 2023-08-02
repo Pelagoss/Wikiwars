@@ -8,7 +8,7 @@ from sqlalchemy import func
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
-from .models import db, Game, User, Email
+from .models import db, Game, User, Email, Friendship
 from .tools import randomize_page, get_wiki_page, getSummaryWikiPage, send_mail
 from datetime import datetime, timedelta
 
@@ -131,6 +131,23 @@ def confirmation(token):
         return jsonify({ 'message': f'Compte non validé', 'authenticated': False }), 403
 
     return jsonify(True)
+
+# @token_required
+@api.route('/friends', methods=('GET',))
+def get_friends():
+#     friends = User.query(User.username).join(Friendship, friend_id=user_id).filter_by(Friendship.user_id=current_user.id).all()
+#     friends = User.query(User.username).join(Friendship, Friendship.user_id==User.id)
+#     friends = [{'username': u[0], 'email': u[1]} for u in User.query.with_entities(User.username, User.friends.status).join(User.friends, User.user_id==User.id).filter_by(User.user_id==1).all()]
+#     friends = [u.to_dict() for u in User.query.join(User.friends).filter_by(id=1)]
+    userList = User.query\
+        .join(Friendship, User.id==Friendship.user_id)\
+        .add_columns(Friendship.friend_id, Friendship.status)\
+        .filter(Friendship.user_id == 1).all()
+
+    print(userList)
+
+    return jsonify([{'username': f[0], 'email': f[1]} for f in userList])
+
 
 @api.route('/email/download/<uuid:unique_token>', methods=('POST',))
 def download_email(unique_token):

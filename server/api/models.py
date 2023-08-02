@@ -116,6 +116,15 @@ class Email(db.Model):
 
         return tuple(messages)
 
+class Friendship(db.Model):
+    __tablename__ = 'friendship'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    friend_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    status = db.Column(String, default='pending')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -132,6 +141,7 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     games = db.relationship('Game', secondary=u_g, lazy='subquery', backref=db.backref('users', lazy=True))
     wins = db.relationship('Game', backref="winner", lazy=False)
+    friends = db.relationship('User', secondary='friendship', lazy='subquery', backref=db.backref('friendship', lazy='dynamic'), primaryjoin=(Friendship.user_id == id), secondaryjoin=(Friendship.friend_id == id))
 
     def __init__(self, email, username, password):
         self.email = email

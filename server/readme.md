@@ -6,7 +6,7 @@ pip install -r requirements.txt
 
 **Database** 
 
-**Create Migration :**python -m manage --app=manage:app db migrate
+**Create Migration :** python -m manage --app=manage:app db migrate
 
 **Run Migration :** python -m manage --app=manage:app db upgrade
 
