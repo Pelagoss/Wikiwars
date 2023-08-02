@@ -4,7 +4,7 @@ import flask
 from parse import *
 
 import urllib.parse
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
@@ -132,21 +132,15 @@ def confirmation(token):
 
     return jsonify(True)
 
-# @token_required
 @api.route('/friends', methods=('GET',))
-def get_friends():
-#     friends = User.query(User.username).join(Friendship, friend_id=user_id).filter_by(Friendship.user_id=current_user.id).all()
-#     friends = User.query(User.username).join(Friendship, Friendship.user_id==User.id)
-#     friends = [{'username': u[0], 'email': u[1]} for u in User.query.with_entities(User.username, User.friends.status).join(User.friends, User.user_id==User.id).filter_by(User.user_id==1).all()]
-#     friends = [u.to_dict() for u in User.query.join(User.friends).filter_by(id=1)]
-    userList = User.query\
-        .join(Friendship, Friendship.friend_id==User.id)\
+@token_required
+def get_friends(current_user):
+    friends_list = User.query\
+        .join(Friendship, or_(User.id==Friendship.friend_id, User.id==Friendship.user_id))\
         .with_entities(User.username, Friendship.status)\
-        .filter(Friendship.user_id == 3).all()
+        .filter(User.id != current_user.id, or_(Friendship.user_id==current_user.id, Friendship.friend_id==current_user.id)).all()
 
-    print(userList)
-
-    return jsonify([{'username': f[0], 'status': f[1]} for f in userList])
+    return jsonify([{'username': f[0], 'status': f[1]} for f in friends_list])
 
 
 @api.route('/email/download/<uuid:unique_token>', methods=('POST',))
