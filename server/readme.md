@@ -3,11 +3,25 @@ python -m venv venv
 python -m ensurepip --upgrade
 pip install -r requirements.txt
 
-Démarrer l'application : python -m manage --app=manage:app run
 
-Relance email : python -m manage --app=manage:app email:register:confirmation
+**Database** 
 
-Commande directement dans le conteneur:
-Exemple : 
+**Create Migration :**python -m manage --app=manage:app db migrate
+
+**Run Migration :** python -m manage --app=manage:app db upgrade
+
+**Démarrer l'application :** python -m manage --app=manage:app run
+
+
+**Cron**
+
+**Relance email :** python -m manage --app=manage:app email:register:confirmation
+
+
+**Commandes**
+
+**Exemple :** 
+
 docker compose exec wiki-server python manage.py --app=manage:app create_db
+
 docker compose exec wiki-server python manage.py --app=manage:app email:register:confirmation
