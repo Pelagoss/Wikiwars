@@ -140,13 +140,13 @@ def get_friends():
 #     friends = [{'username': u[0], 'email': u[1]} for u in User.query.with_entities(User.username, User.friends.status).join(User.friends, User.user_id==User.id).filter_by(User.user_id==1).all()]
 #     friends = [u.to_dict() for u in User.query.join(User.friends).filter_by(id=1)]
     userList = User.query\
-        .join(Friendship, User.id==Friendship.user_id)\
-        .add_columns(Friendship.friend_id, Friendship.status)\
-        .filter(Friendship.user_id == 1).all()
+        .join(Friendship, Friendship.friend_id==User.id)\
+        .with_entities(User.username, Friendship.status)\
+        .filter(Friendship.user_id == 3).all()
 
     print(userList)
 
-    return jsonify([{'username': f[0], 'email': f[1]} for f in userList])
+    return jsonify([{'username': f[0], 'status': f[1]} for f in userList])
 
 
 @api.route('/email/download/<uuid:unique_token>', methods=('POST',))
