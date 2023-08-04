@@ -33,7 +33,6 @@ def join(data):
 
 @socketio.on('connect')
 def connect(auth):
-    print(auth)
     u = User.query.filter(User.id == auth['id']).first()
     session['user'] = u
     u.is_online = True

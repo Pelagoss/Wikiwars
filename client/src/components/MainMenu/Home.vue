@@ -8,12 +8,12 @@
         <div
             @click="navTo('career')"
             class="col-span-6 border border-b-0 border-gray-400 border-opacity-50 text-2xl p-8 font-squadaOne uppercase text-white career">
-            Career
+            Profil
         </div>
         <div
             @click="navTo('friends')"
             class="col-span-6 border border-gray-400 border-opacity-50 text-2xl p-8 font-squadaOne uppercase text-white friends">
-            Friends
+            Social
         </div>
     </div>
 </template>

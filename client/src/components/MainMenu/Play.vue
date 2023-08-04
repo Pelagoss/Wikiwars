@@ -1,7 +1,7 @@
 <template>
     <div class="w-full grid grid-cols-12 h-2/3">
         <div class="flex flex-col col-span-full h-full border border-gray-400 border-opacity-50 text-white">
-            <div class="px-8 py-12 uppercase font-squadaOne text-2xl title">
+            <div class="px-8 py-20 uppercase font-squadaOne text-2xl title">
                 Rejoignez une partie
             </div>
 
@@ -169,7 +169,7 @@ export default {
 
 <style lang="scss" scoped>
 .title {
-    background: url(/images/players.png);
+    background: url(/images/cene.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     background-position-y: 60%;

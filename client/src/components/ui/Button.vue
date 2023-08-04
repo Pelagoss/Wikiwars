@@ -82,7 +82,6 @@ export default {
     background: #e02c26;
     border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 1px 1px 2px rgba(255, 255, 255, 0.2);
-    color: #ec817d;
     text-decoration: none;
     text-shadow: -1px -1px 0 #c2211c;
     transition: all 250ms linear;
@@ -101,7 +100,6 @@ export default {
     background: #d2d2d2;
     border: 1px solid rgba(0, 0, 0, 0.05);
     box-shadow: 1px 1px 2px rgba(255, 255, 255, 0.2);
-    color: #aba5a5de;
     text-decoration: none;
     text-shadow: -1px -1px 0 #5d5a5a;
     transition: all 250ms linear;

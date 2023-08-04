@@ -139,13 +139,21 @@ def confirmation(token):
 @api.route('/friends', methods=('GET',))
 @token_required
 def get_friends(current_user):
-    print(current_user)
-    print(current_user.id)
     friends_list = User.query\
         .join(Friendship, or_(User.id==Friendship.friend_id, User.id==Friendship.user_id))\
         .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online)\
-        .filter(User.id != current_user.id, or_(Friendship.user_id==current_user.id, Friendship.friend_id==current_user.id)).all()
+        .filter(User.id != current_user.id, or_(Friendship.user_id==current_user.id, Friendship.friend_id==current_user.id))
+        .order_by(Friendship.created_at)
+        .all()
 
+    return jsonify([{'username': f[0], 'status': f[1], 'user_id': f[2], 'isOnline': f[3]} for f in friends_list])
+
+
+@api.route('/friends', methods=('POST',))
+@token_required
+def handle_friends_invitation(current_user):
+    #todo gérer l'acceptation ou le refus d'une demande en ami
+    f = [1,2,3,4]
     return jsonify([{'username': f[0], 'status': f[1], 'user_id': f[2], 'isOnline': f[3]} for f in friends_list])
 
 

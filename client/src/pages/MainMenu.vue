@@ -37,9 +37,6 @@ export default {
             tabToShow: 'home'
         }
     },
-    created() {
-        console.log(socket);
-    },
     computed: {
         tabs() {
             return [
@@ -48,15 +45,15 @@ export default {
                     slug: 'home'
                 },
                 {
-                    label: 'Play',
+                    label: 'Jouer',
                     slug: 'play'
                 },
                 {
-                    label: 'Friends',
+                    label: 'Social',
                     slug: 'friends'
                 },
                 {
-                    label: 'Career',
+                    label: 'Profil',
                     slug: 'career'
                 },
             ]
