@@ -11,8 +11,7 @@ def create_app(app_name='WIKI_API'):
     from api.models import db
     db.init_app(app)
 
-    CORS(app)
-
+    CORS(app, supports_credentials=True)
     return app
 
 def create_socket(app):

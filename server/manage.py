@@ -31,6 +31,27 @@ def join(data):
     socketio.emit('ROOM_JOINED', to=current_user)
 
 
+@socketio.on('connect')
+def connect(auth):
+    print(auth)
+    u = User.query.filter(User.id == auth['id']).first()
+    session['user'] = u
+    u.is_online = True
+    db.session.add(u)
+    db.session.flush()
+    db.session.commit()
+
+
+@socketio.on('disconnect')
+def disconnect():
+    u = session['user']
+    u.is_online = False
+    db.session.add(u)
+    db.session.flush()
+    db.session.commit()
+
+    session['user'] = None
+
 @socketio.on('leave')
 def leave(data):
     leave_room(f'{data["start"]}_{data["target"]}')
@@ -41,6 +62,7 @@ def create_db():
     db.drop_all()
     db.create_all()
     db.session.commit()
+
 
 @cli.command("email:register:confirmation")
 def re_send_confirmation():
@@ -53,6 +75,7 @@ def re_send_confirmation():
         db.session.commit()
         send_mail('registerRelance', u, data={'pseudo': u.username, 'token': str(u.validation_token),
                                           'linkValider': f'[appUrl]/inscription/{u.validation_token}'})
+
 
 # enable python shell with application context
 @with_appcontext

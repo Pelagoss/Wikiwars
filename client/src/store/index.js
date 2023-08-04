@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import {isValidJwt, emitter} from '@/utils'
 import {$axios} from "@/utils/axios.js";
+import {socket, state} from "@/utils/socket.js";
 
 export const userStore = defineStore('user', {
     state: () => ({
@@ -12,7 +13,15 @@ export const userStore = defineStore('user', {
     }),
     getters: {
         getUser: (state) => state,
-        isAuthenticated: (state) => isValidJwt(state.jwt),
+        isAuthenticated: (state) => {
+
+            if (state.id !== null) {
+                socket.auth = {id: state.id }
+                socket.connect();
+            }
+
+            return isValidJwt(state.jwt)
+        },
     },
     actions: {
         login(data) {
@@ -23,6 +32,9 @@ export const userStore = defineStore('user', {
                 this.wins = data.wins;
                 this.jwt = data.jwt;
                 localStorage.setItem('token', this.jwt);
+
+                socket.auth = {id: this.id }
+                socket.connect();
             });
         },
         register(data) {
@@ -34,6 +46,7 @@ export const userStore = defineStore('user', {
             this.games = null;
             this.wins = null;
             this.jwt = null;
+            socket.disconnect();
         }
     },
     persist: {

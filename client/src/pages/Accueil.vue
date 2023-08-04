@@ -1,7 +1,7 @@
 <template>
 <!--    <Lobby v-if="isAuthenticated" />-->
-<!--    <Login v-else />-->
-    <main-menu/>
+    <main-menu v-if="isAuthenticated"/>
+    <Login v-else />
 <!--    TODO remettre correctement ça-->
 </template>
 
@@ -16,7 +16,9 @@ export default {
     name: "Accueil",
     components: {MainMenu, Login, Lobby},
     created() {
-        this.fetchGames();
+        if (this.isAuthenticated === true) {
+            this.fetchGames();
+        }
     },
     computed: {
         ...mapState(userStore,{isAuthenticated: "isAuthenticated"})

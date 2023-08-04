@@ -10,6 +10,7 @@
 
             <Home @change-page="tabToShow = $event" v-if="tabToShow === 'home'"/>
             <Play @change-page="tabToShow = $event" v-if="tabToShow === 'play'"/>
+            <Friends @change-page="tabToShow = $event" v-if="tabToShow === 'friends'"/>
             <Career @change-page="tabToShow = $event" v-if="tabToShow === 'career'"/>
 
             <div @click="logout" class="quit">
@@ -22,17 +23,22 @@
 <script>
 import Home from "@/components/MainMenu/Home.vue";
 import Play from "@/components/MainMenu/Play.vue";
+import Friends from "@/components/MainMenu/Friends.vue";
 import Career from "@/components/MainMenu/Career.vue";
 import {mapActions} from "pinia";
 import {userStore} from "@/store/index.js";
+import {socket} from "@/utils/socket.js";
 
 export default {
     name: "MainMenu",
-    components: {Home, Play, Career},
+    components: {Home, Play, Friends, Career},
     data() {
         return {
             tabToShow: 'home'
         }
+    },
+    created() {
+        console.log(socket);
     },
     computed: {
         tabs() {
@@ -57,7 +63,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(userStore, {logout: "logout"})
+        ...mapActions(userStore, {logout: 'logout', user: 'getUser'})
     }
 }
 </script>

@@ -24,6 +24,4 @@ app.use(router);
 app.provide('axios', $axios);
 app.provide('socket', socket);
 
-socket.connect();
-
 app.mount('#app');

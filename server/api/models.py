@@ -137,6 +137,7 @@ class User(db.Model):
     email = db.Column(String)
     username = db.Column(db.Text)
     password = db.Column(db.Text)
+    is_online = db.Column(db.Boolean, default=False)
     validation_token = db.Column(db.Uuid)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     games = db.relationship('Game', secondary=u_g, lazy='subquery', backref=db.backref('users', lazy=True))

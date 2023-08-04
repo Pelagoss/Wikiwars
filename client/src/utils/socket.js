@@ -7,7 +7,8 @@ export const state = reactive({
 });
 
 const URL = import.meta.env.VITE_SOCKET_URL;
-export const socket = io(URL, { autoConnect: false, transports: ['polling', 'flashsocket'] });
+export const socket = io(URL, { autoConnect: false, withCredentials: true, transports: ['polling', 'flashsocket'] });
+
 // const socket = io('localhost:5000');
 
 socket.on("connect", () => {

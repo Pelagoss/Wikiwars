@@ -1,7 +1,10 @@
 import axios from "axios";
 import {emitter} from "@/utils/index.js";
 
-const myAxios = axios.create();
+const myAxios = axios.create({
+    withCredentials: true,
+    xsrfCookieName: 'jwt_access_token'
+});
 
 myAxios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
