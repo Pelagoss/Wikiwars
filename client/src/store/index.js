@@ -77,3 +77,30 @@ export const gameStore = defineStore('game', {
         }
     }
 })
+
+export const friendsStore = defineStore('friends', {
+    state: () => ({
+        friends: [],
+        friends_invitations: []
+    }),
+    getters: {
+        getFriends: (state) => state.friends,
+        getFriendsInvitations: (state) => state.friends_invitations,
+    },
+    actions: {
+        handleFriends(data) {
+            this.friends = data.filter(f => f.status !== 'pending' || userStore()?.getUser.id === f.user_id);
+            this.friends_invitations = data.filter(f => f.status === 'pending' && userStore()?.getUser.id !== f.user_id);
+        },
+        fetchFriends() {
+            return $axios.get('/friends').then(({data}) => {
+                this.handleFriends(data);
+            });
+        },
+        manageInvitation(response, friend) {
+            return $axios.post('/friends', {user_id: friend.user_id, accept: response}).then(({data}) => {
+                this.handleFriends(data);
+            });
+        }
+    }
+})

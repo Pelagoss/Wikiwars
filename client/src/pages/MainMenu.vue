@@ -4,7 +4,9 @@
             <div class="menu">
                 <div v-for="(tab, i) in tabs" @click="tabToShow = tab.slug"
                      :class="{'active': tabToShow === tab.slug}">
-                    {{ tab.label }}
+                    <span :class="{'newInvitations': friends_invitations.length > 0 && tab.slug === 'friends'}">
+                        {{ tab.label }}
+                    </span>
                 </div>
             </div>
 
@@ -25,9 +27,8 @@ import Home from "@/components/MainMenu/Home.vue";
 import Play from "@/components/MainMenu/Play.vue";
 import Friends from "@/components/MainMenu/Friends.vue";
 import Career from "@/components/MainMenu/Career.vue";
-import {mapActions} from "pinia";
-import {userStore} from "@/store/index.js";
-import {socket} from "@/utils/socket.js";
+import {mapActions, mapState} from "pinia";
+import {friendsStore, userStore} from "@/store/index.js";
 
 export default {
     name: "MainMenu",
@@ -38,6 +39,7 @@ export default {
         }
     },
     computed: {
+        ...mapState(friendsStore, {"friends_invitations": "getFriendsInvitations"}),
         tabs() {
             return [
                 {

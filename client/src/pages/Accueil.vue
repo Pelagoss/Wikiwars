@@ -9,8 +9,8 @@
 import Lobby from "@/pages/Lobby.vue";
 import MainMenu from "@/pages/MainMenu.vue";
 import Login from "@/pages/Login.vue";
-import { mapState } from 'pinia'
-import {userStore} from "@/store/index.js";
+import {mapActions, mapState} from 'pinia'
+import {friendsStore, userStore} from "@/store/index.js";
 
 export default {
     name: "Accueil",
@@ -18,12 +18,14 @@ export default {
     created() {
         if (this.isAuthenticated === true) {
             this.fetchGames();
+            this.fetchFriends();
         }
     },
     computed: {
         ...mapState(userStore,{isAuthenticated: "isAuthenticated"})
     },
     methods: {
+        ...mapActions(friendsStore, {'fetchFriends': "fetchFriends"}),
         handleGames(data) {
             userStore().games = data.filter(g => g.users.map(u => u.username).includes(userStore().username));
             userStore().wins = data.filter(g => g.winner?.id === userStore().id);

@@ -11,7 +11,9 @@
 
                     <div @click="tabToShow = 'invitations'"
                          :class="{'active': tabToShow === 'invitations'}">
-                        Invitations d'amis
+                        <span :class="{'newInvitations': friends_invitations.length > 0}">
+                            Invitations d'amis
+                        </span>
                     </div>
                 </div>
             </div>
@@ -40,32 +42,44 @@
                                 </div>
                             </td>
                         </tr>
+
+                        <tr v-else>
+                            <td colspan="2" class="w-full text-center font-squadaOne text-xl">
+                                Vous n'avez encore aucun ami
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 
                 <table v-else-if="tabToShow === 'invitations'" class="w-full border-spacing-y-1 border-spacing-x-0 h-full">
                     <tbody>
-                    <tr v-if="friends_invitation.length !== 0">
-                        <td colspan="2" class="w-full">
-                            <div class="overflow-y-auto scroll-light h-full">
-                                <table>
-                                    <tbody>
-                                    <tr v-for="(friend, index) in invitations">
-                                        <td class="w-6/12 font-squadaOne text-xl">
-                                            {{ friend.username }}
-                                        </td>
-                                        <td class="w-6/12">
-                                            <div class="flex gap-4 justify-center">
-                                                <Button class="btnv-success">Accepter</Button>
-                                                <Button class="btnv-4">Refuser</Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
+                        <tr v-if="friends_invitations.length !== 0">
+                            <td colspan="2" class="w-full">
+                                <div class="overflow-y-auto scroll-light h-full">
+                                    <table>
+                                        <tbody>
+                                        <tr v-for="(friend, index) in friends_invitations">
+                                            <td class="w-6/12 font-squadaOne text-xl">
+                                                {{ friend.username }}
+                                            </td>
+                                            <td class="w-6/12">
+                                                <div class="flex gap-4 justify-center">
+                                                    <Button class="btnv-success" @click="manage(true, friend)">Accepter</Button>
+                                                    <Button class="btnv-4" @click="manage(false, friend)">Refuser</Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr v-else>
+                            <td colspan="2" class="w-full text-center font-squadaOne text-xl">
+                                Vous n'avez aucune demande d'amis
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -78,7 +92,7 @@
 <script>
 import Button from "@/components/ui/Button.vue";
 import {toRaw} from "vue";
-import {gameStore, userStore} from "@/store/index.js";
+import {friendsStore, gameStore, userStore} from "@/store/index.js";
 import {mapActions, mapState} from "pinia";
 import {emitter} from "@/utils/index.js";
 import {socket, state} from "@/utils/socket.js";
@@ -89,14 +103,12 @@ export default {
     components: {SaberLoader, Button},
     data() {
         return {
-            friends: [],
-            friends_invitation: [],
             loading: true,
             tabToShow: 'amis'
         };
     },
     created() {
-        this.fetchFriends();
+        this.fetchFriends().finally(() => this.loading = false);
         emitter.$on('SOCKET_CONNECTED', () => socket.emit('join', 'lobby'));
 
         if (state.connected) {
@@ -105,6 +117,7 @@ export default {
     },
     computed: {
         ...mapState(userStore, {'user': "getUser"}),
+        ...mapState(friendsStore, {'friends': "getFriends", "friends_invitations": "getFriendsInvitations"}),
         amis() {
             let friends = this.friends.filter(f => f.status === 'friends').sort((a, b) => a.username.localeCompare(b.username));
             friends = [...friends, ...this.friends.filter(f => f.status === 'pending').sort((a, b) => a.username.localeCompare(b.username))];
@@ -112,13 +125,10 @@ export default {
         }
     },
     methods: {
-        handleFriends(data) {
-            this.friends = data.filter(f => f.status !== 'pending' || this.user.id === f.user_id);
-            this.friends_invitation = data.filter(f => f.status === 'pending' && this.user.id !== f.user_id);
-        },
-        fetchFriends() {
-            return this.$axios.get('/friends').then(({data}) => {
-                this.handleFriends(data);
+        ...mapActions(friendsStore, {'fetchFriends': "fetchFriends", "manageInvitation": "manageInvitation"}),
+        manage(response, friend) {
+            return this.manageInvitation(response, friend).then(() => {
+                this.tabToShow = 'amis';
             }).finally(() => this.loading = false);
         }
     }

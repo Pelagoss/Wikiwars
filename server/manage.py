@@ -36,6 +36,7 @@ def connect(auth):
     u = User.query.filter(User.id == auth['id']).first()
     session['user'] = u
     u.is_online = True
+    u.sid = request.sid
     db.session.add(u)
     db.session.flush()
     db.session.commit()

@@ -13,20 +13,23 @@
         <div
             @click="navTo('friends')"
             class="col-span-6 border border-gray-400 border-opacity-50 text-2xl p-8 font-squadaOne uppercase text-white friends">
-            Social
+            <span :class="{'newInvitations': friends_invitations.length > 0}">
+                Social
+            </span>
         </div>
     </div>
 </template>
 
 <script>
 import {toRaw} from "vue";
-import {gameStore, userStore} from "@/store/index.js";
-import {mapActions} from "pinia";
+import {friendsStore, gameStore, userStore} from "@/store/index.js";
+import {mapActions, mapState} from "pinia";
 
 export default {
     name: "Home",
     emits: ['change-page'],
     computed: {
+        ...mapState(friendsStore, {"friends_invitations": "getFriendsInvitations"}),
         isInGame() {
             let games = toRaw(userStore().games);
             let filtered_games = games.filter(g => g.winner === null);

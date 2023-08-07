@@ -20,6 +20,10 @@ socket.on("disconnect", () => {
     state.connected = false;
 });
 
+socket.on('NEW_FRIEND', () => {
+    this.fetchFriends();
+});
+
 socket.onAny((event, ...args) => {
     console.log(event, args);
 });
