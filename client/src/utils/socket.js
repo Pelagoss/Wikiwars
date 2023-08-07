@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
 import {reactive} from "vue";
 import {emitter} from "./index.js";
+import {friendsStore} from "@/store/index.js";
 
 export const state = reactive({
     connected: false,
@@ -21,7 +22,7 @@ socket.on("disconnect", () => {
 });
 
 socket.on('NEW_FRIEND', () => {
-    this.fetchFriends();
+    friendsStore().fetchFriends();
 });
 
 socket.onAny((event, ...args) => {
