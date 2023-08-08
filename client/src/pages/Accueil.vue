@@ -1,8 +1,6 @@
 <template>
-<!--    <Lobby v-if="isAuthenticated" />-->
     <main-menu v-if="isAuthenticated"/>
     <Login v-else />
-<!--    TODO remettre correctement ça-->
 </template>
 
 <script>

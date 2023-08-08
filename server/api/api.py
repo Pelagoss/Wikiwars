@@ -55,6 +55,7 @@ def token_required(f):
 
 @api.route('/')
 def index():
+    socketio().emit('NEW_FRIEND', 'John Doe', to=User.query.filter_by(id=1).first().sid)
     return flask.render_template('index.html')
 
 @api.route('/login', methods=('POST',))

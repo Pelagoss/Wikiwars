@@ -21,8 +21,15 @@ socket.on("disconnect", () => {
     state.connected = false;
 });
 
-socket.on('NEW_FRIEND', () => {
+socket.on('NEW_FRIEND', (data) => {
     friendsStore().fetchFriends();
+    emitter.$emit('NOTIFICATION', {
+        type: 'NEW_FRIEND',
+        data: {
+            username: data,
+            icon: 'Person'
+        }
+    });
 });
 
 socket.onAny((event, ...args) => {
