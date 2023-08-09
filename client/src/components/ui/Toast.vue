@@ -1,7 +1,9 @@
 <template>
-    <transition name='fade'>
+    <transition name="slide-fade">
         <aside
+            v-if="show"
             class="toast"
+            @mouseenter="timer?.pause" @mouseleave="timer?.resume"
         >
             <slot>
                 {{ data?.message }} {{ data?.i }}
@@ -17,11 +19,47 @@ export default {
             type: Object
         }
     },
+    data() {
+        return {
+            timer: null,
+            show: false
+        }
+    },
+    methods: {
+        createTimer: function (callback, delay) {
+            var timerId, start, remaining = delay;
+
+            this.pause = function() {
+                window.clearTimeout(timerId);
+                timerId = null;
+                remaining -= Date.now() - start;
+            };
+
+            this.resume = function() {
+                if (timerId) {
+                    return;
+                }
+
+                start = Date.now();
+                timerId = window.setTimeout(callback, remaining);
+            };
+
+            this.resume();
+        }
+    },
     mounted() {
+        this.show = true
+
         if(this.data.timeout) {
-            window.setTimeout(() => {
-                this.$parent.deleteToast(this.data.i);
-            }, this.data.timeout);
+            let parent = this.$parent;
+
+            this.timer = new this.createTimer(() => {
+                    this.show = false;
+                    window.setTimeout(() => {
+                        parent.deleteToast(this.data.i)
+                    }, 150);
+                }, this.data.timeout
+            );
         }
     }
 }
@@ -29,16 +67,23 @@ export default {
 
 <style lang="scss" scoped>
 .toast {
-    border-radius: 0.25rem;
-    padding: 1rem 0.75rem;
+    @apply border rounded text-white px-3 py-4;
+    background-color: rgba(190, 190, 190, 0.15);
+    backdrop-filter: blur(20px);
     width: 100%;
-    color: white;
 }
 
-.fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
+.slide-fade-enter-active {
+    transition: all 0.3s ease-out;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+
+.slide-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+    transform: translate3d(0, 100%, 0);
     opacity: 0;
 }
 </style>

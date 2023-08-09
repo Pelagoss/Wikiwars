@@ -91,11 +91,8 @@
 
 <script>
 import Button from "@/components/ui/Button.vue";
-import {toRaw} from "vue";
 import {friendsStore, gameStore, userStore} from "@/store/index.js";
 import {mapActions, mapState} from "pinia";
-import {emitter} from "@/utils/index.js";
-import {socket, state} from "@/utils/socket.js";
 import SaberLoader from "@/components/ui/SaberLoader.vue";
 
 export default {
@@ -109,10 +106,10 @@ export default {
     },
     created() {
         this.fetchFriends().finally(() => this.loading = false);
-        emitter.$on('SOCKET_CONNECTED', () => socket.emit('join', 'lobby'));
+        this.$emitter.$on('SOCKET_CONNECTED', () => this.$socket.emit('join', 'lobby'));
 
-        if (state.connected) {
-            socket.emit('join', 'lobby');
+        if (this.$socketState.connected) {
+            this.$socket.emit('join', 'lobby');
         }
     },
     computed: {

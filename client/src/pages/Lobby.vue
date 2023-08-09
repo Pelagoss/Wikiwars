@@ -119,8 +119,6 @@ import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
 import {mapActions, mapState} from "pinia";
 import {gameStore, userStore} from "@/store/index.js";
 import {toRaw} from "vue";
-import {socket, state} from "@/utils/socket.js";
-import {emitter} from "@/utils/index.js";
 
 export default {
     name: "Lobby",
@@ -156,13 +154,13 @@ export default {
     },
     created() {
         this.fetchGames();
-        emitter.$on('SOCKET_CONNECTED', () => socket.emit('join', 'lobby'));
+        this.$emitter.$on('SOCKET_CONNECTED', () => this.$socket.emit('join', 'lobby'));
 
-        if (state.connected) {
-            socket.emit('join', 'lobby');
-            socket.on('NEW_GAME', (data) => this.addGame(data));
-            socket.on('GAME_STARTED', (data) => this.updateGame(data));
-            socket.on('FINISH_GAME', (data) => this.removeGame(data));
+        if (this.$socketState.connected) {
+            this.$socket.emit('join', 'lobby');
+            this.$socket.on('NEW_GAME', (data) => this.addGame(data));
+            this.$socket.on('GAME_STARTED', (data) => this.updateGame(data));
+            this.$socket.on('FINISH_GAME', (data) => this.removeGame(data));
         }
     },
     methods: {

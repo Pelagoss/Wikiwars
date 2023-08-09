@@ -76,7 +76,6 @@
 <script>
 import {toRaw} from "vue";
 import {userStore} from "@/store/index.js";
-import {socket, state} from '@/utils/socket.js'
 import {mapState} from "pinia";
 import Button from "@/components/ui/Button.vue";
 import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
@@ -157,19 +156,19 @@ export default {
             })
         },
         initSocket() {
-            socket.emit('join', this.game);
+            this.$socket.emit('join', this.game);
 
             this.error = false;
 
-            socket.on("PAGE_CHANGED", (data) => {
+            this.$socket.on("PAGE_CHANGED", (data) => {
                 this.game = data;
             });
 
-            socket.on("GAME_FINISHED", (data) => {
+            this.$socket.on("GAME_FINISHED", (data) => {
                 this.game = data;
             });
 
-            socket.on('START_GAME', (data) => {
+            this.$socket.on('START_GAME', (data) => {
                 this.game = data;
 
                 this.$nextTick(() => {
@@ -181,19 +180,19 @@ export default {
                 });
             });
 
-            socket.on('connect_error', (e) => {
+            this.$socket.on('connect_error', (e) => {
                 this.error = true;
             });
 
             this.initStarted = false;
         },
         destroy() {
-            socket.emit('leave', this.game);
+            this.$socket.emit('leave', this.game);
 
-            socket.off("connect");
-            socket.off("PAGE_CHANGED");
-            socket.off("GAME_FINISHED");
-            socket.off("START_GAME");
+            this.$socket.off("connect");
+            this.$socket.off("PAGE_CHANGED");
+            this.$socket.off("GAME_FINISHED");
+            this.$socket.off("START_GAME");
         },
         launch() {
             this.$refs.door_un.classList.add('opened');

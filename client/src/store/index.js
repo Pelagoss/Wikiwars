@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
-import {isValidJwt, emitter} from '@/utils'
-import {$axios} from "@/utils/axios.js";
-import {socket, state} from "@/utils/socket.js";
+import {isValidJwt} from '@/utils'
+import $axios from "@/utils/axios.js";
+import {socket} from "@/utils/socket.js";
 
 export const userStore = defineStore('user', {
     state: () => ({

@@ -5,15 +5,8 @@
 
 
 <script>
-import {emitter} from "./utils/index.js";
-import {userStore} from "./store/index.js";
+import {friendsStore, userStore} from "./store/index.js";
 import ToastContainer from "@/components/ui/ToastContainer.vue";
-import {createApp} from "vue";
-
-emitter.$on('unAuthorized', (data) => {
-    console.log(userStore);
-    userStore().logout();
-});
 
 export default {
     name: 'App',
@@ -25,17 +18,12 @@ export default {
         }
     },
     mounted() {
-        let toast = createApp(ToastContainer);
-        let wrapper = document.createElement('div');
-        wrapper.className = 'absolute bottom-0 right-0 flex flex-col-reverse'
-        let toastr = toast.mount(wrapper);
+        this.$emitter.$on('unAuthorized', (data) => {
+            userStore().logout();
+        });
 
-        if (document.body) {
-            document.body.appendChild(wrapper);
-        }
-
-        emitter.$on('NOTIFICATION', (data) => {
-            toastr.addToast(data)
+        this.$emitter.$on('NOTIFICATION', (data) => {
+            this.$notifier.addToast(data)
         });
     }
 };

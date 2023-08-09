@@ -31,4 +31,4 @@ myAxios.interceptors.response.use(r => r, (error) => {
     return Promise.reject(error);
 });
 
-export const $axios = myAxios;
+export default myAxios;
