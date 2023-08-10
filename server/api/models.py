@@ -220,7 +220,7 @@ class User(db.Model):
             return is_valid, errors
 
     def to_dict(self, type = None):
-        d = dict(id=self.id, username=self.username)
+        d = dict(id=self.id, username=self.username, is_online=self.is_online)
 
         if type == 'game':
             return d

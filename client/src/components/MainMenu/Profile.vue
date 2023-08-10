@@ -2,7 +2,7 @@
     <div class="flex flex-col col-span-6 h-full p-8 text-white font-squadaOne text-2xl">
         <div v-if="showTitle" class="title uppercase">Profil</div>
         <!-- TODO Mettre une photo de profil -->
-        <img class="h-32 w-32 rounded-full self-center" src="https://i.pinimg.com/564x/8d/ff/c8/8dffc810ac2226282085257e73a60761.jpg"/>
+        <img class="h-32 w-32 rounded-full self-center border-4" :class="[{true: 'border-accent', false: 'border-error', undefined: 'border-cyan-500'}[user.isOnline]]" src="https://i.pinimg.com/564x/8d/ff/c8/8dffc810ac2226282085257e73a60761.jpg"/>
 
         <div class="title self-center pt-6">{{ user.username }}</div>
     </div>
