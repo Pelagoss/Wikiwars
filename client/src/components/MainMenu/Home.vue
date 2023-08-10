@@ -5,18 +5,18 @@
             class="col-span-6 border border-r-0 border-gray-400 border-opacity-50 row-span-2 text-2xl p-8 font-squadaOne uppercase text-white play">
             Play now!
         </div>
-        <div
-            @click="navTo('career')"
+        <router-link
+            :to="{name: 'career'}"
             class="col-span-6 border border-b-0 border-gray-400 border-opacity-50 text-2xl p-8 font-squadaOne uppercase text-white career">
             Profil
-        </div>
-        <div
-            @click="navTo('friends')"
+        </router-link>
+        <router-link
+            :to="{name: 'friends'}"
             class="col-span-6 border border-gray-400 border-opacity-50 text-2xl p-8 font-squadaOne uppercase text-white friends">
             <span :class="{'newInvitations': friends_invitations.length > 0}">
                 Social
             </span>
-        </div>
+        </router-link>
     </div>
 </template>
 
@@ -67,7 +67,7 @@ export default {
 
 <style lang="scss" scoped>
 .mainGrid {
-    & div {
+    & div, & a {
         @apply cursor-pointer hover:text-[1.875rem] hover:brightness-150 ease-out duration-300;
     }
 

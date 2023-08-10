@@ -25,6 +25,10 @@ export default {
         this.$emitter.$on('NOTIFICATION', (data) => {
             this.$notifier.addToast(data)
         });
+
+        this.$emitter.$on('NAV_TO', (data) => {
+            this.$router.push(data);
+        });
     }
 };
 

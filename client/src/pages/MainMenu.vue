@@ -2,18 +2,15 @@
     <div class="h-[100vh] w-[100vw] bgTable">
         <div class="max-w-7xl h-full bg-red py-16 px-16">
             <div class="menu">
-                <div v-for="(tab, i) in tabs" @click="tabToShow = tab.slug"
-                     :class="{'active': tabToShow === tab.slug}">
+                <router-link :to="{name: tab.slug}" v-for="(tab, i) in tabs"
+                             exact-active-class="active" exact>
                     <span :class="{'newInvitations': friends_invitations.length > 0 && tab.slug === 'friends'}">
                         {{ tab.label }}
                     </span>
-                </div>
+                </router-link>
             </div>
 
-            <Home @change-page="tabToShow = $event" v-if="tabToShow === 'home'"/>
-            <Play @change-page="tabToShow = $event" v-if="tabToShow === 'play'"/>
-            <Friends @change-page="tabToShow = $event" v-if="tabToShow === 'friends'"/>
-            <Career @change-page="tabToShow = $event" v-if="tabToShow === 'career'"/>
+            <router-view></router-view>
 
             <div @click="logout" class="quit">
                 Quit
@@ -83,7 +80,7 @@ export default {
 .menu {
     @apply flex mb-12;
 
-    & div {
+    & a {
         @apply ease-out duration-300 w-36 text-gray-400 flex items-center justify-center py-2 border border-y-0 border-l border-r-0 border-gray-400 uppercase font-squadaOne cursor-pointer;
         background-color: rgba(190, 190, 190, 0.15);
         backdrop-filter: blur(20px);

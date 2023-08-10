@@ -3,17 +3,22 @@
         <aside
             v-if="show"
             class="toast"
-            @mouseenter="timer?.pause" @mouseleave="timer?.resume"
+            @mouseenter="timer?.pause" @mouseleave="timer?.resume" @click="onClick(data?.action)"
         >
-            <slot>
-                {{ data?.message }} {{ data?.i }}
-                {{ data?.data.username }}
-            </slot>
+            <div class="flex gap-3">
+                <icone-dynamique-composant :icon="data?.icon"
+                                           class="!w-6 !h-6"></icone-dynamique-composant>
+
+                <div v-html="data?.message"></div>
+            </div>
         </aside>
     </transition>
 </template>
 <script>
+import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
+
 export default {
+    components: {IconeDynamiqueComposant},
     props: {
         data: {
             type: Object
@@ -26,6 +31,15 @@ export default {
         }
     },
     methods: {
+        onClick(action) {
+            this.show = false;
+
+            if (action === null || action === undefined) {
+                return;
+            }
+
+            action();
+        },
         createTimer: function (callback, delay) {
             var timerId, start, remaining = delay;
 
@@ -67,7 +81,7 @@ export default {
 
 <style lang="scss" scoped>
 .toast {
-    @apply border rounded text-white px-3 py-4;
+    @apply border rounded text-white px-3 py-4 cursor-pointer;
     background-color: rgba(190, 190, 190, 0.15);
     backdrop-filter: blur(20px);
     width: 100%;

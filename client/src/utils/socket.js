@@ -25,10 +25,9 @@ socket.on('NEW_FRIEND', (data) => {
     friendsStore().fetchFriends();
     emitter.$emit('NOTIFICATION', {
         type: 'NEW_FRIEND',
-        data: {
-            username: data,
-            icon: 'Person'
-        }
+        message: `<span class="font-bold">${data}</span> a accepté votre demande d'ami</span>`,
+        action: () => emitter.$emit('NAV_TO', {name: 'friends'}),
+        icon: 'Users'
     });
 });
 

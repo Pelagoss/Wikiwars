@@ -22,10 +22,9 @@ export default {
     methods: {
         addToast(data) {
             this.toasts[this.count] = {
+                ...data,
                 i: this.count,
                 timeout: this.timeout * 1000,
-                message: "Ceci est un message",
-                data: data
             };
 
             this.count += 1;
