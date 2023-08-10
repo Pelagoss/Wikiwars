@@ -137,6 +137,15 @@ def confirmation(token):
 
     return jsonify(True)
 
+@api.route('/users', methods=('POST',))
+@token_required
+def get_user(current_user):
+    data = request.get_json()
+
+    user = User.query.filter_by(username = data['username']).first()
+
+    return jsonify(user.to_dict())
+
 @api.route('/friends', methods=('GET',))
 @token_required
 def get_friends(current_user):

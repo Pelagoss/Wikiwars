@@ -16,13 +16,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col col-span-6 h-full border border-gray-400 border-opacity-50 p-8">
-            <div class="title uppercase">Profil</div>
-            <!-- TODO Mettre une photo de profil -->
-            <img class="h-32 w-32 rounded-full self-center" src="https://i.pinimg.com/564x/8d/ff/c8/8dffc810ac2226282085257e73a60761.jpg"/>
-
-            <div class="title self-center pt-6">{{ username }}</div>
-        </div>
+        <Profile show-title class="border border-gray-400 border-opacity-50" :user="user"/>
     </div>
 </template>
 
@@ -32,10 +26,11 @@ import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
 import {toRaw} from "vue";
 import {gameStore, userStore} from "@/store/index.js";
 import {mapActions, mapState} from "pinia";
+import Profile from "@/components/MainMenu/Profile.vue";
 
 export default {
     name: "Career",
-    components: {IconeDynamiqueComposant, Button},
+    components: {Profile, IconeDynamiqueComposant, Button},
     emits: ['change-page'],
     created() {
         this.$emitter.$on('SOCKET_CONNECTED', () => this.$socket.emit('join', 'lobby'));
@@ -60,7 +55,7 @@ export default {
         ratio() {
             return this.wins / (this.loses === 0 ? 1.00 : this.loses);
         },
-        ...mapState(userStore, {username: "username"}),
+        ...mapState(userStore, {user: "getUser"}),
     },
     methods: {
         navTo(route) {

@@ -29,12 +29,18 @@
                                 <div class="overflow-y-auto scroll-light h-full">
                                     <table>
                                         <tbody>
-                                            <tr v-for="(friend, index) in amis">
-                                                <td class="w-6/12">
+                                            <tr v-for="(friend, index) in amis" class="cursor-pointer" @click="openModalFriend(friend)">
+                                                <td class="w-6/12 inline-flex gap-3 items-center">
+                                                    <div class="h-3 w-3 rounded-full border" :class="[{true: 'bg-accent', false: 'bg-error'}[friend.isOnline]]"></div>
                                                     {{ friend.username }}
                                                 </td>
-                                                <td class="w-6/12">
-                                                    {{ friend.status === 'pending' ? 'Demande envoyée...' : {true: 'En ligne', false: 'Hors ligne'}[friend.isOnline] }}
+
+                                                <td class="w-6/12" v-if="friend.status === 'pending'">
+                                                    Demande envoyée...
+                                                </td>
+
+                                                <td class="w-6/12" v-else>
+                                                    {{ {true: 'En ligne', false: 'Hors ligne'}[friend.isOnline] }}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -58,7 +64,7 @@
                                 <div class="overflow-y-auto scroll-light h-full">
                                     <table>
                                         <tbody>
-                                        <tr v-for="(friend, index) in friends_invitations">
+                                        <tr v-for="(friend, index) in friends_invitations" class="cursor-pointer" @click="openModalFriend(friend)">
                                             <td class="w-6/12 font-squadaOne text-xl">
                                                 {{ friend.username }}
                                             </td>
@@ -86,6 +92,8 @@
 
             <saber-loader v-else class="self-center grow"/>
         </div>
+
+        <friend-modal v-if="friendClicked !== null" :show-modal-friend="showModalFriend" :friend="friendClicked" @close="showModalFriend=false; friendClicked = null;"></friend-modal>
     </div>
 </template>
 
@@ -94,13 +102,16 @@ import Button from "@/components/ui/Button.vue";
 import {friendsStore, gameStore, userStore} from "@/store/index.js";
 import {mapActions, mapState} from "pinia";
 import SaberLoader from "@/components/ui/SaberLoader.vue";
+import FriendModal from "@/components/MainMenu/FriendModal.vue";
 
 export default {
     name: "Friends",
-    components: {SaberLoader, Button},
+    components: {FriendModal, SaberLoader, Button},
     data() {
         return {
             loading: true,
+            showModalFriend: false,
+            friendClicked: null,
             tabToShow: 'amis'
         };
     },
@@ -127,6 +138,10 @@ export default {
             return this.manageInvitation(response, friend).then(() => {
                 this.tabToShow = 'amis';
             }).finally(() => this.loading = false);
+        },
+        openModalFriend(friend) {
+            this.showModalFriend = true;
+            this.friendClicked = friend;
         }
     }
 }
