@@ -34,7 +34,7 @@ export default {
         };
     },
     created() {
-        this.$axios.post('/users', this.friend).then(({data}) => {
+        this.$axios.post('/users', {username: this.friend.username}).then(({data}) => {
             this.user = data;
             this.loading = false;
         });

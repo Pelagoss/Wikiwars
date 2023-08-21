@@ -15,6 +15,11 @@
                             Invitations d'amis
                         </span>
                     </div>
+
+                    <div @click="tabToShow = 'recherche'"
+                         :class="{'active': tabToShow === 'recherche'}">
+                            Rechercher des amis
+                    </div>
                 </div>
             </div>
 
@@ -88,6 +93,53 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <table v-else-if="tabToShow === 'recherche'" class="w-full border-spacing-y-1 border-spacing-x-0 h-full">
+                    <tbody>
+                        <tr class="h-12">
+                            <td>
+                                <div class="p-3">
+                                    <text-field
+                                        label="Rechercher un utilisateur"
+                                        @update:model-value="fetchUsers"
+                                        class="flex flex-col gap-2"
+                                        v-model="search"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-if="users.length !== 0">
+                            <td colspan="2" class="w-full">
+                                <div class="overflow-y-auto scroll-light h-full">
+                                    <table>
+                                        <tbody>
+                                        <tr v-for="(friend, index) in users" class="cursor-pointer">
+                                            <td class="w-6/12 font-squadaOne text-xl">
+                                                {{ friend.username }}
+                                            </td>
+
+                                            <td class="w-6/12">
+                                                <div class="flex gap-4 justify-center">
+                                                    <Button class="btnv-success" @click="openModalFriend(friend)">Voir le profil</Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr v-else>
+                            <td v-if="loadingSearch === false" colspan="2" class="w-full text-center font-squadaOne text-xl">
+                                {{ search === null || search === '' ? "Entrez le nom d'un utilisateur pour rechercher" : "Aucun joueur trouvé" }}
+                            </td>
+
+                            <td v-else>
+                                <saber-loader class="self-center grow"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <saber-loader v-else class="self-center grow"/>
@@ -103,16 +155,21 @@ import {friendsStore, gameStore, userStore} from "@/store/index.js";
 import {mapActions, mapState} from "pinia";
 import SaberLoader from "@/components/ui/SaberLoader.vue";
 import FriendModal from "@/components/MainMenu/FriendModal.vue";
+import TextField from "@/components/ui/form/TextField.vue";
 
 export default {
     name: "Friends",
-    components: {FriendModal, SaberLoader, Button},
+    components: {TextField, FriendModal, SaberLoader, Button},
     data() {
         return {
             loading: true,
+            loadingSearch: false,
             showModalFriend: false,
             friendClicked: null,
-            tabToShow: 'amis'
+            tabToShow: 'amis',
+            users: [],
+            searchUsersTimeout: null,
+            search: null
         };
     },
     created() {
@@ -142,7 +199,30 @@ export default {
         openModalFriend(friend) {
             this.showModalFriend = true;
             this.friendClicked = friend;
-        }
+        },
+        fetchUsers(value) {
+            if (this.searchUsersTimeout != null) {
+                clearTimeout(this.searchUsersTimeout);
+            }
+
+            if (value.value == null || value.value.length < 2) {
+                return;
+            }
+
+            this.searchUsersTimeout = setTimeout(() => {
+                this.loadingSearch = true;
+                console.log(value.value);
+                if (value.value != null) {
+                    this.$axios.post('/users-search', {username: value.value}).then(({data}) => {
+                        this.users = data;
+                    }).catch((e) => {
+                        console.error(e);
+                    }).finally(() => {
+                        this.loadingSearch = false;
+                    });
+                }
+            }, 400);
+        },
     }
 }
 </script>

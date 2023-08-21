@@ -4,7 +4,7 @@ import flask
 from parse import *
 
 import urllib.parse
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, and_
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
@@ -142,9 +142,24 @@ def confirmation(token):
 def get_user(current_user):
     data = request.get_json()
 
-    user = User.query.filter_by(username = data['username']).first()
+    f = User.query\
+        .join(Friendship, and_(or_(User.id==Friendship.friend_id, User.id==Friendship.user_id), or_(Friendship.friend_id == current_user.id, Friendship.user_id == current_user.id)))\
+        .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online)\
+        .filter(User.username == data['username']).first()
 
-    return jsonify(user.to_dict())
+    return jsonify({'username': f[0], 'status': f[1], 'user_id': f[2], 'isOnline': f[3]})
+
+
+@api.route('/users-search', methods=('POST',))
+@token_required
+def search_user(current_user):
+    data = request.get_json()
+
+    users = User.query.filter(User.username != current_user.username, func.lower(User.username).like(f'%{data["username"].lower()}%'))
+
+    users = users.all()
+
+    return jsonify([u.to_dict() for u in users])
 
 @api.route('/friends', methods=('GET',))
 @token_required
