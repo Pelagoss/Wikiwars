@@ -41,7 +41,7 @@
                                                 </td>
 
                                                 <td class="w-6/12" v-if="friend.status === 'pending'">
-                                                    Demande envoyée...
+                                                    Demande d'ami en attente...
                                                 </td>
 
                                                 <td class="w-6/12" v-else>
@@ -75,8 +75,8 @@
                                             </td>
                                             <td class="w-6/12">
                                                 <div class="flex gap-4 justify-center">
-                                                    <Button class="btnv-success" @click="manage(true, friend)">Accepter</Button>
-                                                    <Button class="btnv-4" @click="manage(false, friend)">Refuser</Button>
+                                                    <Button class="btnv-success" @click.prevent.stop="manage(true, friend)">Accepter</Button>
+                                                    <Button class="btnv-4" @click.prevent.stop="manage(false, friend)">Refuser</Button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -156,6 +156,7 @@ import {mapActions, mapState} from "pinia";
 import SaberLoader from "@/components/ui/SaberLoader.vue";
 import FriendModal from "@/components/MainMenu/FriendModal.vue";
 import TextField from "@/components/ui/form/TextField.vue";
+import {useRoute} from "vue-router";
 
 export default {
     name: "Friends",

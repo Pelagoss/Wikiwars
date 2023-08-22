@@ -55,7 +55,10 @@ def token_required(f):
 
 @api.route('/')
 def index():
-    socketio().emit('NEW_FRIEND', 'John Doe', to=User.query.filter_by(id=1).first().sid)
+    sid = User.query.filter_by(id=1).first().sid
+    if sid is not None:
+        socketio().emit('NEW_FRIEND_INVITATION', 'John Doe', to=sid)
+
     return flask.render_template('index.html')
 
 @api.route('/login', methods=('POST',))
@@ -143,11 +146,11 @@ def get_user(current_user):
     data = request.get_json()
 
     f = User.query\
-        .join(Friendship, and_(or_(User.id==Friendship.friend_id, User.id==Friendship.user_id), or_(Friendship.friend_id == current_user.id, Friendship.user_id == current_user.id)))\
-        .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online)\
+        .join(Friendship, and_(or_(User.id==Friendship.friend_id, User.id==Friendship.user_id), or_(Friendship.friend_id == current_user.id, Friendship.user_id == current_user.id)), isouter=True)\
+        .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online, User.id)\
         .filter(User.username == data['username']).first()
 
-    return jsonify({'username': f[0], 'status': f[1], 'user_id': f[2], 'isOnline': f[3]})
+    return jsonify({'username': f[0], 'relation': f[1], 'user_id': f[2], 'isOnline': f[3], 'uid': f[4]})
 
 
 @api.route('/users-search', methods=('POST',))
@@ -173,6 +176,25 @@ def get_friends(current_user):
 
     return jsonify([{'username': f[0], 'status': f[1], 'user_id': f[2], 'isOnline': f[3]} for f in friends_list])
 
+@api.route('/friends/add', methods=('POST',))
+@token_required
+def add_friends(current_user):
+    data = request.get_json()
+    friend_invitation = Friendship()
+    friend_invitation.user_id = current_user.id
+    friend_invitation.friend_id = data['friend_id']
+    friend_invitation.status = 'pending'
+
+    db.session.add(friend_invitation)
+    db.session.flush()
+    db.session.commit()
+
+    sid = User.query.filter_by(id=data['friend_id']).first().sid
+    if sid is not None:
+        socketio().emit('NEW_FRIEND_INVITATION', current_user.username, to=sid)
+
+    return jsonify()
+
 
 @api.route('/friends', methods=('POST',))
 @token_required
@@ -182,7 +204,9 @@ def handle_friends_invitation(current_user):
 
     if data['accept'] is True:
         friend_invitation.status = 'friends'
-        socketio().emit('NEW_FRIEND', current_user.username, to=User.query.filter_by(id=data['user_id']).first().sid)
+        sid = User.query.filter_by(id=data['user_id']).first().sid
+        if sid is not None:
+            socketio().emit('NEW_FRIEND', current_user.username, to=sid)
     else:
         friend_invitation.status = 'refused'
 

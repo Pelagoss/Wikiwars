@@ -119,7 +119,6 @@ class Email(db.Model):
 class Friendship(db.Model):
     __tablename__ = 'friendship'
 
-    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     friend_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     status = db.Column(String, default='pending')

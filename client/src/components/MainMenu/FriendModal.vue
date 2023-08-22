@@ -1,7 +1,7 @@
 <template>
     <Modal @close="$emit('close')" persistent :closable="true" height="50%" width="30%" v-model="show">
         <div v-if="loading === false">
-            <Profile :user="user"/>
+            <Profile :user="user" friend-view/>
         </div>
 
         <div v-else class="text-white h-full flex items-center">

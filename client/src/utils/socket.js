@@ -31,6 +31,16 @@ socket.on('NEW_FRIEND', (data) => {
     });
 });
 
+socket.on('NEW_FRIEND_INVITATION', (data) => {
+    friendsStore().fetchFriends();
+    emitter.$emit('NOTIFICATION', {
+        type: 'NEW_FRIEND_INVITATION',
+        message: `<span class="font-bold">${data}</span> souhaite être votre ami</span>`,
+        action: () => emitter.$emit('NAV_TO', {name: 'friends'}),
+        icon: 'UserPlus'
+    });
+});
+
 socket.onAny((event, ...args) => {
     console.log(event, args);
 });
