@@ -1,8 +1,13 @@
 <template>
     <div class="flex flex-col col-span-6 h-full p-8 text-white font-squadaOne text-2xl">
         <div v-if="showTitle" class="title uppercase">Profil</div>
-        <!-- TODO Mettre une photo de profil -->
-        <img class="h-32 w-32 rounded-full self-center border-4" :class="[{true: 'border-accent', false: 'border-error', undefined: 'border-cyan-500'}[user.isOnline]]" src="https://i.pinimg.com/564x/8d/ff/c8/8dffc810ac2226282085257e73a60761.jpg"/>
+
+        <img
+            @click="friendView === false ? $emit('toggle-modal-avatar', true) : $event.preventDefault();"
+            class="h-32 w-32 rounded-lg self-center border-4"
+            :class="[{true: 'border-accent', false: 'border-error', undefined: 'border-cyan-500'}[user.isOnline], {'cursor-pointer': friendView === false}]"
+            src="https://i.pinimg.com/564x/8d/ff/c8/8dffc810ac2226282085257e73a60761.jpg"
+        />
 
         <div class="title self-center pt-4">{{ user.username }}</div>
 
@@ -55,6 +60,7 @@ import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
 export default {
     name: "Profile",
     components: {IconeDynamiqueComposant, Button},
+    emits: ['toggle-modal-avatar'],
     props: {
         user: {
             type: Object
@@ -73,11 +79,13 @@ export default {
         ...mapActions(friendsStore, {'fetchFriends': "fetchFriends", "manageInvitation": "manageInvitation"}),
         manage(response, friend) {
             return this.manageInvitation(response, friend).then(() => {
+                this.user.relation = response ? 'friends' : null;
                 this.tabToShow = 'amis';
             }).finally(() => this.loading = false);
         },
         addFriend() {
             this.$axios.post('/friends/add', {'friend_id': this.user.uid}).then(() => {
+                this.fetchFriends();
                 this.user.relation = 'pending';
                 this.user.user_id = userStore()?.getUser?.id;
             });

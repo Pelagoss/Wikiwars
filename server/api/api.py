@@ -52,7 +52,6 @@ def token_required(f):
     return _verify
 
 
-
 @api.route('/')
 def index():
     sid = User.query.filter_by(id=1).first().sid
@@ -207,10 +206,11 @@ def handle_friends_invitation(current_user):
         sid = User.query.filter_by(id=data['user_id']).first().sid
         if sid is not None:
             socketio().emit('NEW_FRIEND', current_user.username, to=sid)
+            db.session.add(friend_invitation)
     else:
         friend_invitation.status = 'refused'
+        db.session.delete(friend_invitation)
 
-    db.session.add(friend_invitation)
     db.session.flush()
     db.session.commit()
 

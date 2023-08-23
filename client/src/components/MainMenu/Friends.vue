@@ -69,7 +69,7 @@
                                 <div class="overflow-y-auto scroll-light h-full">
                                     <table>
                                         <tbody>
-                                        <tr v-for="(friend, index) in friends_invitations" class="cursor-pointer" @click="openModalFriend(friend)">
+                                        <tr v-for="(friend, index) in friends_invitations" class="cursor-pointer" @click.prevent.stop="openModalFriend(friend)">
                                             <td class="w-6/12 font-squadaOne text-xl">
                                                 {{ friend.username }}
                                             </td>

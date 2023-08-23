@@ -1,5 +1,5 @@
 <template>
-    <button @click="loading ? $event.preventDefault() : $emit('click')" class="flex items-center md:px-4 md:py-3 px-2 py-1 btnv md:text-base !text-xs w-fit">
+    <button @click="onClick" class="flex items-center md:px-4 md:py-3 px-2 py-1 btnv md:text-base !text-xs w-fit">
         <div v-if="loading === true">
             <LoaderButton class="text-white" width="1.25rem"></LoaderButton>
         </div>
@@ -28,6 +28,15 @@ export default {
         loading: {
             type: Boolean,
             default: false
+        }
+    },
+    methods: {
+        onClick(e) {
+            if (this.loading === true) {
+                e.preventDefault()
+            } else {
+                this.$emit('click', e)
+            }
         }
     }
 }
