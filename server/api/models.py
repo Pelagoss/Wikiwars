@@ -2,6 +2,7 @@ import re
 from abc import ABC
 from datetime import datetime
 
+from flask import current_app
 from flask_mail import Mail, Message
 from flask_sqlalchemy.extension import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
@@ -143,11 +144,14 @@ class User(db.Model):
     games = db.relationship('Game', secondary=u_g, lazy='subquery', backref=db.backref('users', lazy=True))
     wins = db.relationship('Game', backref="winner", lazy=False)
     friends = db.relationship('User', secondary='friendship', lazy='subquery', backref=db.backref('friendship', lazy='dynamic'), primaryjoin=(Friendship.user_id == id), secondaryjoin=(Friendship.friend_id == id))
+#     todo
+#     avatar = db.Column(db.Text)
 
     def __init__(self, email, username, password):
         self.email = email
         self.username = username
         self.password = generate_password_hash(password)
+#         self.avatar = current_app.config['APP_URL_BACK'] + '/static/avatar/basic.jpg'
 
     @classmethod
     def authenticate(cls, **kwargs):
