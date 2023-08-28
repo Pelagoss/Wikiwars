@@ -9,6 +9,7 @@ export const userStore = defineStore('user', {
         username: null,
         games: null,
         wins: null,
+        avatar: null,
         jwt: null
     }),
     getters: {
@@ -31,10 +32,17 @@ export const userStore = defineStore('user', {
                 this.games = data.games;
                 this.wins = data.wins;
                 this.jwt = data.jwt;
+                this.avatar = data.avatar;
+
                 localStorage.setItem('token', this.jwt);
 
                 socket.auth = {id: this.id }
                 socket.connect();
+            });
+        },
+        me() {
+            return $axios.post('/me').then(({data}) => {
+                this.avatar = data.avatar;
             });
         },
         register(data) {
@@ -46,6 +54,7 @@ export const userStore = defineStore('user', {
             this.games = null;
             this.wins = null;
             this.jwt = null;
+            this.avatar = null;
             socket.disconnect();
         }
     },

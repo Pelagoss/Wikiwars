@@ -6,7 +6,7 @@
             @click="friendView === false ? $emit('toggle-modal-avatar', true) : $event.preventDefault();"
             class="h-32 w-32 rounded-lg self-center border-4"
             :class="[{true: 'border-accent', false: 'border-error', undefined: 'border-cyan-500'}[user.isOnline], {'cursor-pointer': friendView === false}]"
-            :src="user.avatar ?? 'basic.jpg'"
+            :src="user?.avatar?.path ?? 'basic.jpg'"
         />
 
         <div class="title self-center pt-4">{{ user.username }}</div>

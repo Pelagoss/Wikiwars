@@ -8,7 +8,7 @@ from sqlalchemy import func, or_, and_
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
-from .models import db, Game, User, Email, Friendship
+from .models import db, Game, User, Email, Friendship, Avatar
 from .tools import randomize_page, get_wiki_page, getSummaryWikiPage, send_mail
 from datetime import datetime, timedelta
 
@@ -59,6 +59,11 @@ def index():
         socketio().emit('NEW_FRIEND_INVITATION', 'John Doe', to=sid)
 
     return flask.render_template('index.html')
+
+@api.route('/me', methods=('POST',))
+@token_required
+def me(current_user):
+    return jsonify(current_user.to_dict())
 
 @api.route('/login', methods=('POST',))
 def login():
@@ -146,10 +151,10 @@ def get_user(current_user):
 
     f = User.query\
         .join(Friendship, and_(or_(User.id==Friendship.friend_id, User.id==Friendship.user_id), or_(Friendship.friend_id == current_user.id, Friendship.user_id == current_user.id)), isouter=True)\
-        .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online, User.id)\
+        .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online, User.id, User.avatar)\
         .filter(User.username == data['username']).first()
 
-    return jsonify({'username': f[0], 'relation': f[1], 'user_id': f[2], 'isOnline': f[3], 'uid': f[4]})
+    return jsonify({'username': f[0], 'relation': f[1], 'user_id': f[2], 'isOnline': f[3], 'uid': f[4], 'avatar': Avatar.query.filter_by(id = f[5]).first().to_dict()})
 
 
 @api.route('/users-search', methods=('POST',))

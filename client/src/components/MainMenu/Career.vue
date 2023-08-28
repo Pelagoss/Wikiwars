@@ -42,6 +42,7 @@ export default {
     },
     created() {
         this.$emitter.$on('SOCKET_CONNECTED', () => this.$socket.emit('join', 'lobby'));
+        this.refreshUser();
     },
     computed: {
         stats() {
@@ -69,7 +70,8 @@ export default {
         navTo(route) {
             this.$emit('changePage', route);
         },
-        ...mapActions(gameStore, {createGame: "createGame", join: "joinGame"})
+        ...mapActions(gameStore, {createGame: "createGame", join: "joinGame"}),
+        ...mapActions(userStore, {refreshUser: "me"})
     }
 }
 </script>

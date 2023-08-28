@@ -45,6 +45,10 @@ u_g = db.Table('user_game',
                db.Column('game_id', db.Integer, db.ForeignKey('games.id'), primary_key=True),
                db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True)
                )
+u_a = db.Table('user_avatar',
+               db.Column('avatar_id', db.Integer, db.ForeignKey('avatars.id'), primary_key=True),
+               db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True)
+       )
 
 class Email(db.Model):
     __tablename__ = 'emails'
@@ -144,14 +148,14 @@ class User(db.Model):
     games = db.relationship('Game', secondary=u_g, lazy='subquery', backref=db.backref('users', lazy=True))
     wins = db.relationship('Game', backref="winner", lazy=False)
     friends = db.relationship('User', secondary='friendship', lazy='subquery', backref=db.backref('friendship', lazy='dynamic'), primaryjoin=(Friendship.user_id == id), secondaryjoin=(Friendship.friend_id == id))
-#     todo
-#     avatar = db.Column(db.Text)
+    list_avatars = db.relationship('Avatar', secondary=u_a, lazy='subquery', backref=db.backref('users', lazy=True))
+    avatar = db.Column(db.Integer, db.ForeignKey('avatars.id'), nullable=True)
 
     def __init__(self, email, username, password):
         self.email = email
         self.username = username
         self.password = generate_password_hash(password)
-#         self.avatar = current_app.config['APP_URL_BACK'] + '/static/avatar/basic.jpg'
+        self.avatar = 1
 
     @classmethod
     def authenticate(cls, **kwargs):
@@ -223,7 +227,7 @@ class User(db.Model):
             return is_valid, errors
 
     def to_dict(self, type = None):
-        d = dict(id=self.id, username=self.username, is_online=self.is_online)
+        d = dict(id=self.id, username=self.username, avatar=Avatar.query.filter_by(id = self.avatar).first().to_dict(), is_online=self.is_online)
 
         if type == 'game':
             return d
@@ -265,3 +269,20 @@ class Game(db.Model):
             return d
         else:
             return d
+
+class Avatar(db.Model):
+    __tablename__ = 'avatars'
+
+    id = db.Column(db.Integer, primary_key=True)
+    path = db.Column(db.Text)
+    condition_type = db.Column(db.Text)
+    condition_value = db.Column(db.Text)
+
+    def to_dict(self, type = None):
+        d = dict(path=current_app.config['APP_URL_BACK'] + f'/static/avatar/{self.path}')
+
+        if type == 'full':
+            d['condition_type']=self.condition_type,
+            d['condition_value']=self.condition_value
+
+        return d
