@@ -5,6 +5,7 @@ from parse import *
 
 import urllib.parse
 from sqlalchemy import func, or_, and_
+from sqlalchemy.sql import column
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
@@ -156,6 +157,19 @@ def get_user(current_user):
 
     return jsonify({'username': f[0], 'relation': f[1], 'user_id': f[2], 'isOnline': f[3], 'uid': f[4], 'avatar': Avatar.query.filter_by(id = f[5]).first().to_dict()})
 
+@api.route('/avatars', methods=('GET',))
+@token_required
+def get_list_avatars(current_user):
+    f = Avatar.query\
+        .join(User.list_avatars, isouter=True)\
+        .with_entities(Avatar.path, column('avatar_id'))\
+        .filter(column('user_id') == current_user.id)
+
+    print(f)
+
+    f = f.all()
+
+    return jsonify([{'path': current_app.config['APP_URL_BACK'] + f'/static/avatar/{a[0]}', 'isUnlocked': a[1] is not None} for a in f])
 
 @api.route('/users-search', methods=('POST',))
 @token_required
