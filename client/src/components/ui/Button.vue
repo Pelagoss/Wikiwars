@@ -1,5 +1,8 @@
 <template>
-    <button @click="onClick" class="flex items-center md:px-4 md:py-3 px-2 py-1 btnv md:text-base !text-xs w-fit">
+    <button @click="onClick"
+            class="flex items-center md:px-4 md:py-3 px-2 py-1 btnv md:text-base !text-xs w-fit select-none"
+            :class="{'pointer-events-none grayscale !shadow-none': disabled === true}"
+    >
         <div v-if="loading === true">
             <LoaderButton class="text-white" width="1.25rem"></LoaderButton>
         </div>
@@ -25,6 +28,9 @@ export default {
             required: false,
             default: null
         },
+        disabled: {
+            type: Boolean
+        },
         loading: {
             type: Boolean,
             default: false
@@ -32,7 +38,7 @@ export default {
     },
     methods: {
         onClick(e) {
-            if (this.loading === true) {
+            if (this.loading === true || this.disabled === true) {
                 e.preventDefault()
             } else {
                 this.$emit('click', e)

@@ -5,7 +5,7 @@ from parse import *
 
 import urllib.parse
 from sqlalchemy import func, or_, and_
-from sqlalchemy.sql import column
+from sqlalchemy.sql import column, table
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
@@ -161,15 +161,22 @@ def get_user(current_user):
 @token_required
 def get_list_avatars(current_user):
     f = Avatar.query\
-        .join(User.list_avatars, isouter=True)\
-        .with_entities(Avatar.path, column('avatar_id'))\
-        .filter(column('user_id') == current_user.id)
+        .join(table('user_avatar').join(User, and_(User.id==column('user_id'), User.id==current_user.id)), Avatar.id == column('avatar_id'), isouter=True)\
+        .with_entities(Avatar.id, Avatar.path, column('avatar_id'))\
+        .all()
 
-    print(f)
+    return jsonify([{'id': a[0], 'path': current_app.config['APP_URL_BACK'] + f'/static/avatar/{a[1]}', 'isUnlocked': a[2] is not None} for a in f])
 
-    f = f.all()
+@api.route('/avatars', methods=('POST',))
+@token_required
+def set_avatar(current_user):
+    data = request.get_json()
 
-    return jsonify([{'path': current_app.config['APP_URL_BACK'] + f'/static/avatar/{a[0]}', 'isUnlocked': a[1] is not None} for a in f])
+    current_user.avatar = data['avatarId']
+
+    db.session.flush()
+    db.session.commit()
+    return jsonify()
 
 @api.route('/users-search', methods=('POST',))
 @token_required

@@ -279,7 +279,7 @@ class Avatar(db.Model):
     condition_value = db.Column(db.Text)
 
     def to_dict(self, type = None):
-        d = dict(path=current_app.config['APP_URL_BACK'] + f'/static/avatar/{self.path}')
+        d = dict(id=self.id, path=current_app.config['APP_URL_BACK'] + f'/static/avatar/{self.path}')
 
         if type == 'full':
             d['condition_type']=self.condition_type,
