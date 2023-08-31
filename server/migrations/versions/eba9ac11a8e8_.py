@@ -64,7 +64,7 @@ def upgrade():
     idAvatar = ret.lastrowid
 
     idAvatars = [idAvatar]
-    for i in [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]:
+    for i in [1, 4, 5, 7, 10, 11]:
         data = {
             "path": f'design{i}.png',
             "condition_type": "free",
@@ -72,6 +72,14 @@ def upgrade():
         }
         ret = session.execute(insert(avatar).values(data))
         idAvatars.append(ret.lastrowid)
+
+    for i in [2, 6, 8, 9, 12, 13]:
+            data = {
+                "path": f'design{i}.png',
+                "condition_type": "lock",
+                "condition_value": None
+            }
+            ret = session.execute(insert(avatar).values(data))
 
     for u in session.execute(select(users)):
         for idA in idAvatars:
