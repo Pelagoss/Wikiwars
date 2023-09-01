@@ -194,12 +194,12 @@ def search_user(current_user):
 def get_friends(current_user):
     friends_list = User.query\
         .join(Friendship, or_(User.id==Friendship.friend_id, User.id==Friendship.user_id))\
-        .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online)\
+        .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online, User.avatar)\
         .filter(User.id != current_user.id, or_(Friendship.user_id==current_user.id, Friendship.friend_id==current_user.id))\
         .order_by(Friendship.created_at)\
         .all()
 
-    return jsonify([{'username': f[0], 'status': f[1], 'user_id': f[2], 'isOnline': f[3]} for f in friends_list])
+    return jsonify([{'username': f[0], 'status': f[1], 'user_id': f[2], 'isOnline': f[3], 'avatar': Avatar.query.filter_by(id = f[4]).first().to_dict()} for f in friends_list])
 
 @api.route('/friends/add', methods=('POST',))
 @token_required

@@ -35,6 +35,8 @@
                                     <table>
                                         <tbody>
                                             <tr v-for="(friend, index) in amis" class="cursor-pointer" @click="openModalFriend(friend)">
+                                                <!-- TODO: add avatar-->
+
                                                 <td class="w-6/12 inline-flex gap-3 items-center">
                                                     <div class="h-3 w-3 rounded-full border" :class="[{true: 'bg-accent', false: 'bg-error'}[friend.isOnline]]"></div>
                                                     {{ friend.username }}
@@ -70,6 +72,7 @@
                                     <table>
                                         <tbody>
                                         <tr v-for="(friend, index) in friends_invitations" class="cursor-pointer" @click.prevent.stop="openModalFriend(friend)">
+                                            <!-- TODO: add avatar-->
                                             <td class="w-6/12 font-squadaOne text-xl">
                                                 {{ friend.username }}
                                             </td>
@@ -113,6 +116,8 @@
                                     <table>
                                         <tbody>
                                         <tr v-for="(friend, index) in users" class="cursor-pointer">
+                                            <!-- TODO: add avatar-->
+
                                             <td class="w-6/12 font-squadaOne text-xl">
                                                 {{ friend.username }}
                                             </td>

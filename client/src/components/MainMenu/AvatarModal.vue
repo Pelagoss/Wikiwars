@@ -14,7 +14,6 @@
                         <icone-dynamique-composant icon="LockClosed" type="outline" class="text-gray-400 !w-1/2 !h-auto"></icone-dynamique-composant>
                     </div>
                 </div>
-                <!-- todo: show different avatar to choose the one for profile -->
             </div>
             <div class="flex justify-end">
                 <Button class="btnv-success"
