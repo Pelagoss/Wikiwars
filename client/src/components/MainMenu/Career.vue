@@ -7,10 +7,16 @@
                 <div v-for="stat in stats" class="stat">
                     <div>
                         {{ stat.label }}
+                        <div v-if="stat?.dont" class="text-xs normal-case">
+                            {{ stat.dont?.label }}
+                        </div>
                     </div>
 
-                    <div>
+                    <div class="text-end">
                         {{ stat.value }}
+                        <div v-if="stat?.dont" class="text-xs normal-case text-end">
+                            {{ stat.dont?.value }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -46,23 +52,7 @@ export default {
     },
     computed: {
         stats() {
-            return [
-                {label: 'Victoires', value: this.wins},
-                {label: 'Parties jouées', value: this.games},
-                {label: 'Ratio V/D', value: this.ratio},
-            ]
-        },
-        wins() {
-            return toRaw(userStore().wins).length;
-        },
-        loses() {
-            return toRaw(userStore().games).length - this.wins;
-        },
-        games() {
-            return toRaw(userStore().games).length;
-        },
-        ratio() {
-            return this.wins / (this.loses === 0 ? 1.00 : this.loses);
+            return userStore().stats;
         },
         ...mapState(userStore, {user: "getUser"}),
     },

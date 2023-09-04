@@ -155,7 +155,9 @@ def get_user(current_user):
         .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online, User.id, User.avatar)\
         .filter(User.username == data['username']).first()
 
-    return jsonify({'username': f[0], 'relation': f[1], 'user_id': f[2], 'isOnline': f[3], 'uid': f[4], 'avatar': Avatar.query.filter_by(id = f[5]).first().to_dict()})
+    stats = User.query.filter(User.id == f[4]).first().to_dict()['stats']
+
+    return jsonify({'username': f[0], 'relation': f[1], 'user_id': f[2], 'isOnline': f[3], 'uid': f[4], 'avatar': Avatar.query.filter_by(id = f[5]).first().to_dict(), 'stats': stats})
 
 @api.route('/avatars', methods=('GET',))
 @token_required

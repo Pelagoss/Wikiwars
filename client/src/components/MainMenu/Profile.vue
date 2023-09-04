@@ -46,6 +46,28 @@
                     </div>
                 </div>
             </template>
+
+            <div class="text-lg w-1/2">
+                <div class="title uppercase">Statistiques</div>
+
+                <div class="flex flex-col">
+                    <div v-for="stat in user.stats" class="stat">
+                        <div>
+                            {{ stat.label }}
+                            <div v-if="stat?.dont" class="text-xs normal-case">
+                                {{ stat.dont?.label }}
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            {{ stat.value }}
+                            <div v-if="stat?.dont" class="text-xs normal-case text-end">
+                                {{ stat.dont?.value }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </template>
     </div>
 </template>
@@ -93,3 +115,9 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.stat {
+    @apply border border-gray-400 flex justify-between text-white px-4 py-2 uppercase;
+}
+</style>

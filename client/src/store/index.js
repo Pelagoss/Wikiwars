@@ -8,7 +8,7 @@ export const userStore = defineStore('user', {
         id: null,
         username: null,
         games: null,
-        wins: null,
+        stats: null,
         avatar: null,
         jwt: null
     }),
@@ -30,7 +30,7 @@ export const userStore = defineStore('user', {
                 this.id = data.id;
                 this.username = data.username;
                 this.games = data.games;
-                this.wins = data.wins;
+                this.stats = data.stats;
                 this.jwt = data.jwt;
                 this.avatar = data.avatar;
 
@@ -52,7 +52,7 @@ export const userStore = defineStore('user', {
             this.id = null;
             this.username = null;
             this.games = null;
-            this.wins = null;
+            this.stats = null;
             this.jwt = null;
             this.avatar = null;
             socket.disconnect();

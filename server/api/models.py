@@ -227,13 +227,48 @@ class User(db.Model):
             return is_valid, errors
 
     def to_dict(self, type = None):
-        d = dict(id=self.id, username=self.username, avatar=Avatar.query.filter_by(id = self.avatar).first().to_dict(), is_online=self.is_online)
+        d = dict(id=self.id, username=self.username, avatar=Avatar.query.filter_by(id = self.avatar).first().to_dict(), isOnline=self.is_online)
+
+        wins = len(self.wins)
+        wins_solo = len(list(filter(lambda w: len(w.users) == 1, self.wins)))
+        games = len(list(filter(lambda g: g.winner is not None, self.games)))
+        games_solo = len(list(filter(lambda g: g.winner is not None and len(g.users) == 1, self.games)))
+        loses = games - wins
+        loses_solo = games_solo - wins_solo
+        if loses == 0:
+            loses = 1
+        if loses_solo == 0:
+            loses_solo = 1
+        ratio = wins / loses
+        ratio_solo = wins_solo / loses_solo
+        stats = [{
+                'label': 'Victoires',
+                'value': wins, 'dont': {
+                    'label': 'Dont solo',
+                    'value': wins_solo
+                },
+            },
+            {
+                'label': 'Parties jouées',
+                'value': games, 'dont': {
+                    'label': 'Dont solo',
+                    'value': games_solo
+                },
+            },
+            {
+                'label': 'Ratio V/D',
+                'value': str('%.2f' % ratio), 'dont': {
+                    'label': 'Dont solo',
+                    'value': str('%.2f' % ratio)
+                }
+            }]
+
+        d['stats'] = stats
 
         if type == 'game':
             return d
         else:
-            d['games'] = [game.to_dict() for game in self.games]
-            d['wins'] = [win.to_dict() for win in self.wins]
+            d['games'] = [game.to_dict('game') for game in self.games]
             return d
 
 

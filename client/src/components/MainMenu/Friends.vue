@@ -35,10 +35,11 @@
                                     <table>
                                         <tbody>
                                             <tr v-for="(friend, index) in amis" class="cursor-pointer" @click="openModalFriend(friend)">
-                                                <!-- TODO: add avatar-->
-
-                                                <td class="w-6/12 inline-flex gap-3 items-center">
-                                                    <div class="h-3 w-3 rounded-full border" :class="[{true: 'bg-accent', false: 'bg-error'}[friend.isOnline]]"></div>
+                                                <td class="w-6/12 inline-flex items-center gap-3 font-squadaOne text-xl">
+                                                    <div class="w-2/12 rounded-lg border-2"
+                                                         :class="{true: 'border-accent', false: 'border-error'}[friend.isOnline]">
+                                                        <img class="rounded h-auto w-full aspect-square object-cover cursor-pointer" :src="friend.avatar.path">
+                                                    </div>
                                                     {{ friend.username }}
                                                 </td>
 
@@ -47,7 +48,11 @@
                                                 </td>
 
                                                 <td class="w-6/12" v-else>
-                                                    {{ {true: 'En ligne', false: 'Hors ligne'}[friend.isOnline] }}
+                                                    <div class="flex gap-3 items-center">
+                                                        <div class="h-3 w-3 rounded-full border" :class="[{true: 'bg-accent', false: 'bg-error'}[friend.isOnline]]"></div>
+
+                                                        {{ {true: 'En ligne', false: 'Hors ligne'}[friend.isOnline] }}
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -72,10 +77,14 @@
                                     <table>
                                         <tbody>
                                         <tr v-for="(friend, index) in friends_invitations" class="cursor-pointer" @click.prevent.stop="openModalFriend(friend)">
-                                            <!-- TODO: add avatar-->
-                                            <td class="w-6/12 font-squadaOne text-xl">
+                                            <td class="w-6/12 inline-flex items-center gap-3 font-squadaOne text-xl">
+                                                <div class="w-2/12 rounded-lg border-2"
+                                                     :class="{true: 'border-accent', false: 'border-error'}[friend.isOnline]">
+                                                    <img class="rounded h-auto w-full aspect-square object-cover cursor-pointer" :src="friend.avatar.path">
+                                                </div>
                                                 {{ friend.username }}
                                             </td>
+
                                             <td class="w-6/12">
                                                 <div class="flex gap-4 justify-center">
                                                     <Button class="btnv-success" @click.prevent.stop="manage(true, friend)">Accepter</Button>
@@ -116,9 +125,11 @@
                                     <table>
                                         <tbody>
                                         <tr v-for="(friend, index) in users" class="cursor-pointer">
-                                            <!-- TODO: add avatar-->
-
-                                            <td class="w-6/12 font-squadaOne text-xl">
+                                            <td class="w-6/12 inline-flex items-center gap-3 font-squadaOne text-xl">
+                                                <div class="w-2/12 rounded-lg border-2"
+                                                     :class="{true: 'border-accent', false: 'border-error'}[friend.isOnline]">
+                                                    <img class="rounded h-auto w-full aspect-square object-cover cursor-pointer" :src="friend.avatar.path">
+                                                </div>
                                                 {{ friend.username }}
                                             </td>
 
