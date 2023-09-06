@@ -92,6 +92,16 @@ def login():
         'exp': datetime.utcnow() + timedelta(days=1)},
         current_app.config['SECRET_KEY'])
 
+    # Say to everybody "I'm here"
+    friends_list = User.query\
+        .join(Friendship, or_(User.id==Friendship.friend_id, User.id==Friendship.user_id))\
+        .with_entities(User.sid)\
+        .filter(User.id != user.id, or_(Friendship.user_id==user.id, Friendship.friend_id==user.id), Friendship.status == 'friends', User.is_online == True)\
+        .order_by(Friendship.created_at)\
+        .all()
+
+    socketio().emit('FRIEND_ONLINE', user.username, to=[f[0] for f in friends_list])
+
     body = user.to_dict()
     body['jwt'] = token
 
@@ -155,9 +165,29 @@ def get_user(current_user):
         .with_entities(User.username, Friendship.status, Friendship.user_id, User.is_online, User.id, User.avatar)\
         .filter(User.username == data['username']).first()
 
-    stats = User.query.filter(User.id == f[4]).first().to_dict()['stats']
+    friend = User.query.filter(User.id == f[4]).first()
+    stats = friend.to_dict()['stats']
 
-    return jsonify({'username': f[0], 'relation': f[1], 'user_id': f[2], 'isOnline': f[3], 'uid': f[4], 'avatar': Avatar.query.filter_by(id = f[5]).first().to_dict(), 'stats': stats})
+    isInGame = len(list(filter(lambda g: g.winner_id is None, friend.games))) > 0 and f[1] == 'friends'
+    joinableGame = list(filter(lambda g: g.winner_id is None and g.is_started == 0, friend.games))
+    isJoinable = len(joinableGame) == 1 and f[1] == 'friends'
+
+    response = {\
+        'username': f[0],
+        'relation': f[1],
+        'user_id': f[2],
+        'isOnline': f[3],
+        'uid': f[4],
+        'avatar': Avatar.query.filter_by(id = f[5]).first().to_dict(),
+        'stats': stats,
+        'isInGame': isInGame,
+        'isJoinable': isJoinable\
+    }
+
+    if isJoinable is True:
+        response['gameId'] = joinableGame[0].id
+
+    return jsonify(response)
 
 @api.route('/avatars', methods=('GET',))
 @token_required

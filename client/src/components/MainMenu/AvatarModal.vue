@@ -1,5 +1,5 @@
 <template>
-    <Modal @close="close" persistent :closable="true" height="50%" width="30%" v-model="show">
+    <Modal @close="close" persistent :closable="true" class-modal="w-1/3 h-1/2" v-model="show">
         <div v-if="loading === false" class="p-8 flex flex-col justify-between h-full">
             <div class="grid grid-cols-6 gap-4">
                 <div v-for="a in [...avatars.filter(a => a.isUnlocked === true), ...avatars.filter(a => a.isUnlocked === false)]"

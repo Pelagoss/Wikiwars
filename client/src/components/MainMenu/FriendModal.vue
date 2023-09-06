@@ -1,10 +1,10 @@
 <template>
-    <Modal @close="$emit('close')" persistent :closable="true" height="50%" width="30%" v-model="show">
+    <Modal @close="$emit('close')" persistent :closable="true" class-modal="h-fit min-h-1/2 w-1/3" v-model="show">
         <div v-if="loading === false">
             <Profile :user="user" friend-view/>
         </div>
 
-        <div v-else class="text-white h-full flex items-center">
+        <div v-else class="text-white h-full flex items-center min-h-[50vh]">
             <saber-loader class="self-center grow"/>
         </div>
     </Modal>

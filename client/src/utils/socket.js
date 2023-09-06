@@ -41,6 +41,16 @@ socket.on('NEW_FRIEND_INVITATION', (data) => {
     });
 });
 
+socket.on('FRIEND_ONLINE', (data) => {
+    friendsStore().fetchFriends();
+    emitter.$emit('NOTIFICATION', {
+        type: 'FRIEND_ONLINE',
+        message: `<span class="font-bold">${data}</span> est en ligne</span>`,
+        action: () => emitter.$emit('NAV_TO', {name: 'friends'}),
+        icon: 'GlobeEuropeAfrica'
+    });
+});
+
 socket.onAny((event, ...args) => {
     console.log(event, args);
 });

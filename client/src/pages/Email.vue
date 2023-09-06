@@ -1,6 +1,6 @@
 <template>
     <div id="login" class="bgTable h-full flex items-center justify-center m-auto relative">
-        <Modal persistent :closable="false" :width="loading === true ? '18rem' : 'auto'" v-model="showModalConfirmation">
+        <Modal persistent :closable="false" :class-modal="['h-[25vh]', loading === true ? '18rem' : 'auto']" v-model="showModalConfirmation">
             <div class="px-12" v-if="loading === false && error === false" v-html="mailContent"></div>
             <FormWrapper v-else-if="loading === false" ref="form" class="w-full" @submit="$router.push({name: 'accueil'})">
                 <template #fields>

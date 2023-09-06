@@ -70,7 +70,7 @@
             </FormWrapper>
         </div>
 
-        <Modal v-model="showModalConfirmation">
+        <Modal class-modal="w-[25vw] h-[25vh]" v-model="showModalConfirmation">
             <div class="flex flex-col items-center h-fit shadow-custom-elevate p-14">
                 <div class="text-5xl font-squadaOne text-center">
                     Merci !

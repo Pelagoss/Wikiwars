@@ -30,9 +30,17 @@
                 </template>
 
                 <template v-if="user.relation === 'friends'">
-                    <div class="self-center border px-2 py-1 mt-2 text-sm border-gray-400 rounded-lg flex items-center gap-2">
-                        <icone-dynamique-composant icon="Users" class="!w-4 !h-4"></icone-dynamique-composant>
-                        Amis
+                    <div class="self-center mt-2 flex gap-2 text-base text-center">
+                        <div class="self-center border px-2 py-1 text-sm border-gray-400 rounded-lg flex items-center gap-2">
+                            <icone-dynamique-composant icon="Users" class="!w-4 !h-4"></icone-dynamique-composant>
+                            Amis
+                        </div>
+
+                        <div v-if="user.isJoinable && (isInGame === null || isInGame === user?.gameId)" @click="joinGame(user?.gameId)"
+                             class="self-center border px-2 py-1 text-sm text-accent50 border-accent50 rounded-lg flex items-center gap-2 hover:text-accent cursor-pointer hover:border-accent">
+                            <icone-dynamique-composant icon="PaperAirplane" class="!w-4 !h-4"></icone-dynamique-composant>
+                            Rejoindre
+                        </div>
                     </div>
                 </template>
             </template>
@@ -76,8 +84,9 @@
 
 import Button from "@/components/ui/Button.vue";
 import {mapActions} from "pinia";
-import {friendsStore, userStore} from "@/store/index.js";
+import {friendsStore, gameStore, userStore} from "@/store/index.js";
 import IconeDynamiqueComposant from "@/components/IconeDynamiqueComposant.vue";
+import {toRaw} from "vue";
 
 export default {
     name: "Profile",
@@ -99,6 +108,7 @@ export default {
     methods: {
         userStore,
         ...mapActions(friendsStore, {'fetchFriends': "fetchFriends", "manageInvitation": "manageInvitation"}),
+        ...mapActions(gameStore, {'join': "joinGame"}),
         manage(response, friend) {
             return this.manageInvitation(response, friend).then(() => {
                 this.user.relation = response ? 'friends' : null;
@@ -111,6 +121,23 @@ export default {
                 this.user.relation = 'pending';
                 this.user.user_id = userStore()?.getUser?.id;
             });
+        },
+        joinGame(game_id = null) {
+            if (game_id !== null && this.isInGame !== this.user?.gameId) {
+                this.join({id: game_id}).then(() => {
+                    this.$router.push({name: 'game'});
+                })
+            } else if (this.isInGame === this.user?.gameId) {
+                this.$router.push({name: 'game'});
+            }
+        }
+    },
+    computed: {
+        isInGame() {
+            let games = toRaw(userStore().games);
+            let filtered_games = games.filter(g => g.winner === null);
+
+            return filtered_games.length === 0 ? null : filtered_games[0].id;
         }
     }
 }

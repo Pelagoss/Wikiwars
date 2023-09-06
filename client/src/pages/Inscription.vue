@@ -1,6 +1,6 @@
 <template>
     <div id="login" class="bgTable h-full flex items-center justify-center m-auto relative">
-        <Modal persistent :closable="false" v-model="showModalConfirmation">
+        <Modal persistent :closable="false" v-model="showModalConfirmation" class-modal="w-[25vw] h-[25vh]">
             <FormWrapper ref="form" class="w-full" @submit="$router.push({name: 'accueil'})">
                 <template #fields>
                     <div class="flex flex-col items-center h-fit shadow-custom-elevate p-14">
