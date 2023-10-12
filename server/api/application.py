@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_socketio import SocketIO
+from flask_migrate import Migrate
+from flask_mail import Mail
 
 def create_app(app_name='WIKI_API'):
     app = Flask(app_name)
@@ -12,7 +14,14 @@ def create_app(app_name='WIKI_API'):
     db.init_app(app)
 
     CORS(app, supports_credentials=True)
-    return app
 
-def create_socket(app):
-    return SocketIO(app, logger=True, engineio_logger=True, cors_allowed_origins="*", Threaded=True, message_queue=app.config["REDIS_URL"])
+    migrate = Migrate()
+    migrate.init_app(app, db)
+
+    socketio = SocketIO(logger=True, engineio_logger=True, cors_allowed_origins="*", Threaded=True, message_queue=app.config["REDIS_URL"])
+    socketio.init_app(app)
+
+    mailer = Mail()
+    mailer.init_app(app)
+
+    return app

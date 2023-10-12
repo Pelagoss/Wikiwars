@@ -3,7 +3,7 @@ from abc import ABC
 from datetime import datetime
 
 from flask import current_app
-from flask_mail import Mail, Message
+from flask_mail import Message
 from flask_sqlalchemy.extension import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -20,7 +20,6 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(metadata=metadata)
-mailer = Mail()
 
 from sqlalchemy.types import TypeDecorator, VARCHAR
 import json

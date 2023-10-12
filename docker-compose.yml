@@ -3,13 +3,17 @@ version: '3.8'
 services:
   wiki-server:
     build: ./server
+    container_name: wiki-server
     command: gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -b 0.0.0.0:5000 --workers 1 --threads 400 manage:app
     env_file:
       - ./.env
     depends_on:
       - wiki-db
+      - wiki-redis
     expose:
       - 5000
+    volumes:
+      - .:/app
     labels:
       - traefik.http.routers.wiki-server.rule=Host(`api.wiki-wars.fr`)
       - traefik.http.routers.wiki-server.tls=true
@@ -22,6 +26,7 @@ services:
 
   wiki-client:
     build: ./client
+    container_name: wiki-client
     command: nginx -g "daemon off;"
     labels:
       - traefik.http.routers.wiki-client.rule=Host(`wiki-wars.fr`)
@@ -33,6 +38,7 @@ services:
 
   wiki-db:
     image: postgres:13
+    container_name: wiki-db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -47,17 +53,19 @@ services:
       - web
 
   wiki-worker:
-    image: web
+    build: ./server
+    container_name: wiki-worker
     command: python manage.py --app=manage:app run_worker
     volumes:
-      - .:/usr/src/app
+      - .:/app
     environment:
       - APP_SETTINGS=server.config.BaseConfig
     depends_on:
-      - redis
+      - wiki-redis
 
   wiki-redis:
     image: redis:6.2-alpine
+    container_name: wiki-redis
 
 volumes:
   postgres_data:
