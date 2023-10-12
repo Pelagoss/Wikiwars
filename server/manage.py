@@ -10,6 +10,9 @@ from api.application import create_app, create_socket
 from api.models import db, User, Game, u_g, mailer
 from api.tools import send_mail
 
+import redis
+from rq import Connection, Worker
+
 app = create_app()
 
 migrate = Migrate()
@@ -76,6 +79,13 @@ def re_send_confirmation():
         send_mail('registerRelance', u, data={'pseudo': u.username, 'token': str(u.validation_token),
                                           'linkValider': f'[appUrl]/inscription/{u.validation_token}'})
 
+@cli.command("run_worker")
+def run_worker():
+    redis_url = app.config["REDIS_URL"]
+    redis_connection = redis.from_url(redis_url)
+    with Connection(redis_connection):
+        worker = Worker(app.config["QUEUES"])
+        worker.work()
 
 # enable python shell with application context
 @with_appcontext

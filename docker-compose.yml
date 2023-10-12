@@ -46,6 +46,19 @@ services:
     networks:
       - web
 
+  wiki-worker:
+    image: web
+    command: python manage.py --app=manage:app run_worker
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - APP_SETTINGS=server.config.BaseConfig
+    depends_on:
+      - redis
+
+  wiki-redis:
+    image: redis:6.2-alpine
+
 volumes:
   postgres_data:
 

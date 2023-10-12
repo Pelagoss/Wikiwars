@@ -1,5 +1,6 @@
 from functools import wraps
 
+from flask_socketio import SocketIO
 import flask
 from parse import *
 
@@ -15,6 +16,9 @@ from datetime import datetime, timedelta
 
 import jwt
 import uuid
+
+import redis
+from rq import Queue, Connection
 
 api = Blueprint('api', __name__)
 
@@ -93,14 +97,9 @@ def login():
         current_app.config['SECRET_KEY'])
 
     # Say to everybody "I'm here"
-    friends_list = User.query\
-        .join(Friendship, or_(User.id==Friendship.friend_id, User.id==Friendship.user_id))\
-        .with_entities(User.sid)\
-        .filter(User.id != user.id, or_(Friendship.user_id==user.id, Friendship.friend_id==user.id), Friendship.status == 'friends', User.is_online == True)\
-        .order_by(Friendship.created_at)\
-        .all()
-
-    socketio().emit('FRIEND_ONLINE', user.username, to=[f[0] for f in friends_list])
+    with Connection(redis.from_url(current_app.config["REDIS_URL"])):
+        q = Queue()
+        task = q.enqueue(notif_user_logged_in, args=(user,))
 
     body = user.to_dict()
     body['jwt'] = token
@@ -136,7 +135,9 @@ def register():
     db.session.flush()
     db.session.commit()
 
-    msg = send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
+    with Connection(redis.from_url(current_app.config["REDIS_URL"])):
+        q = Queue()
+        task = q.enqueue(send_mail, 'register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 
     return jsonify(True)
 
@@ -410,3 +411,15 @@ def getGames(current_user):
 
 def socketio():
     return current_app.extensions['socketio']
+
+# Todo : sortir ça d'ici et trouver un moyen de récup le context sqlalchemy User Friendship etc dans le nouveau fichier tasks.py
+def notif_user_logged_in(user):
+    friends_list = User.query\
+            .join(Friendship, or_(User.id==Friendship.friend_id, User.id==Friendship.user_id))\
+            .with_entities(User.sid)\
+            .filter(User.id != user.id, or_(Friendship.user_id==user.id, Friendship.friend_id==user.id), Friendship.status == 'friends', User.is_online == True)\
+            .order_by(Friendship.created_at)\
+            .all()
+
+    socketio = SocketIO(message_queue='redis://127.0.0.1:6379/0')
+    socketio.emit('FRIEND_ONLINE', user.username, to=[f[0] for f in friends_list])
