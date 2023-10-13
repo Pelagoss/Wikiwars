@@ -10,6 +10,7 @@ services:
     depends_on:
       - wiki-db
       - wiki-redis
+      - wiki-worker
     expose:
       - 5000
     volumes:
