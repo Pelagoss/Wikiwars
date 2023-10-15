@@ -19,25 +19,25 @@ users_avatars = table('user_avatar',
     )
 
 def create_user(email):
-    user = User.query.filter_by(email=email).first()
-
     with app.app_context():
+        user = User.query.filter_by(email=email).first()
+
         send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 
-    bind = op.get_bind()
-    session = sa.orm.Session(bind=bind)
+        bind = op.get_bind()
+        session = sa.orm.Session(bind=bind)
 
-    idAvatars = Avatar.query\
-            .with_entities(Avatar.id)\
-            .filter(Avatar.condition_type == 'free').all()
+        idAvatars = Avatar.query\
+                .with_entities(Avatar.id)\
+                .filter(Avatar.condition_type == 'free').all()
 
-    for idA in idAvatars:
-        dataAvatar = {
-            "avatar_id": idA[0],
-            "user_id": u[0]
-        }
+        for idA in idAvatars:
+            dataAvatar = {
+                "avatar_id": idA[0],
+                "user_id": u[0]
+            }
 
-        session.execute(insert(users_avatars).values(dataAvatar))
+            session.execute(insert(users_avatars).values(dataAvatar))
 
 def notif_user_logged_in(user):
     friends_list = User.query\
