@@ -2,12 +2,15 @@ from .models import db, Game, User, Email, Friendship, Avatar
 
 from flask import render_template
 from .application import create_app
+from flask_socketio import SocketIO
+from flask_mail import Mail
 
-app = create_app()
-app.app_context().push()
+from .config import BaseConfig
+
+config = BaseConfig.__dict__
 
 mailer = Mail()
-socketio = SocketIO(message_queue=app.config["REDIS_URL"])
+socketio = SocketIO(message_queue=config["REDIS_URL"])
 
 def send_mail(type_mail, user, data):
     if isinstance(user, str):
@@ -15,8 +18,8 @@ def send_mail(type_mail, user, data):
     else:
         recipients = [user.email]
 
-    appUrl = app.config['APP_URL']
-    appUrlBack = app.config['APP_URL_BACK']
+    appUrl = config['APP_URL']
+    appUrlBack = config['APP_URL_BACK']
 
     data['appUrl'] = appUrl
     data['appUrlBack'] = appUrlBack
@@ -33,7 +36,7 @@ def send_mail(type_mail, user, data):
 
     msg = Message(
         subject=subject,
-        sender=(app.config['MAIL_SENDER'], app.config['MAIL_ADDRESS']),
+        sender=(config['MAIL_SENDER'], config['MAIL_ADDRESS']),
         recipients=recipients
     )
 

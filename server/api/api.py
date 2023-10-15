@@ -23,7 +23,6 @@ from rq import Queue, Connection
 
 api = Blueprint('api', __name__)
 
-
 def token_required(f):
     @wraps(f)
     def _verify(*args, **kwargs):
