@@ -7,7 +7,7 @@ from sqlalchemy.sql.functions import current_user
 
 from api.application import create_app
 from api.models import db, User, Game, u_g
-from api.tools import send_mail
+from api.tasks import send_mail
 
 import redis
 from rq import Connection, Worker
