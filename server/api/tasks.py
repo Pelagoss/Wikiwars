@@ -4,6 +4,7 @@ from flask import render_template
 from .application import create_app
 from flask_socketio import SocketIO
 from .tools import send_mail
+import uuid
 
 app = create_app()
 
