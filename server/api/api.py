@@ -123,9 +123,16 @@ def register():
         return jsonify({ 'message': f'Votre [field] : [field_value] existe déjà', 'fields': fields, 'authenticated': False }), 403
 
     #Create account, send email and generate a validation token
+    user = User(email = data.get('email').lower(), username = data.get('username'), password = data.get('password'))
+    user.validation_token = uuid.uuid4()
+
+    db.session.add(user)
+    db.session.flush()
+    db.session.commit()
+
     with Connection(redis.from_url(current_app.config["REDIS_URL"])):
         q = Queue()
-        task = q.enqueue(create_user, args=(data,))
+        task = q.enqueue(create_user, args=(user.email,))
 
     return jsonify(True)
 

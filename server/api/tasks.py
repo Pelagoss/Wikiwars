@@ -18,15 +18,11 @@ users_avatars = table('user_avatar',
         column('user_id')
     )
 
-def create_user(data):
-    user = User(email = data.get('email').lower(), username = data.get('username'), password = data.get('password'))
-    user.validation_token = uuid.uuid4()
+def create_user(email):
+    user = User.query.filter_by(email=email).first()
 
-    db.session.add(user)
-    db.session.flush()
-    db.session.commit()
-
-    send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
+    with app.app_context():
+        send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 
     bind = op.get_bind()
     session = sa.orm.Session(bind=bind)
