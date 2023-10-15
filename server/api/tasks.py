@@ -74,7 +74,7 @@ def send_mail(type_mail, user, data):
 
     return None
 
-def create_user(user_id):
+def create_user(data):
     user = User(email = data.get('email').lower(), username = data.get('username'), password = data.get('password'))
     user.validation_token = uuid.uuid4()
 
