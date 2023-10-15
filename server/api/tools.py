@@ -81,8 +81,8 @@ def send_mail(type_mail, user, data):
     else:
         recipients = [user.email]
 
-    appUrl = config['APP_URL']
-    appUrlBack = config['APP_URL_BACK']
+    appUrl = app.config['APP_URL']
+    appUrlBack = app.config['APP_URL_BACK']
 
     data['appUrl'] = appUrl
     data['appUrlBack'] = appUrlBack
@@ -99,7 +99,7 @@ def send_mail(type_mail, user, data):
 
     msg = Message(
         subject=subject,
-        sender=(config['MAIL_SENDER'], config['MAIL_ADDRESS']),
+        sender=(app.config['MAIL_SENDER'], app.config['MAIL_ADDRESS']),
         recipients=recipients
     )
 
