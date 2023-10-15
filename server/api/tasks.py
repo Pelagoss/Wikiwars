@@ -18,7 +18,7 @@ users_avatars = table('user_avatar',
         column('user_id')
     )
 
-def create_user(app, data):
+def create_user(data):
     user = User(email = data.get('email').lower(), username = data.get('username'), password = data.get('password'))
     user.validation_token = uuid.uuid4()
 
