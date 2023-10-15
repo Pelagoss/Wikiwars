@@ -5,6 +5,7 @@ from .application import create_app
 from flask_socketio import SocketIO
 from flask_mail import Mail
 from flask_mail import Message
+import uuid
 
 from .config import BaseConfig
 

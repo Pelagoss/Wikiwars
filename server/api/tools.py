@@ -1,8 +1,6 @@
 import requests
 import urllib.parse
 from bs4 import BeautifulSoup
-from werkzeug.local import LocalProxy
-import uuid
 
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
