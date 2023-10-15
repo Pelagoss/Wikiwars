@@ -1,7 +1,7 @@
 import requests
 import urllib.parse
 from bs4 import BeautifulSoup
-
+from flask import render_template
 from flask_mail import Mail
 from flask_mail import Message
 import uuid
