@@ -2,6 +2,12 @@ import requests
 import urllib.parse
 from bs4 import BeautifulSoup
 
+from flask_mail import Mail
+from flask_mail import Message
+import uuid
+
+mailer = Mail()
+
 def randomize_page():
     r = requests.get("https://fr.wikipedia.org/w/api.php?format=json&action=query&generator=random&grnnamespace=0")
     pages = r.json()['query']['pages']
@@ -68,3 +74,54 @@ def to_dict(o):
     if o is None:
         return o
     return o.to_dict()
+
+def send_mail(type_mail, user, data):
+    if isinstance(user, str):
+        recipients = [user]
+    else:
+        recipients = [user.email]
+
+    appUrl = config['APP_URL']
+    appUrlBack = config['APP_URL_BACK']
+
+    data['appUrl'] = appUrl
+    data['appUrlBack'] = appUrlBack
+
+    for key, value in data.items():
+        data[key] = value.replace('[appUrl]', appUrl)
+
+    if type_mail == 'register':
+        subject = 'Confirmez votre inscription !'
+    elif type_mail == 'registerRelance':
+        subject = '[Relance] Confirmez votre inscription !'
+    else:
+        subject = 'Consultez les WikiNews !'
+
+    msg = Message(
+        subject=subject,
+        sender=(config['MAIL_SENDER'], config['MAIL_ADDRESS']),
+        recipients=recipients
+    )
+
+    unique_token = uuid.uuid4()
+
+    data['browserLink'] = f'{appUrl}/emails/{unique_token}'
+
+    msg.html = render_template(
+            "mail/{}.html".format(type_mail),
+            **data
+        )
+
+    emails = Email.from_message(msg)
+    for email in emails:
+        email.unique_token = unique_token
+        email.type = type_mail
+        email.recipient_id = user.id
+
+        db.session.add(email)
+        db.session.flush()
+        db.session.commit()
+
+    mailer.send(msg)
+
+    return None

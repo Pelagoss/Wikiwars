@@ -7,7 +7,7 @@ from sqlalchemy.sql.functions import current_user
 
 from api.application import create_app
 from api.models import db, User, Game, u_g
-from api.tasks import send_mail
+from api.tools import send_mail
 
 import redis
 from rq import Connection, Worker
@@ -71,8 +71,11 @@ def re_send_confirmation():
         db.session.add(u)
         db.session.flush()
         db.session.commit()
-        send_mail('registerRelance', u, data={'pseudo': u.username, 'token': str(u.validation_token),
-                                          'linkValider': f'[appUrl]/inscription/{u.validation_token}'})
+
+        with Connection(redis.from_url(current_app.config["REDIS_URL"])):
+            q = Queue()
+            task = q.enqueue(send_mail, args=('registerRelance', u, {'pseudo': u.username, 'token': str(u.validation_token),
+                                                                                        'linkValider': f'[appUrl]/inscription/{u.validation_token}'},))
 
 @cli.command("run_worker")
 def run_worker():
