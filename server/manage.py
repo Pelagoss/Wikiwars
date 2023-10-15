@@ -72,7 +72,7 @@ def re_send_confirmation():
         db.session.flush()
         db.session.commit()
 
-        with Connection(redis.from_url(current_app.config["REDIS_URL"])):
+        with Connection(redis.from_url(app.config["REDIS_URL"])):
             q = Queue()
             task = q.enqueue(send_mail, args=('registerRelance', u, {'pseudo': u.username, 'token': str(u.validation_token),
                                                                                         'linkValider': f'[appUrl]/inscription/{u.validation_token}'},))

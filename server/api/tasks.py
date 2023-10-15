@@ -26,8 +26,7 @@ def create_user(data):
     db.session.flush()
     db.session.commit()
 
-    with app.app_context():
-        send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
+    send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 
     bind = op.get_bind()
     session = sa.orm.Session(bind=bind)

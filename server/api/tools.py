@@ -115,6 +115,8 @@ def send_mail(type_mail, user, data):
             **data
         )
 
+    print(current_app.config)
+
     emails = Email.from_message(msg)
     for email in emails:
         email.unique_token = unique_token
