@@ -12,7 +12,7 @@ from flask_socketio import join_room
 
 from .models import db, Game, User, Email, Friendship, Avatar
 from .tools import randomize_page, get_wiki_page, getSummaryWikiPage
-from .tasks import notif_user_logged_in, send_mail
+from .tasks import notif_user_logged_in, send_mail, create_user
 from datetime import datetime, timedelta
 
 import jwt
@@ -59,10 +59,6 @@ def token_required(f):
 
 @api.route('/')
 def index():
-    sid = User.query.filter_by(id=1).first().sid
-    if sid is not None:
-        socketio().emit('NEW_FRIEND_INVITATION', 'John Doe', to=sid)
-
     return flask.render_template('index.html')
 
 @api.route('/me', methods=('POST',))
@@ -137,7 +133,7 @@ def register():
 
     with Connection(redis.from_url(current_app.config["REDIS_URL"])):
         q = Queue()
-        task = q.enqueue(send_mail, 'register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
+        task = q.enqueue(create_user, args=(user,))
 
     return jsonify(True)
 

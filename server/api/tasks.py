@@ -14,6 +14,33 @@ config = BaseConfig.__dict__
 mailer = Mail()
 socketio = SocketIO(message_queue=config["REDIS_URL"])
 
+from alembic import op
+import sqlalchemy as sa
+from sqlalchemy.sql import insert, table, column, select, update
+
+users_avatars = table('user_avatar',
+        column('avatar_id'),
+        column('user_id')
+    )
+
+def create_user(user):
+    send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
+
+    bind = op.get_bind()
+    session = sa.orm.Session(bind=bind)
+
+    idAvatars = Avatar.query\
+            .with_entities(Avatar.id)\
+            .filter(Avatar.condition_type == 'free').all()
+
+    for idA in idAvatars:
+        dataAvatar = {
+            "avatar_id": idA[0],
+            "user_id": u[0]
+        }
+
+        session.execute(insert(users_avatars).values(dataAvatar))
+
 def send_mail(type_mail, user, data):
     if isinstance(user, str):
         recipients = [user]
