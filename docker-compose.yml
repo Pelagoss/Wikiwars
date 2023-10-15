@@ -63,10 +63,14 @@ services:
       - APP_SETTINGS=server.config.BaseConfig
     depends_on:
       - wiki-redis
+    networks:
+      - web
 
   wiki-redis:
     image: redis:6.2-alpine
     container_name: wiki-redis
+    networks:
+      - web
 
 volumes:
   postgres_data:
