@@ -8,7 +8,7 @@ then
       sleep 0.1
     done
 
-    python -m manage --app=manage:app db upgrade
+    python manage.py --app=manage:app db upgrade
 
     echo "PostgreSQL started"
 fi
