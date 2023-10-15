@@ -133,7 +133,7 @@ def register():
 
     with Connection(redis.from_url(current_app.config["REDIS_URL"])):
         q = Queue()
-        task = q.enqueue(create_user, args=(user,))
+        task = q.enqueue(create_user, args=(user.id,))
 
     return jsonify(True)
 

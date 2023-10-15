@@ -74,7 +74,9 @@ def send_mail(type_mail, user, data):
 
     return None
 
-def create_user(user):
+def create_user(user_id):
+    user = User.query.filter_by(id=user_id).first()
+
     send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 
     bind = op.get_bind()
