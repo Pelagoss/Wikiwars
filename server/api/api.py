@@ -412,7 +412,7 @@ def getGames(current_user):
 def socketio():
     return current_app.extensions['socketio']
 
-# Todo : sortir ça d'ici et trouver un moyen de récup le context sqlalchemy User Friendship etc dans le nouveau fichier tasks.py
+# Async Tasks
 def notif_user_logged_in(user):
     friends_list = User.query\
             .join(Friendship, or_(User.id==Friendship.friend_id, User.id==Friendship.user_id))\
@@ -421,5 +421,5 @@ def notif_user_logged_in(user):
             .order_by(Friendship.created_at)\
             .all()
 
-    socketio = SocketIO(message_queue='redis://127.0.0.1:6379/0')
+    socketio = SocketIO(message_queue='redis://wiki-redis:6379/0')
     socketio.emit('FRIEND_ONLINE', user.username, to=[f[0] for f in friends_list])
