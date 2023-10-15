@@ -1,5 +1,6 @@
 import requests
 import urllib.parse
+from .models import db, Game, User, Email, Friendship, Avatar
 from bs4 import BeautifulSoup
 from flask import render_template
 from flask_mail import Mail
