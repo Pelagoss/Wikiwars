@@ -21,7 +21,9 @@ users_avatars = table('user_avatar',
 def create_user(email):
     with app.app_context():
         user = User.query.filter_by(email=email).first()
-
+        print(user)
+        userTest = User.query.all()
+        print(userTest[0])
         send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 
         bind = op.get_bind()
