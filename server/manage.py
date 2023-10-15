@@ -10,7 +10,7 @@ from api.models import db, User, Game, u_g
 from api.tools import send_mail
 
 import redis
-from rq import Connection, Worker
+from rq import Connection, Worker, Queue
 
 app = create_app()
 
