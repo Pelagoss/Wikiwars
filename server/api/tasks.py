@@ -4,6 +4,7 @@ from flask import render_template
 from .application import create_app
 from flask_socketio import SocketIO
 from flask_mail import Mail
+from flask_mail import Message
 
 from .config import BaseConfig
 

@@ -1,7 +1,6 @@
 import requests
 import urllib.parse
 from bs4 import BeautifulSoup
-from flask_mail import Message
 from werkzeug.local import LocalProxy
 import uuid
 
