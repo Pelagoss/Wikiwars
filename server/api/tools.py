@@ -6,6 +6,8 @@ from flask_mail import Mail
 from flask_mail import Message
 import uuid
 
+from flask import current_app
+
 mailer = Mail()
 
 def randomize_page():
@@ -81,8 +83,8 @@ def send_mail(type_mail, user, data):
     else:
         recipients = [user.email]
 
-    appUrl = app.config['APP_URL']
-    appUrlBack = app.config['APP_URL_BACK']
+    appUrl = current_app.config['APP_URL']
+    appUrlBack = current_app.config['APP_URL_BACK']
 
     data['appUrl'] = appUrl
     data['appUrlBack'] = appUrlBack
@@ -99,7 +101,7 @@ def send_mail(type_mail, user, data):
 
     msg = Message(
         subject=subject,
-        sender=(app.config['MAIL_SENDER'], app.config['MAIL_ADDRESS']),
+        sender=(current_app.config['MAIL_SENDER'], current_app.config['MAIL_ADDRESS']),
         recipients=recipients
     )
 
