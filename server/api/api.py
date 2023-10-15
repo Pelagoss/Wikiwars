@@ -126,7 +126,7 @@ def register():
     #Create account, send email and generate a validation token
     with Connection(redis.from_url(current_app.config["REDIS_URL"])):
         q = Queue()
-        task = q.enqueue(create_user, args=(data,))
+        task = q.enqueue(create_user, args=(current_app._get_current_object(), data,))
 
     return jsonify(True)
 
