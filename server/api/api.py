@@ -11,7 +11,8 @@ from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
 from .models import db, Game, User, Email, Friendship, Avatar
-from .tools import randomize_page, get_wiki_page, getSummaryWikiPage, send_mail
+from .tools import randomize_page, get_wiki_page, getSummaryWikiPage
+from .tasks import notif_user_logged_in, send_mail
 from datetime import datetime, timedelta
 
 import jwt
@@ -411,15 +412,3 @@ def getGames(current_user):
 
 def socketio():
     return current_app.extensions['socketio']
-
-# Async Tasks
-def notif_user_logged_in(user):
-    friends_list = User.query\
-            .join(Friendship, or_(User.id==Friendship.friend_id, User.id==Friendship.user_id))\
-            .with_entities(User.sid)\
-            .filter(User.id != user.id, or_(Friendship.user_id==user.id, Friendship.friend_id==user.id), Friendship.status == 'friends', User.is_online == True)\
-            .order_by(Friendship.created_at)\
-            .all()
-
-    socketio = SocketIO(message_queue='redis://wiki-redis:6379/0')
-    socketio.emit('FRIEND_ONLINE', user.username, to=[f[0] for f in friends_list])

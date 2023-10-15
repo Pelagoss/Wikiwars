@@ -21,7 +21,7 @@ def create_app(app_name='WIKI_API'):
     socketio = SocketIO(logger=True, engineio_logger=True, cors_allowed_origins="*", Threaded=True, message_queue=app.config["REDIS_URL"])
     socketio.init_app(app)
 
-    mailer = Mail()
+    from api.tasks import mailer
     mailer.init_app(app)
 
     return app
