@@ -72,7 +72,7 @@ def re_send_confirmation():
         db.session.flush()
         db.session.commit()
 
-        send_mail('registerRelance', u, data={'pseudo': u.username, 'token': str(u.validation_token), 'linkValider': f'[appUrl]/inscription/{u.validation_token}'}, True)
+        send_mail('registerRelance', u, {'pseudo': u.username, 'token': str(u.validation_token), 'linkValider': f'[appUrl]/inscription/{u.validation_token}'}, True)
 
 @cli.command("run_worker")
 def run_worker():
