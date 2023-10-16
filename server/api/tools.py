@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from flask import render_template
 from flask_mail import Mail
 from flask_mail import Message
+from threading import Thread
 import uuid
 
 from flask import current_app
@@ -78,7 +79,11 @@ def to_dict(o):
         return o
     return o.to_dict()
 
-def send_mail(type_mail, user, data):
+def send_async_email(app, msg):
+    with app.app_context():
+        mailer.send(msg)
+
+def send_mail(type_mail, user, data, sync=False):
     if isinstance(user, str):
         recipients = [user]
     else:
@@ -127,6 +132,9 @@ def send_mail(type_mail, user, data):
         db.session.flush()
         db.session.commit()
 
-    mailer.send(msg)
+    if sync:
+        mailer.send(msg)
+    else:
+        Thread(target=send_async_email, args=(current_app._get_current_object(), msg)).start()
 
     return None
