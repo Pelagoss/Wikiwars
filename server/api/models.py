@@ -7,19 +7,8 @@ from flask_mail import Message
 from flask_sqlalchemy.extension import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
 from werkzeug.security import check_password_hash, generate_password_hash
-from sqlalchemy import MetaData, Uuid, String, UniqueConstraint
-
-convention = {
-    "ix": 'ix_%(column_0_label)s',
-    "uq": "uq_%(table_name)s_%(column_0_name)s",
-    "ck": "ck_%(table_name)s_%(constraint_name)s",
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    "pk": "pk_%(table_name)s"
-}
-
-metadata = MetaData(naming_convention=convention)
-
-db = SQLAlchemy(metadata=metadata)
+from sqlalchemy import Uuid, String, UniqueConstraint
+from .application import db
 
 from sqlalchemy.types import TypeDecorator, VARCHAR
 import json

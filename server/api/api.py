@@ -10,9 +10,10 @@ from sqlalchemy.sql import column, table
 from flask import Blueprint, jsonify, request, current_app, session
 from flask_socketio import join_room
 
-from .models import db, Game, User, Email, Friendship, Avatar
+from .models import Game, User, Email, Friendship, Avatar
 from .tools import randomize_page, get_wiki_page, getSummaryWikiPage, send_mail
 from datetime import datetime, timedelta
+from .application import db
 
 import jwt
 import uuid
