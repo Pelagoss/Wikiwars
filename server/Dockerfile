@@ -44,8 +44,8 @@ ENV APP_HOME=/home/app/server
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
-# install dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends netcat
+# install system dependencies
+RUN apt-get update && apt-get install -y netcat
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
 RUN pip install --upgrade pip

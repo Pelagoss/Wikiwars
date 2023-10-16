@@ -25,7 +25,7 @@ def create_app(app_name='WIKI_API'):
 
     db.init_app(app)
 
-    CORS(app, supports_credentials=True)
+    CORS(app, origins=["http://wiki-wars.localhost", "https://wiki-wars.fr"], supports_credentials=True)
 
     migrate = Migrate()
     migrate.init_app(app, db)
