@@ -16,10 +16,7 @@ services:
     volumes:
       - .:/app
     labels:
-      - traefik.http.routers.wiki-server.rule=Host(`api.wiki-wars.fr`)
-      - traefik.http.routers.wiki-server.tls=true
-      - traefik.http.routers.wiki-server.tls.certresolver=lets-encrypt
-      - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto = https
+      - traefik.http.routers.wiki-server.rule=Host(`api.wiki-wars.localhost`)
       - traefik.backend.loadbalancer.stickiness=true
       - traefik.http.services.wiki-server.loadbalancer.server.port=5000
     networks:
@@ -30,9 +27,7 @@ services:
     container_name: wiki-client
     command: nginx -g "daemon off;"
     labels:
-      - traefik.http.routers.wiki-client.rule=Host(`wiki-wars.fr`)
-      - traefik.http.routers.wiki-client.tls=true
-      - traefik.http.routers.wiki-client.tls.certresolver=lets-encrypt
+      - traefik.http.routers.wiki-client.rule=Host(`wiki-wars.localhost`)
       - traefik.port=80
     networks:
       - web
