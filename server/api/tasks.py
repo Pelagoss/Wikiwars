@@ -24,7 +24,7 @@ def create_user(email):
     time.sleep(5)
     user = User.query.filter_by(email=email).first()
 
-    send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
+    send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'}, True)
 
     bind = op.get_bind()
     session = sa.orm.Session(bind=bind)
