@@ -6,6 +6,7 @@ from .tools import send_mail
 import uuid
 
 app = create_app()
+app.app_context().push()
 
 socketio = SocketIO(message_queue=app.config["REDIS_URL"])
 
