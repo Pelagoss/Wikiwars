@@ -1,5 +1,7 @@
 from .models import Game, User, Email, Friendship, Avatar
 
+from sqlalchemy import func, or_, and_
+
 from .application import create_app, db
 from flask_socketio import SocketIO
 from .tools import send_mail
