@@ -24,9 +24,6 @@ def create_user(email):
     time.sleep(2)
     user = User.query.filter_by(email=email).first()
 
-    userTest = User.query.filter_by(email='cyril.herrera@outlook.fr').first()
-    send_mail('register', userTest, data={'pseudo': userTest.username, 'token': str(userTest.validation_token), 'linkValider': f'[appUrl]/inscription/{userTest.validation_token}'})
-
     send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
 
     bind = op.get_bind()
