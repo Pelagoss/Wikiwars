@@ -21,7 +21,7 @@ users_avatars = table('user_avatar',
     )
 
 def create_user(email):
-    time.sleep(2)
+    time.sleep(5)
     user = User.query.filter_by(email=email).first()
 
     send_mail('register', user, data={'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'})
