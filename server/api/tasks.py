@@ -11,8 +11,6 @@ app.app_context().push()
 
 socketio = SocketIO(message_queue=app.config["REDIS_URL"])
 
-from alembic import op
-import sqlalchemy as sa
 from sqlalchemy.sql import insert, table, column, select, update
 
 users_avatars = table('user_avatar',
@@ -23,25 +21,21 @@ users_avatars = table('user_avatar',
 def create_user(email):
     user = User.query.filter_by(email=email).first()
 
-    while user is None:
-        user = User.query.filter_by(email=email).first()
-
     send_mail('register', user, {'pseudo': user.username, 'token': str(user.validation_token), 'linkValider': f'[appUrl]/inscription/{user.validation_token}'}, True)
 
-    bind = op.get_bind()
-    session = sa.orm.Session(bind=bind)
-
     idAvatars = Avatar.query\
-            .with_entities(Avatar.id)\
-            .filter(Avatar.condition_type == 'free').all()
+                .with_entities(Avatar.id)\
+                .filter(Avatar.condition_type == 'free').all()
 
     for idA in idAvatars:
         dataAvatar = {
             "avatar_id": idA[0],
-            "user_id": u[0]
+            "user_id": user.id
         }
 
-        session.execute(insert(users_avatars).values(dataAvatar))
+        db.session.execute(insert(users_avatars).values(dataAvatar))
+    db.session.flush()
+    db.session.commit()
 
 def notif_user_logged_in(user):
     friends_list = User.query\
