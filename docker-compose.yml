@@ -59,8 +59,8 @@ services:
     command: python manage.py --app=manage:app run_worker
     volumes:
       - .:/app
-    environment:
-      - APP_SETTINGS=server.config.BaseConfig
+    env_file:
+      - ./.env
     depends_on:
       - wiki-redis
     networks:
