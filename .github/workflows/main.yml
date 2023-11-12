@@ -5,6 +5,7 @@ on: workflow_dispatch
 jobs:
   setup:
     runs-on: self-hosted
+    environment: PROD
     steps:
       - name: Pull Project
         uses: actions/checkout@v4.1.1
