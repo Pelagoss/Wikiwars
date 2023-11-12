@@ -1,0 +1,13 @@
+name: Build&Deploy
+
+on: []
+
+jobs:
+  build:
+
+    runs-on: self-hosted
+    
+    steps:
+      - uses: actions/checkout@v4.1.1
+      - name: Build & Deploy
+        run: touch hello.txt
