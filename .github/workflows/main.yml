@@ -10,4 +10,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - name: Build & Deploy
-        run: sudo docker compose up -d --build
+        run: cp ~/Wikiwars/.env.prod.db ~/actions-runner/_work/Wikiwars/Wikiwars/ && sudo docker compose up -d --build
