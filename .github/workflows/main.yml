@@ -12,4 +12,4 @@ jobs:
       - name: Build & Deploy
         env:
           ENV: ${{ secrets.ENV }}
-        run: echo "$ENV"
+        run: echo "$ENV" >> test.txt
