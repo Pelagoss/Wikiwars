@@ -3,11 +3,32 @@ name: Build&Deploy
 on: workflow_dispatch
 
 jobs:
-  build:
-
+  setup:
     runs-on: self-hosted
-    
     steps:
-      - uses: actions/checkout@v4.1.1
-      - name: Build & Deploy
-        run: cp ~/Wikiwars/.env.prod.db ~/actions-runner/_work/Wikiwars/Wikiwars/ && cp ~/Wikiwars/server/.env.prod ~/actions-runner/_work/Wikiwars/Wikiwars/server && sudo docker compose up -d --build
+      - name: Pull Project
+        uses: actions/checkout@v4.1.1
+      - name: Setup environment
+        env:
+          ENV: ${{ secrets.ENV }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+        run: ./scripts/deploy.sh
+  build:
+    runs-on: self-hosted
+    needs: setup
+    steps:
+      - name: Build docker services
+        run: sudo docker compose build
+  create:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: Create docker containers
+        run: sudo docker compose create
+  deploy:
+    runs-on: self-hosted
+    needs: create
+    steps:
+      - name: Start containers
+        run: sudo docker compose start
