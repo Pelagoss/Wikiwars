@@ -14,7 +14,7 @@ jobs:
           ENV: ${{ secrets.ENV }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
-        run: chmod u+x /scripts/deploy.sh && ./scripts/deploy.sh
+        run: chmod u+x scripts/deploy.sh && ./scripts/deploy.sh
   build:
     runs-on: self-hosted
     needs: setup
