@@ -10,4 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - name: Build & Deploy
+        env:
+          ENV: ${{ secrets.ENV }}
         run: echo "$ENV"
