@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   wiki-server:
+    environment:
+      - ENV=prod
     labels:
       - traefik.http.routers.wiki-server.rule=Host(`api.wiki-wars.fr`)
       - traefik.http.routers.wiki-server.tls=true
@@ -13,3 +15,7 @@ services:
       - traefik.http.routers.wiki-client.rule=Host(`wiki-wars.fr`)
       - traefik.http.routers.wiki-client.tls=true
       - traefik.http.routers.wiki-client.tls.certresolver=lets-encrypt
+  
+  wiki-worker:
+    environment:
+      - ENV=prod
