@@ -6,4 +6,4 @@ sed 's/$MAIL_PASSWORD/'"$MAIL_PASSWORD"'/' -i server/.env.prod
 sed 's/${ENV}/'"$ENV"'/' -i docker-compose.yml
 
 # Rename docker-compose.prod.yml
-mv docker-compose.prod.yml docker-compose.override.yml
+cp docker-compose.prod.yml docker-compose.override.yml
