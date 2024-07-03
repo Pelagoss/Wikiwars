@@ -22,3 +22,9 @@ services:
     restart: always
     environment:
       - ENV=prod
+
+  wiki-redis:
+    restart: always
+
+  wiki-db:
+    restart: always
