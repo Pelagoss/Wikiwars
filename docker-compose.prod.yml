@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   wiki-server:
+    restart: always
     environment:
       - ENV=prod
     labels:
@@ -11,11 +12,13 @@ services:
       - traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto = https
 
   wiki-client:
+    restart: always
     labels:
       - traefik.http.routers.wiki-client.rule=Host(`wiki-wars.fr`)
       - traefik.http.routers.wiki-client.tls=true
       - traefik.http.routers.wiki-client.tls.certresolver=lets-encrypt
   
   wiki-worker:
+    restart: always
     environment:
       - ENV=prod
