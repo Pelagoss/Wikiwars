@@ -41,6 +41,15 @@ export default {
         navTo(route) {
             this.$emit('changePage', route);
         },
+        handleGames(data) {
+            userStore().games = data.filter(g => g.users.map(u => u.username).includes(userStore().username));
+            userStore().wins = data.filter(g => g.winner?.id === userStore().id);
+        },
+        fetchGames() {
+            return this.$axios.get('/games').then(({data}) => {
+                this.handleGames(data);
+            });
+        },
         joinGame(game_id = null) {
             if (this.isInGame === null && game_id === null) {
                 this.createGame().then(() => {
