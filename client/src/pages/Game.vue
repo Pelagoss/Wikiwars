@@ -92,7 +92,6 @@ export default {
             showTooltip: false,
             tooltipContent: '',
             initStarted: false,
-            socketJoined: false,
             timeoutHover: null,
             contenu: '',
             loading: true,
@@ -105,6 +104,9 @@ export default {
     },
     computed: {
         ...mapState(userStore, {isAuthenticated: "isAuthenticated", username: "username"}),
+        socketJoined() {
+            return this.$socketState.connected;
+        }
     },
     mounted() {
         this.$refs.wiki.addEventListener("click", this.clickLink.bind(this), false);
