@@ -360,7 +360,7 @@ def get_page(current_user, title):
     if game.target == urllib.parse.unquote(title).replace(' ', '_'):
         event = "GAME_FINISHED"
         game.winner_id = current_user.id
-        socketio().emit("FINISH_GAME", game, to='lobby')
+        socketio().emit("FINISH_GAME", game.to_dict('game'), to='lobby')
 
     db.session.commit()
 
