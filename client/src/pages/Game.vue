@@ -418,6 +418,7 @@ body {
 
     &.opened {
         scale: 1.6;
+        pointer-events: none;
     }
 }
 
