@@ -212,7 +212,7 @@ export default {
 
                 this.showTooltip = false;
 
-                this.fetchPage(event.target.href.replace('/wiki/', ''));
+                this.fetchPage(event.target.getAttribute('href').replace('/wiki/', ''));
             }
         },
         hoverLink(event) {
