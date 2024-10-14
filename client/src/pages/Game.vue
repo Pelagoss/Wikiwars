@@ -44,6 +44,7 @@
             <div v-if="loading === false"
                  class="mw-content-ltr sitedir-ltr ltr mw-body-content parsoid-body mediawiki mw-parser-output grid-col heightGame"
                  :class="{'overflow-hidden h-[100vh]': game?.is_started === false}"
+                 @click="clickLink"
                  v-html="contenu">
             </div>
 
@@ -109,17 +110,17 @@ export default {
         }
     },
     mounted() {
-        this.$refs.wiki.addEventListener("click", this.clickLink.bind(this), false);
+        // this.$refs.wiki.addEventListener("click", this.clickLink.bind(this), false);
         // this.$refs.wiki.addEventListener("mouseenter", this.hoverLink.bind(this), {passive: false, capture: true});
         // this.$refs.wiki.addEventListener("mouseleave", this.unhoverLink.bind(this), {passive: false, capture: true});
 
         this.fetchGames().then(() => {
-            window.addEventListener("keydown",function (e) {
-                if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
-                    e.preventDefault();
-                    console.log("Timeout 5s");
-                }
-            })
+            // window.addEventListener("keydown",function (e) {
+            //     if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+            //         e.preventDefault();
+            //         console.log("Timeout 5s");
+            //     }
+            // })
 
             let games = toRaw(userStore().games);
             let filtered_games = games.filter(g => g.winner == null);
@@ -211,7 +212,7 @@ export default {
 
                 this.showTooltip = false;
 
-                this.fetchPage(event.target['data-title']);
+                this.fetchPage(event.target.href.replace('/wiki/', ''));
             }
         },
         hoverLink(event) {

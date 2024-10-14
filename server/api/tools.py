@@ -59,6 +59,7 @@ def get_wiki_page(title):
             a.replaceWith(a.text)
 
     for a in page_py.find_all('a', href=False):
+        a['onclick'] = 'return false'
         a.replaceWith(a.text)
 
     for img in page_py.find_all('img'):
