@@ -51,9 +51,12 @@ def get_wiki_page(title):
             pass
         elif "/wiki/" in link_text and "/wiki/Aide:" not in link_text and "/wiki/Sp%C3%A9cial:" not in link_text and "/wiki/Discussion:" not in link_text and "/wiki/Mod%C3%A8le:" not in link_text and "https" not in link_text:
             pass
-        elif '/w/index.php?title=' in link_text and "#mw-pages" in link_text:
+        elif '/w/index.php?title=' in link_text and ("#mw-pages" in link_text or "from=" in link_text):
             a['href'] = link_text.replace(
                 f'/w/index.php?title={urllib.parse.quote(a["title"].replace(" ", "_"), safe=":/")}', f'/wiki/{a["title"]}?')
+            pass
+        elif 'https://fr.wikipedia.org/wiki/' in link_text:
+            a['href'] = link_text.replace(f'https://fr.wikipedia.org/wiki/', f'/wiki/')
             pass
         else:
             a.replaceWith(a.text)
