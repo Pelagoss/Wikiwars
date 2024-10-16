@@ -350,6 +350,8 @@ def get_page(current_user, title):
             title += f'pagefrom={request.args["pagefrom"]}'
         if 'pageuntil' in request.args.keys():
             title += f'pageuntil={request.args["pageuntil"]}'
+        if 'from' in request.args.keys():
+            title += f'from={request.args["from"]}'
 
     page = get_wiki_page(title)
 
