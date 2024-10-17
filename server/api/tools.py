@@ -23,7 +23,7 @@ def randomize_page():
 
 
 def get_wiki_page(title):
-    url = f'/wiki/{title}'
+#     url = f'/wiki/{title}'
 
     # if 'w/index.php' in title and "#mw-pages" in title:
     #     url = title
@@ -53,9 +53,9 @@ def get_wiki_page(title):
             pass
         elif '/w/index.php?title=' in link_text and ("#mw-pages" in link_text or "from=" in link_text):
             if "title" in a:
-                a['href'] = link_text.replace(f'/w/index.php?title={urllib.parse.quote(a["title"].replace(" ", "_"), safe=":/")}', f'/wiki/{a["title"]}?')
+                pass
             else:
-                a['href'] = link_text.replace(f'https://fr.wikipedia.org/w/index.php?title=', '').replace('&', '?', 1)
+                a['href'] = link_text.replace(f'https://fr.wikipedia.org', '')
             pass
         elif 'https://fr.wikipedia.org/wiki/' in link_text:
             a['href'] = link_text.replace(f'https://fr.wikipedia.org/wiki/', f'/wiki/')
