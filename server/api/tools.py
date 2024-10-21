@@ -29,6 +29,7 @@ def get_wiki_page(title):
     #     url = title
     # https://fr.wikipedia.org/w/index.php?title=Cat%C3%A9gorie:Portail:Am%C3%A9rique_du_Sud/Articles_li%C3%A9s&pagefrom=Abarema+longipedunculata#mw-pages
     url = f'https://fr.wikipedia.org{url}'
+    print(url)
     page = requests.get(url)
 
     soup = BeautifulSoup(page.text, features="lxml")

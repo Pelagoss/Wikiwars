@@ -337,6 +337,7 @@ def join_game(current_user):
 @api.route('/game/page/<path:title>', methods=('GET',))
 @token_required
 def get_page(current_user, title):
+    print(title)
     try:
         game = Game.query.filter(Game.users.contains(current_user), Game.winner == None).first()
 
