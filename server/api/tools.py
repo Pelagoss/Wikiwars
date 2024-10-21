@@ -28,7 +28,7 @@ def get_wiki_page(title):
     # if 'w/index.php' in title and "#mw-pages" in title:
     #     url = title
     # https://fr.wikipedia.org/w/index.php?title=Cat%C3%A9gorie:Portail:Am%C3%A9rique_du_Sud/Articles_li%C3%A9s&pagefrom=Abarema+longipedunculata#mw-pages
-    url = f'https://fr.wikipedia.org{url}'
+    url = f'https://fr.wikipedia.org/{title}'
     print(url)
     page = requests.get(url)
 
