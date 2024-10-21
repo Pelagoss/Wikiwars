@@ -134,7 +134,7 @@ export default {
                     this.initSocket();
                 }
 
-                this.fetchPage(this.game.clics[userStore().username].page);
+                this.fetchPage('/wiki/' + this.game.clics[userStore().username].page);
             }
         });
     },
