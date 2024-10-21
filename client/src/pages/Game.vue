@@ -134,7 +134,7 @@ export default {
                     this.initSocket();
                 }
 
-                this.fetchPage('wiki/' + this.game.clics[userStore().username].page);
+                this.fetchPage('/wiki/' + this.game.clics[userStore().username].page);
             }
         });
     },
@@ -235,7 +235,7 @@ export default {
         },
         fetchPage(title) {
             this.loading = true;
-            return this.$axios.get('/game/page/' + title).then(({data}) => {
+            return this.$axios.get('/game/page' + title).then(({data}) => {
                 this.contenu = data.replace(/<\/body>/, '').replace(/<body["'=\w0-9a-zA-Z-,_ ]*>/, '');
             }).finally(() => {
                 this.loading = false;
