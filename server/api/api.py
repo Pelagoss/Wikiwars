@@ -341,7 +341,7 @@ def get_page(current_user, title):
     try:
         game = Game.query.filter(Game.users.contains(current_user), Game.winner == None).first()
 
-        game.clics[current_user.username] = {"clics": game.clics[current_user.username]["clics"] + 1, "page": title}
+        game.clics[current_user.username] = {"clics": game.clics[current_user.username]["clics"] + 1, "page": title.replace('wiki/', '')}
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
