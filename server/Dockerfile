@@ -3,7 +3,7 @@
 ###########
 
 # pull official base image
-FROM python:3.9-slim-buster as builder
+FROM python:3.9-slim-bookworm as builder
 
 # set work directory
 WORKDIR /app
@@ -30,7 +30,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.t
 #########
 
 # pull official base image
-FROM python:3.9-slim-buster
+FROM python:3.9-slim-bookworm
 
 # create directory for the app user
 RUN mkdir -p /home/app
