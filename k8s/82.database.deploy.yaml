@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+  namespace: wikiwars
+  labels:
+    app: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      name: database
+      labels:
+        app: database
+    spec:
+      containers:
+        - name: database
+          image: postgres:13
+          env:
+            - name: POSTGRES_USER
+              value: wikiwars
+            - name: POSTGRES_DB
+              value: wikiwars
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: postgres_password
+            - name: SQL_PASSWORD
+              value: "$(POSTGRES_PASSWORD)"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: database

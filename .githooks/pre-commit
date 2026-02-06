@@ -1,0 +1,97 @@
+#!/bin/bash
+
+# Couleurs pour les messages
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}🔍 Vérification du chiffrement SOPS des fichiers secrets...${NC}"
+
+# Vérifier si SOPS est installé
+if ! command -v sops &> /dev/null; then
+    echo -e "${RED}❌ ERREUR: SOPS n'est pas installé!${NC}"
+    echo -e "${YELLOW}Installez SOPS: https://github.com/mozilla/sops${NC}"
+    exit 1
+fi
+
+# Récupérer tous les fichiers *.secrets.yaml qui sont stagés
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.secrets\.yaml$')
+
+if [ -z "$FILES" ]; then
+    echo -e "${GREEN}✅ Aucun fichier secrets à vérifier${NC}"
+    exit 0
+fi
+
+# Variables pour tracker
+HAS_ERROR=0
+UNENCRYPTED_FILES=()
+ENCRYPTED_FILES=()
+
+# Vérifier chaque fichier
+for FILE in $FILES; do
+    if [ -f "$FILE" ]; then
+        if grep -q "sops:" "$FILE" && grep -q "version:" "$FILE"; then
+            echo -e "${GREEN}✅ $FILE est déjà chiffré avec SOPS${NC}"
+        else
+            echo -e "${YELLOW}⚠️ $FILE n'est PAS chiffré${NC}"
+            UNENCRYPTED_FILES+=("$FILE")
+        fi
+    fi
+done
+
+# Si des fichiers non chiffrés sont détectés
+if [ ${#UNENCRYPTED_FILES[@]} -gt 0 ]; then
+    echo ""
+    echo -e "${YELLOW}Les fichiers suivants ne sont pas chiffrés:${NC}"
+    for FILE in "${UNENCRYPTED_FILES[@]}"; do
+        echo -e "  - $FILE"
+    done
+    echo ""
+
+    # Demander confirmation (avec timeout de 10 secondes)
+    exec < /dev/tty
+    read -t 10 -p "Voulez-vous les chiffrer automatiquement ? (O/n) " -n 1 -r REPLY
+    echo ""
+
+    # Si réponse positive
+    if [[ $REPLY =~ ^[Oo]$ ]]; then
+        for FILE in "${UNENCRYPTED_FILES[@]}"; do
+            echo -e "${BLUE}🔐 Chiffrement de $FILE...${NC}"
+
+            if sops --encrypt --in-place "$FILE" 2>/dev/null; then
+                echo -e "${GREEN}✅ $FILE a été chiffré avec succès${NC}"
+                git add "$FILE"
+                echo -e "${GREEN}✅ $FILE a été re-stagé${NC}"
+                ENCRYPTED_FILES+=("$FILE")
+            else
+                echo -e "${RED}✗ ERREUR: Impossible de chiffrer $FILE${NC}"
+                HAS_ERROR=1
+            fi
+        done
+    else
+        echo -e "${RED}❌ COMMIT REFUSÉ: Fichiers non chiffrés détectés${NC}"
+        exit 1
+    fi
+fi
+
+# Afficher un résumé
+if [ ${#ENCRYPTED_FILES[@]} -gt 0 ]; then
+    echo ""
+    echo -e "${BLUE}📝 Fichiers chiffrés automatiquement:${NC}"
+    for FILE in "${ENCRYPTED_FILES[@]}"; do
+        echo -e "  ${GREEN}✅${NC} $FILE"
+    done
+fi
+
+if [ $HAS_ERROR -eq 1 ]; then
+    echo ""
+    echo -e "${RED}❌ COMMIT REFUSÉ: Erreurs de chiffrement${NC}"
+    echo -e "${YELLOW}Vérifiez votre configuration SOPS (.sops.yaml)${NC}"
+    exit 1
+fi
+
+echo ""
+echo -e "${GREEN}✅ Tous les fichiers secrets sont correctement chiffrés${NC}"
+exit 0

@@ -1,0 +1,87 @@
+# .github/workflows/deploy.yml
+name: Build and Push to Registry
+
+on: workflow_dispatch
+
+env:
+  REGISTRY: harbor.codingpacer.fr
+  REPO_NAME: ${{ github.repository }}
+  OWNER: ${{ github.repository_owner }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - id: lower-repo
+        name: Repository to lowercase
+        run: |
+          echo image_name=$(echo $(image_name="${REPO_NAME/"${OWNER}/"/}" && echo "prod/"${image_name@L})) >> $GITHUB_OUTPUT
+          echo namespace=$(echo $(namespace="${REPO_NAME/"${OWNER}/"/}" && echo ${namespace@L})) >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-kubectl@v4
+
+      - uses: Azure/k8s-set-context@v4
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Login to Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push front
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          push: true
+          target: production-stage
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image_name }}-front:${{ github.ref_name }}${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image_name }}-front:latest
+
+      - name: Build and push server
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          push: true
+          target: backend
+          tags: |
+            ${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image_name }}-backend:${{ github.ref_name }}${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image_name }}-backend:latest
+
+      - uses: Azure/k8s-create-secret@v4
+        with:
+          namespace: ${{ steps.lower-repo.outputs.namespace }}
+          container-registry-url: ${{ env.REGISTRY }}
+          container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          secret-name: registry-secret
+
+      - name: Install Sops
+        uses: mdgreenwald/mozilla-sops-action@v1.6.0
+        with:
+          version: 'latest'
+
+      - name: Decrypt secrets
+        run: |
+          find -name '*.secrets.yaml' | xargs -I % sh -c 'sops decrypt % -i'
+        shell: bash
+        env:
+          SOPS_AGE_KEY: '${{ secrets.DECRYPTING_KEY }}'
+
+      - name: Apply Manifests
+        uses: Azure/k8s-deploy@v4
+        with:
+          namespace: ${{ steps.lower-repo.outputs.namespace }}
+          action: deploy
+          manifests: |
+            k8s
+          images: |
+            ${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image_name }}-front:${{ github.ref_name }}${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ steps.lower-repo.outputs.image_name }}-backend:${{ github.ref_name }}${{ github.sha }}
+          imagepullsecrets: |
+            registry-secret

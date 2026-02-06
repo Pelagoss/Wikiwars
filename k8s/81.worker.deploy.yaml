@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: wikiwars
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      name: worker
+      labels:
+        app: worker
+    spec:
+      imagePullSecrets:
+        - name: registry-secret
+      containers:
+        - name: worker
+          image: harbor.codingpacer.fr/prod/wikiwars-worker:_GITHUB_INJECTED
+          env:
+            - name: ENV
+              value: prod
+            - name: MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mail-secret
+                  key: mail_password
+          command: ["python", "manage.py", "--app=manage:app", "run_worker"]
+  

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front
+  namespace: wikiwars
+  labels:
+    app: front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      name: front
+      labels:
+        app: front
+    spec:
+      imagePullSecrets:
+        - name: registry-secret
+      containers:
+        - name: front
+          image: harbor.codingpacer.fr/prod/wikiwars-front:_GITHUB_INJECTED
+          ports:
+            - containerPort: 80
