@@ -20,7 +20,7 @@ spec:
         - name: registry-secret
       containers:
         - name: worker
-          image: harbor.codingpacer.fr/prod/wikiwars-worker:_GITHUB_INJECTED
+          image: harbor.codingpacer.fr/prod/wikiwars-backend:_GITHUB_INJECTED
           env:
             - name: ENV
               value: prod
