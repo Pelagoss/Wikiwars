@@ -29,6 +29,8 @@ spec:
                 secretKeyRef:
                   name: mail-secret
                   key: mail_password
+            - name: SQL_DSN
+              value: "postgresql://wikiwars:$(SQL_PASSWORD)@database:5432/wikiwars"
           ports:
             - containerPort: 5000
           command: ["gunicorn", "-k", "geventwebsocket.gunicorn.workers.GeventWebSocketWorker", "-b", "0.0.0.0:5000", "--workers", "1", "--threads", "400", "manage:app"]
