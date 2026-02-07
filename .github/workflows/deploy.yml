@@ -20,6 +20,16 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Setup
+        env:
+          ENV: ${{ secrets.ENV }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
+        run: |
+          sed 's/$SQL_PASSWORD/'"$SQL_PASSWORD"'/' -i .env.prod.db
+          sed 's/$SQL_PASSWORD/'"$SQL_PASSWORD"'/' -i server/.env.prod
+          sed 's/$MAIL_PASSWORD/'"$MAIL_PASSWORD"'/' -i server/.env.prod
+
       - uses: azure/setup-kubectl@v4
 
       - uses: Azure/k8s-set-context@v4
