@@ -24,6 +24,11 @@ spec:
           env:
             - name: ENV
               value: prod
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: postgres_password
             - name: MAIL_PASSWORD
               valueFrom:
                 secretKeyRef:
