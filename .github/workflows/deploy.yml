@@ -10,6 +10,7 @@ env:
 
 jobs:
   build:
+    environment: PROD
     runs-on: ubuntu-latest
     steps:
       - id: lower-repo
