@@ -24,10 +24,17 @@ spec:
           env:
             - name: ENV
               value: prod
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-secret
+                  key: postgres_password
             - name: MAIL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mail-secret
                   key: mail_password
+            - name: SQL_DSN
+              value: "postgresql://wikiwars:$(SQL_PASSWORD)@database:5432/wikiwars"
           command: ["python", "manage.py", "--app=manage:app", "run_worker"]
   
